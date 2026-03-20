@@ -183,19 +183,19 @@ const painPoints = [
 ]
 
 const services = [
-  { icon: icons.chatbot, title: 'Chatbot IA Multiagente', price: '$4,999/mes', desc: 'Atencion al cliente 24/7 con agentes especializados que resuelven el 80% de consultas sin intervencion humana. Web, WhatsApp y Telegram.' },
-  { icon: icons.automation, title: 'Automatizacion de Procesos', price: '$2,999/proyecto', desc: 'Conectamos tu CRM, email, facturacion y herramientas en flujos automaticos con Make.com y n8n. Elimina la carga administrativa.' },
-  { icon: icons.content, title: 'Generacion de Contenido con IA', price: '$3,499/mes', desc: 'Copy para redes sociales, prompts DALL-E 3, paletas visuales y calendario de publicacion. 4 plataformas, contenido ilimitado.' },
-  { icon: icons.finance, title: 'Dashboard Financiero con IA', price: '$5,999/proyecto', desc: 'Deteccion de anomalias, reconciliacion de gastos y proyecciones de flujo de caja. Importa tus datos y obten insights al instante.' },
-  { icon: icons.hr, title: 'Filtrado de CVs con IA', price: '$1,999/proceso', desc: 'Evalua candidatos automaticamente contra tu perfil de puesto. Scoring, ranking y recomendaciones por candidato.' },
-  { icon: icons.portal, title: 'Portal de Clientes No-Code', price: '$4,499/proyecto', desc: 'Portal completo con proyectos, facturas, tickets y documentos. Sin backend, sin servidor, listo en dias.' },
+  { icon: icons.chatbot, title: 'Chatbot IA Multiagente', price: '$4,999/mes', desc: 'Atención al cliente 24/7 con agentes especializados que resuelven el 80% de consultas sin intervención humana. Web, WhatsApp y Telegram.', demo: 'https://chatbot-multiagente-ia.vercel.app' },
+  { icon: icons.automation, title: 'Automatización de Procesos', price: '$2,999/proyecto', desc: 'Conectamos tu CRM, email, facturación y herramientas en flujos automáticos con Make.com y n8n. Elimina la carga administrativa.', demo: null },
+  { icon: icons.content, title: 'Generación de Contenido con IA', price: '$3,499/mes', desc: 'Copy para redes sociales, prompts DALL-E 3, paletas visuales y calendario de publicación. 4 plataformas, contenido ilimitado.', demo: 'https://content-studio-ai-blush.vercel.app' },
+  { icon: icons.finance, title: 'Dashboard Financiero con IA', price: '$5,999/proyecto', desc: 'Detección de anomalías, reconciliación de gastos y proyecciones de flujo de caja. Importa tus datos y obtén insights al instante.', demo: 'https://finance-ai-dashboard-omega.vercel.app' },
+  { icon: icons.hr, title: 'Filtrado de CVs con IA', price: '$1,999/proceso', desc: 'Evalúa candidatos automáticamente contra tu perfil de puesto. Scoring, ranking y recomendaciones por candidato.', demo: 'https://hr-scout-llm.vercel.app' },
+  { icon: icons.portal, title: 'Portal de Clientes No-Code', price: '$4,499/proyecto', desc: 'Portal completo con proyectos, facturas, tickets y documentos. Sin backend, sin servidor, listo en días.', demo: 'https://client-hub-nocode.vercel.app' },
 ]
 
 const steps = [
-  { num: '01', title: 'Diagnostico Gratis', desc: 'Analizamos tus procesos y detectamos oportunidades de automatizacion (30 min, sin compromiso)' },
-  { num: '02', title: 'Propuesta a la Medida', desc: 'Disenamos la solucion tecnica con tiempos, costos y ROI estimado' },
-  { num: '03', title: 'Implementacion Agil', desc: 'Construimos, testeamos y desplegamos en sprints de 1-2 semanas' },
-  { num: '04', title: 'Soporte Continuo', desc: 'Monitoreo, ajustes y capacitacion para tu equipo' },
+  { num: '01', title: 'Diagnóstico Gratis', desc: 'Analizamos tus procesos y detectamos oportunidades de automatización (30 min, sin compromiso)' },
+  { num: '02', title: 'Propuesta a la Medida', desc: 'Diseñamos la solución técnica con tiempos, costos y ROI estimado' },
+  { num: '03', title: 'Implementación Ágil', desc: 'Construimos, testeamos y desplegamos en sprints de 1-2 semanas' },
+  { num: '04', title: 'Soporte Continuo', desc: 'Monitoreo, ajustes y capacitación para tu equipo' },
 ]
 
 const demos = [
@@ -251,7 +251,7 @@ function Navbar() {
     { label: 'Servicios', href: '#servicios' },
     { label: 'Proceso', href: '#proceso' },
     { label: 'Demos', href: '#demos' },
-    { label: 'Sobre mi', href: '#sobre' },
+    { label: 'Sobre mí', href: '#sobre' },
     { label: 'Contacto', href: '#contacto' },
   ]
 
@@ -378,7 +378,7 @@ function Hero() {
           ...s.badge,
           background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8',
         }}>
-          IA & Automatizacion para empresas
+          IA & Automatización para empresas
         </div>
         <h1 style={{
           fontFamily: "'Syne', sans-serif", fontWeight: 800,
@@ -396,7 +396,7 @@ function Hero() {
           fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#94A3B8',
           maxWidth: 680, margin: '0 auto 40px', lineHeight: 1.7,
         }}>
-          Implementamos soluciones de Inteligencia Artificial y automatizacion que reducen costos, aceleran procesos y liberan a tu equipo para lo que realmente importa.
+          Implementamos soluciones de Inteligencia Artificial y automatización que reducen costos, aceleran procesos y liberan a tu equipo para lo que realmente importa.
         </p>
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
           <a href="#contacto" style={{
@@ -410,7 +410,7 @@ function Hero() {
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.45)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.3)' }}
           >
-            Agenda tu diagnostico gratis {icons.arrow}
+            Agenda tu diagnóstico gratis {icons.arrow}
           </a>
           <a href="#servicios" style={{
             padding: '16px 36px', borderRadius: 12,
@@ -425,6 +425,26 @@ function Hero() {
           >
             Ver servicios
           </a>
+        </div>
+
+        {/* Trust metrics */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 48, marginTop: 64, flexWrap: 'wrap' }}>
+          {[
+            { num: '6+', label: 'Soluciones en producción' },
+            { num: '80%', label: 'Consultas resueltas por IA' },
+            { num: '20+', label: 'Horas/semana ahorradas' },
+            { num: '5', label: 'Demos en vivo' },
+          ].map((m, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <div style={{
+                fontFamily: "'Syne', sans-serif", fontWeight: 800,
+                fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
+                background: 'linear-gradient(135deg, #6366F1, #10B981)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              }}>{m.num}</div>
+              <div style={{ fontSize: '0.85rem', color: '#64748B', marginTop: 4 }}>{m.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -480,13 +500,17 @@ function Services() {
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
           gap: 24,
         }}>
-          {services.map((sv, i) => (
-            <div key={i} style={{
+          {services.map((sv, i) => {
+            const Wrapper = sv.demo ? 'a' : 'div'
+            const wrapperProps = sv.demo ? { href: sv.demo, target: '_blank', rel: 'noopener noreferrer' } : {}
+            return (
+            <Wrapper key={i} {...wrapperProps} style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
               border: '1px solid rgba(255,255,255,0.06)',
               borderRadius: 16, padding: 32,
               transition: 'border-color 0.3s, transform 0.3s',
               display: 'flex', flexDirection: 'column',
+              textDecoration: 'none', color: 'inherit', cursor: 'pointer',
             }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.4)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
@@ -515,11 +539,11 @@ function Services() {
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 }}>Desde {sv.price}</span>
                 <span style={{ color: '#6366F1', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.9rem', fontWeight: 500 }}>
-                  Saber mas {icons.arrow}
+                  {sv.demo ? 'Ver demo' : 'Contactar'} {icons.arrow}
                 </span>
               </div>
-            </div>
-          ))}
+            </Wrapper>
+          )})}
         </div>
       </div>
     </section>
@@ -583,7 +607,7 @@ function Demos() {
             Portafolio
           </div>
           <h2 style={s.sectionTitle}>Demos en vivo</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>Proyectos reales, funcionando ahora mismo. Haz clic y pruebalos.</p>
+          <p style={{ ...s.sectionSub, margin: '0 auto' }}>Proyectos reales, funcionando ahora mismo. Haz clic y pruébalos.</p>
         </div>
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -707,7 +731,7 @@ function About() {
           }}>CH</div>
           <div style={{ flex: 1, minWidth: 280 }}>
             <p style={{ color: '#CBD5E1', fontSize: '1.05rem', lineHeight: 1.8, marginBottom: 24 }}>
-              Soy Christian Hernandez, Ingeniero en Software especializado en IA & Automatizacion. He disenado y desplegado sistemas multiagente, chatbots inteligentes, dashboards financieros y portales No-Code para empresas. Mi enfoque: traducir necesidades de negocio en soluciones tecnicas que generan ROI desde el dia uno.
+              Soy Christian Hernández, Ingeniero en Software especializado en IA & Automatización. He diseñado y desplegado sistemas multiagente, chatbots inteligentes, dashboards financieros y portales No-Code para empresas. Mi enfoque: traducir necesidades de negocio en soluciones técnicas que generan ROI desde el día uno.
             </p>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               {['5+ proyectos IA desplegados', 'Stack full: React, Python, Node.js', 'Resultados medibles en semanas'].map((item, i) => (
@@ -717,6 +741,50 @@ function About() {
               ))}
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Results() {
+  const results = [
+    { icon: '🤖', metric: '80%', label: 'de consultas resueltas sin humanos', desc: 'Chatbot multiagente con 5 IAs especializadas, base de conocimiento y árboles de decisión' },
+    { icon: '⚡', metric: '90%', label: 'menos tiempo en producción de contenido', desc: 'Generador de copy + visual para 4 plataformas en segundos, no horas' },
+    { icon: '📊', metric: '2σ', label: 'detección estadística de anomalías', desc: 'Z-score sobre transacciones reales con proyecciones por regresión lineal' },
+    { icon: '⏱️', metric: '15 min', label: 'vs horas en filtrado de CVs', desc: 'Scoring automático, matching por sinónimos y heatmap de cobertura de skills' },
+  ]
+  return (
+    <section style={{ ...s.sectionPad, background: 'linear-gradient(180deg, #0F1017 0%, #0A0B0F 100%)' }}>
+      <div style={s.container} className="fade-section">
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <div style={{ ...s.badge, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#34D399' }}>
+            Resultados reales
+          </div>
+          <h2 style={s.sectionTitle}>No prometemos, demostramos</h2>
+          <p style={{ ...s.sectionSub, margin: '0 auto' }}>Cada métrica viene de proyectos reales que puedes probar tú mismo en las demos.</p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
+          {results.map((r, i) => (
+            <div key={i} style={{
+              background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 16, padding: '28px 24px', textAlign: 'center',
+              transition: 'border-color 0.3s, transform 0.3s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
+            >
+              <div style={{ fontSize: 32, marginBottom: 12 }}>{r.icon}</div>
+              <div style={{
+                fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '2rem',
+                background: 'linear-gradient(135deg, #10B981, #6366F1)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                marginBottom: 4,
+              }}>{r.metric}</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#E2E8F0', marginBottom: 8 }}>{r.label}</div>
+              <div style={{ fontSize: '0.8rem', color: '#64748B', lineHeight: 1.5 }}>{r.desc}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -753,7 +821,7 @@ function Contact() {
           </div>
           <h2 style={s.sectionTitle}>Hablemos de tu proyecto</h2>
           <p style={{ ...s.sectionSub, margin: '0 auto' }}>
-            Agenda tu diagnostico gratuito de 30 minutos. Sin compromiso, con ideas concretas.
+            Agenda tu diagnóstico gratuito de 30 minutos. Sin compromiso, con ideas concretas.
           </p>
         </div>
 
@@ -775,7 +843,7 @@ function Contact() {
               onFocus={e => e.target.style.borderColor = '#6366F1'}
               onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
             />
-            <textarea placeholder="Que quieres automatizar?" rows={4} required
+            <textarea placeholder="¿Qué quieres automatizar?" rows={4} required
               style={{ ...inputStyle, resize: 'vertical', minHeight: 100 }}
               onFocus={e => e.target.style.borderColor = '#6366F1'}
               onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
@@ -789,7 +857,7 @@ function Contact() {
               boxShadow: '0 8px 32px rgba(99,102,241,0.3)',
               transition: 'all 0.3s',
             }}>
-              {submitted ? 'Enviado - Te contactaremos pronto' : 'Enviar'}
+              {submitted ? '\✓ Enviado \— Te contactaremos pronto' : 'Enviar'}
             </button>
           </form>
 
@@ -815,7 +883,7 @@ function Contact() {
             }}>
               <h4 style={{ color: '#fff', fontWeight: 600, marginBottom: 16, fontSize: '1.05rem' }}>Redes sociales</h4>
               <div style={{ display: 'flex', gap: 16 }}>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                <a href="https://linkedin.com/in/christianhernandez-ia" target="_blank" rel="noopener noreferrer"
                   style={{
                     width: 48, height: 48, borderRadius: 12,
                     background: 'rgba(99,102,241,0.1)',
@@ -827,7 +895,7 @@ function Contact() {
                 >
                   {icons.linkedin}
                 </a>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                <a href="https://github.com/christianescamilla15-cell" target="_blank" rel="noopener noreferrer"
                   style={{
                     width: 48, height: 48, borderRadius: 12,
                     background: 'rgba(99,102,241,0.1)',
@@ -891,6 +959,7 @@ export default function App() {
       <Demos />
       <TechStack />
       <About />
+      <Results />
       <Contact />
       <Footer />
     </>
