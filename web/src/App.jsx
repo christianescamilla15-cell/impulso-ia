@@ -1,4 +1,346 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, createContext, useContext } from 'react'
+
+/* ───────────────── Language Context ───────────────── */
+const LangContext = createContext({ lang: 'es', setLang: () => {} })
+const useLang = () => useContext(LangContext)
+
+/* ───────────────── Translations ───────────────── */
+const t = {
+  es: {
+    // Nav
+    navServices: 'Servicios',
+    navProcess: 'Proceso',
+    navDemos: 'Demos',
+    navAbout: 'Sobre mí',
+    navContact: 'Contacto',
+    navCta: 'Agenda tu llamada',
+    // Hero
+    heroBadge: 'IA & Automatización para empresas',
+    heroTitle1: 'Tu negocio merece trabajar ',
+    heroHighlight: 'con IA',
+    heroTitle2: ', no contra ella',
+    heroSub: 'Implementamos soluciones de Inteligencia Artificial y automatización que reducen costos, aceleran procesos y liberan a tu equipo para lo que realmente importa.',
+    heroCta: 'Agenda tu diagnóstico gratis',
+    heroCtaSecondary: 'Ver servicios',
+    heroMetric1: 'Soluciones en producción',
+    heroMetric2: 'Consultas resueltas por IA',
+    heroMetric3: 'Horas/semana ahorradas',
+    heroMetric4: 'Demos en vivo',
+    // Trust signals
+    trustBadge: 'Respaldado por resultados',
+    trustTitle: 'Números que hablan por nosotros',
+    trust1: 'Sistemas IA Entregados',
+    trust2: 'Claude Tools en Producción',
+    trust3: 'Tests (pytest + PHPUnit)',
+    trust4: 'Demos en Vivo Disponibles',
+    // Pain points
+    painBadge: 'El problema',
+    painTitle: 'Esto le pasa a tu empresa hoy',
+    pain1: 'Tu equipo pierde horas en tareas repetitivas',
+    pain2: 'Tus clientes esperan demasiado por respuestas',
+    pain3: 'Tomas decisiones sin datos en tiempo real',
+    // Services
+    servicesBadge: 'Servicios',
+    servicesTitle: 'Soluciones que generan resultados',
+    servicesSub: 'Cada proyecto se adapta a tus necesidades. Sin contratos largos, con resultados medibles.',
+    svcFrom: 'Desde',
+    svcDemo: 'Ver demo',
+    svcContact: 'Contactar',
+    svc1Title: 'Chatbot IA Multiagente',
+    svc1Price: '$4,999/mes',
+    svc1Desc: 'Atención al cliente 24/7 con agentes especializados que resuelven el 80% de consultas sin intervención humana. Web, WhatsApp y Telegram.',
+    svc2Title: 'Automatización de Procesos',
+    svc2Price: '$2,999/proyecto',
+    svc2Desc: 'Conectamos tu CRM, email, facturación y herramientas en flujos automáticos con Make.com y n8n. Elimina la carga administrativa.',
+    svc3Title: 'Generación de Contenido con IA',
+    svc3Price: '$3,499/mes',
+    svc3Desc: 'Copy para redes sociales, prompts DALL-E 3, paletas visuales y calendario de publicación. 4 plataformas, contenido ilimitado.',
+    svc4Title: 'Dashboard Financiero con IA',
+    svc4Price: '$5,999/proyecto',
+    svc4Desc: 'Detección de anomalías, reconciliación de gastos y proyecciones de flujo de caja. Importa tus datos y obtén insights al instante.',
+    svc5Title: 'Filtrado de CVs con IA',
+    svc5Price: '$1,999/proceso',
+    svc5Desc: 'Evalúa candidatos automáticamente contra tu perfil de puesto. Scoring, ranking y recomendaciones por candidato.',
+    svc6Title: 'Portal de Clientes No-Code',
+    svc6Price: '$4,499/proyecto',
+    svc6Desc: 'Portal completo con proyectos, facturas, tickets y documentos. Sin backend, sin servidor, listo en días.',
+    // Process
+    processBadge: 'Proceso',
+    processTitle: 'Como trabajamos',
+    processSub: 'De la idea al resultado en 4 pasos claros.',
+    step1Title: 'Diagnóstico Gratis',
+    step1Desc: 'Analizamos tus procesos y detectamos oportunidades de automatización (30 min, sin compromiso)',
+    step2Title: 'Propuesta a la Medida',
+    step2Desc: 'Diseñamos la solución técnica con tiempos, costos y ROI estimado',
+    step3Title: 'Implementación Ágil',
+    step3Desc: 'Construimos, testeamos y desplegamos en sprints de 1-2 semanas',
+    step4Title: 'Soporte Continuo',
+    step4Desc: 'Monitoreo, ajustes y capacitación para tu equipo',
+    // Demos
+    demosBadge: 'Portafolio',
+    demosTitle: 'Demos en vivo',
+    demosSub: 'Proyectos reales, funcionando ahora mismo. Haz clic y pruébalos.',
+    demoCta: 'Probar demo en vivo',
+    demo1Title: 'Chatbot Multiagente',
+    demo1M1: '5 agentes IA',
+    demo1M2: '80% resolución',
+    demo1M3: '24/7 disponible',
+    demo2Title: 'Content Studio IA',
+    demo2M1: '4 plataformas',
+    demo2M2: '90% más rápido',
+    demo2M3: 'A/B testing',
+    demo3Title: 'Finance AI Dashboard',
+    demo3M1: 'Detección anomalías',
+    demo3M2: 'Proyección cashflow',
+    demo3M3: 'Chatbot financiero',
+    demo4Title: 'HR Scout LLM',
+    demo4M1: 'Scoring 0-100',
+    demo4M2: '15 min vs 3 días',
+    demo4M3: 'Reporte comparativo',
+    demo5Title: 'Client Hub No-Code',
+    demo5M1: 'Tickets & facturas',
+    demo5M2: 'Documentos seguros',
+    demo5M3: 'Asistente IA',
+    demo6Title: 'ClientHub Portal',
+    demo6M1: 'Portal completo',
+    demo6M2: 'Sin backend',
+    demo6M3: 'Listo en días',
+    // Tech
+    techBadge: 'Tecnologías',
+    techTitle: 'Nuestro stack',
+    // About
+    aboutBadge: 'Sobre mí',
+    aboutName: 'Christian Hernandez Escamilla',
+    aboutBio: 'Soy Christian Hernández, Ingeniero en Software especializado en IA & Automatización. He diseñado y desplegado sistemas multiagente, chatbots inteligentes, dashboards financieros y portales No-Code para empresas. Mi enfoque: traducir necesidades de negocio en soluciones técnicas que generan ROI desde el día uno.',
+    aboutTag1: '5+ proyectos IA desplegados',
+    aboutTag2: 'Stack full: React, Python, Node.js',
+    aboutTag3: 'Resultados medibles en semanas',
+    // Results
+    resultsBadge: 'Resultados reales',
+    resultsTitle: 'No prometemos, demostramos',
+    resultsSub: 'Cada métrica viene de proyectos reales que puedes probar tú mismo en las demos.',
+    res1Metric: '80%',
+    res1Label: 'de consultas resueltas sin humanos',
+    res1Desc: 'Chatbot multiagente con 5 IAs especializadas, base de conocimiento y árboles de decisión',
+    res2Metric: '90%',
+    res2Label: 'menos tiempo en producción de contenido',
+    res2Desc: 'Generador de copy + visual para 4 plataformas en segundos, no horas',
+    res3Metric: '2σ',
+    res3Label: 'detección estadística de anomalías',
+    res3Desc: 'Z-score sobre transacciones reales con proyecciones por regresión lineal',
+    res4Metric: '15 min',
+    res4Label: 'vs horas en filtrado de CVs',
+    res4Desc: 'Scoring automático, matching por sinónimos y heatmap de cobertura de skills',
+    // Testimonials
+    testimonialsBadge: 'Testimonios',
+    testimonialsTitle: 'Lo que dicen nuestros clientes',
+    test1: 'Implementamos el chatbot multiagente y resolvemos el 80% de consultas sin intervención humana.',
+    test1Author: 'María González',
+    test1Role: 'COO @ TechSoluciones',
+    test2: 'El dashboard financiero detectó anomalías que nos ahorraron $50K en el primer mes.',
+    test2Author: 'Carlos Ruiz',
+    test2Role: 'CFO @ DataMex',
+    test3: 'Redujimos el tiempo de screening de CVs de 3 días a 15 minutos.',
+    test3Author: 'Ana López',
+    test3Role: 'HR Director @ TalentPro',
+    // FAQ
+    faqBadge: 'Preguntas frecuentes',
+    faqTitle: 'Resolvemos tus dudas',
+    faq1Q: '¿Cuánto tiempo toma la implementación?',
+    faq1A: 'Entre 1 y 3 semanas dependiendo de la complejidad del proyecto. Trabajamos en sprints ágiles para entregarte valor lo antes posible.',
+    faq2Q: '¿Necesito conocimientos técnicos?',
+    faq2A: 'No, nosotros nos encargamos de todo. Desde el diseño hasta el despliegue y la capacitación de tu equipo.',
+    faq3Q: '¿Qué pasa si no me convence?',
+    faq3A: 'Ofrecemos reembolso completo en los primeros 30 días. Sin preguntas, sin complicaciones.',
+    faq4Q: '¿Puedo ver una demo antes de contratar?',
+    faq4A: 'Sí, todas nuestras demos están disponibles en línea. Pruébalas directamente desde la sección de demos.',
+    faq5Q: '¿Ofrecen soporte post-implementación?',
+    faq5A: 'Sí, 30 días de soporte incluidos con cada proyecto, más planes de soporte continuo disponibles.',
+    // Contact
+    contactBadge: 'Contacto',
+    contactTitle: 'Hablemos de tu proyecto',
+    contactSub: 'Agenda tu diagnóstico gratuito de 30 minutos. Sin compromiso, con ideas concretas.',
+    contactName: 'Nombre',
+    contactEmail: 'Email',
+    contactCompany: 'Empresa',
+    contactMessage: '¿Qué quieres automatizar?',
+    contactSubmit: 'Agenda tu Diagnóstico Gratis',
+    contactSent: '✓ Enviado — Te contactaremos pronto',
+    contactDirect: 'Contacto directo',
+    contactSocial: 'Redes sociales',
+    // Footer
+    footerText: '© 2026 Impulso IA — Automatiza. Escala. Transforma.',
+    // Floating CTA
+    floatingCta: 'Agenda Llamada Gratis',
+    // Chatbot
+    chatTitle: 'Impulso IA — Asistente',
+    chatPlaceholder: 'Escribe tu pregunta...',
+    chatWelcome: '¡Hola! Soy el asistente de Impulso IA. ¿En qué puedo ayudarte?',
+    chatQuick1: 'Servicios',
+    chatQuick2: 'Precios',
+    chatQuick3: 'Proceso',
+    chatQuick4: 'Agendar llamada',
+  },
+  en: {
+    navServices: 'Services',
+    navProcess: 'Process',
+    navDemos: 'Demos',
+    navAbout: 'About',
+    navContact: 'Contact',
+    navCta: 'Schedule a Call',
+    heroBadge: 'AI & Automation for Business',
+    heroTitle1: 'Your business deserves to work ',
+    heroHighlight: 'with AI',
+    heroTitle2: ', not against it',
+    heroSub: 'We implement AI and automation solutions that cut costs, accelerate processes, and free your team to focus on what truly matters.',
+    heroCta: 'Schedule your free diagnosis',
+    heroCtaSecondary: 'View services',
+    heroMetric1: 'Solutions in production',
+    heroMetric2: 'Queries resolved by AI',
+    heroMetric3: 'Hours/week saved',
+    heroMetric4: 'Live demos',
+    trustBadge: 'Backed by results',
+    trustTitle: 'Numbers that speak for themselves',
+    trust1: 'AI Systems Shipped',
+    trust2: 'Claude Tools in Production',
+    trust3: 'Tests (pytest + PHPUnit)',
+    trust4: 'Live Demos Available',
+    painBadge: 'The problem',
+    painTitle: "This is happening to your business today",
+    pain1: 'Your team wastes hours on repetitive tasks',
+    pain2: 'Your customers wait too long for answers',
+    pain3: 'You make decisions without real-time data',
+    servicesBadge: 'Services',
+    servicesTitle: 'Solutions that deliver results',
+    servicesSub: 'Every project adapts to your needs. No long contracts, with measurable results.',
+    svcFrom: 'From',
+    svcDemo: 'View demo',
+    svcContact: 'Contact us',
+    svc1Title: 'Multi-Agent AI Chatbot',
+    svc1Price: '$4,999/mo',
+    svc1Desc: '24/7 customer support with specialized agents that resolve 80% of queries without human intervention. Web, WhatsApp & Telegram.',
+    svc2Title: 'Process Automation',
+    svc2Price: '$2,999/project',
+    svc2Desc: 'We connect your CRM, email, billing & tools into automatic workflows with Make.com and n8n. Eliminate admin overhead.',
+    svc3Title: 'AI Content Generation',
+    svc3Price: '$3,499/mo',
+    svc3Desc: 'Social media copy, DALL-E 3 prompts, visual palettes & publishing calendar. 4 platforms, unlimited content.',
+    svc4Title: 'AI Financial Dashboard',
+    svc4Price: '$5,999/project',
+    svc4Desc: 'Anomaly detection, expense reconciliation & cash flow projections. Import your data and get instant insights.',
+    svc5Title: 'AI Resume Screening',
+    svc5Price: '$1,999/process',
+    svc5Desc: 'Automatically evaluate candidates against your job profile. Scoring, ranking & recommendations per candidate.',
+    svc6Title: 'No-Code Client Portal',
+    svc6Price: '$4,499/project',
+    svc6Desc: 'Complete portal with projects, invoices, tickets & documents. No backend, no server, ready in days.',
+    processBadge: 'Process',
+    processTitle: 'How we work',
+    processSub: 'From idea to results in 4 clear steps.',
+    step1Title: 'Free Diagnosis',
+    step1Desc: 'We analyze your processes and detect automation opportunities (30 min, no commitment)',
+    step2Title: 'Custom Proposal',
+    step2Desc: 'We design the technical solution with timelines, costs and estimated ROI',
+    step3Title: 'Agile Implementation',
+    step3Desc: 'We build, test and deploy in 1-2 week sprints',
+    step4Title: 'Ongoing Support',
+    step4Desc: 'Monitoring, adjustments and training for your team',
+    demosBadge: 'Portfolio',
+    demosTitle: 'Live demos',
+    demosSub: 'Real projects, running right now. Click and try them.',
+    demoCta: 'Try Live Demo',
+    demo1Title: 'Multi-Agent Chatbot',
+    demo1M1: '5 AI agents',
+    demo1M2: '80% resolution',
+    demo1M3: '24/7 available',
+    demo2Title: 'AI Content Studio',
+    demo2M1: '4 platforms',
+    demo2M2: '90% faster',
+    demo2M3: 'A/B testing',
+    demo3Title: 'Finance AI Dashboard',
+    demo3M1: 'Anomaly detection',
+    demo3M2: 'Cashflow projection',
+    demo3M3: 'Financial chatbot',
+    demo4Title: 'HR Scout LLM',
+    demo4M1: 'Score 0-100',
+    demo4M2: '15 min vs 3 days',
+    demo4M3: 'Comparative report',
+    demo5Title: 'Client Hub No-Code',
+    demo5M1: 'Tickets & invoices',
+    demo5M2: 'Secure documents',
+    demo5M3: 'AI assistant',
+    demo6Title: 'ClientHub Portal',
+    demo6M1: 'Complete portal',
+    demo6M2: 'No backend',
+    demo6M3: 'Ready in days',
+    techBadge: 'Technologies',
+    techTitle: 'Our stack',
+    aboutBadge: 'About me',
+    aboutName: 'Christian Hernandez Escamilla',
+    aboutBio: "I'm Christian Hernández, Software Engineer specializing in AI & Automation. I've designed and deployed multi-agent systems, intelligent chatbots, financial dashboards, and No-Code portals for businesses. My focus: translating business needs into technical solutions that generate ROI from day one.",
+    aboutTag1: '5+ AI projects deployed',
+    aboutTag2: 'Full stack: React, Python, Node.js',
+    aboutTag3: 'Measurable results in weeks',
+    resultsBadge: 'Real results',
+    resultsTitle: "We don't promise, we prove",
+    resultsSub: 'Every metric comes from real projects you can try yourself in the demos.',
+    res1Metric: '80%',
+    res1Label: 'of queries resolved without humans',
+    res1Desc: 'Multi-agent chatbot with 5 specialized AIs, knowledge base and decision trees',
+    res2Metric: '90%',
+    res2Label: 'less time in content production',
+    res2Desc: 'Copy + visual generator for 4 platforms in seconds, not hours',
+    res3Metric: '2σ',
+    res3Label: 'statistical anomaly detection',
+    res3Desc: 'Z-score on real transactions with linear regression projections',
+    res4Metric: '15 min',
+    res4Label: 'vs hours in resume screening',
+    res4Desc: 'Automatic scoring, synonym matching and skill coverage heatmap',
+    testimonialsBadge: 'Testimonials',
+    testimonialsTitle: 'What our clients say',
+    test1: 'We implemented the multi-agent chatbot and now resolve 80% of queries without human intervention.',
+    test1Author: 'María González',
+    test1Role: 'COO @ TechSoluciones',
+    test2: 'The financial dashboard detected anomalies that saved us $50K in the first month.',
+    test2Author: 'Carlos Ruiz',
+    test2Role: 'CFO @ DataMex',
+    test3: 'We reduced CV screening time from 3 days to 15 minutes.',
+    test3Author: 'Ana López',
+    test3Role: 'HR Director @ TalentPro',
+    faqBadge: 'FAQ',
+    faqTitle: 'Frequently asked questions',
+    faq1Q: 'How long does implementation take?',
+    faq1A: 'Between 1 and 3 weeks depending on project complexity. We work in agile sprints to deliver value as soon as possible.',
+    faq2Q: 'Do I need technical knowledge?',
+    faq2A: "No, we handle everything. From design to deployment and training your team.",
+    faq3Q: "What if I'm not satisfied?",
+    faq3A: 'We offer a full refund within the first 30 days. No questions asked.',
+    faq4Q: 'Can I see a demo before hiring?',
+    faq4A: 'Yes, all our demos are available online. Try them directly from the demos section.',
+    faq5Q: 'Do you offer post-implementation support?',
+    faq5A: 'Yes, 30 days of support included with every project, plus ongoing support plans available.',
+    contactBadge: 'Contact',
+    contactTitle: "Let's talk about your project",
+    contactSub: 'Schedule your free 30-minute diagnosis. No commitment, with concrete ideas.',
+    contactName: 'Name',
+    contactEmail: 'Email',
+    contactCompany: 'Company',
+    contactMessage: 'What do you want to automate?',
+    contactSubmit: 'Schedule Your Free Diagnosis',
+    contactSent: '✓ Sent — We will contact you soon',
+    contactDirect: 'Direct contact',
+    contactSocial: 'Social media',
+    footerText: '© 2026 Impulso IA — Automate. Scale. Transform.',
+    floatingCta: 'Schedule Free Call',
+    chatTitle: 'Impulso IA — Assistant',
+    chatPlaceholder: 'Type your question...',
+    chatWelcome: "Hi! I'm the Impulso IA assistant. How can I help you?",
+    chatQuick1: 'Services',
+    chatQuick2: 'Pricing',
+    chatQuick3: 'Process',
+    chatQuick4: 'Schedule a call',
+  },
+}
 
 /* ───────────────── Global Styles ───────────────── */
 const globalStyles = `
@@ -47,6 +389,10 @@ const globalStyles = `
     0%, 100% { opacity: 0.4; }
     50% { opacity: 0.8; }
   }
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 `
 
 /* ───────────────── Hook: Intersection Observer ───────────────── */
@@ -65,6 +411,44 @@ function useFadeIn() {
     document.querySelectorAll('.fade-section').forEach((el) => observer.observe(el))
     return () => observer.disconnect()
   }, [])
+}
+
+/* ───────────────── Hook: Animated Counter ───────────────── */
+function useCountUp(end, duration = 2000) {
+  const [count, setCount] = useState(0)
+  const [started, setStarted] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started) {
+          setStarted(true)
+        }
+      },
+      { threshold: 0.3 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [started])
+
+  useEffect(() => {
+    if (!started) return
+    let start = 0
+    const increment = end / (duration / 16)
+    const timer = setInterval(() => {
+      start += increment
+      if (start >= end) {
+        setCount(end)
+        clearInterval(timer)
+      } else {
+        setCount(Math.floor(start))
+      }
+    }, 16)
+    return () => clearInterval(timer)
+  }, [started, end, duration])
+
+  return { count, ref }
 }
 
 /* ───────────────── SVG Icons ───────────────── */
@@ -173,39 +557,25 @@ const icons = {
       <line x1="6" y1="6" x2="18" y2="18"/>
     </svg>
   ),
+  chevronDown: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  ),
+  quote: (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/>
+      <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+    </svg>
+  ),
+  star: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="1">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  ),
 }
 
-/* ───────────────── Data ───────────────── */
-const painPoints = [
-  { icon: icons.clock, title: 'Tu equipo pierde horas en tareas repetitivas', color: '#EF4444' },
-  { icon: icons.users, title: 'Tus clientes esperan demasiado por respuestas', color: '#F59E0B' },
-  { icon: icons.chart, title: 'Tomas decisiones sin datos en tiempo real', color: '#8B5CF6' },
-]
-
-const services = [
-  { icon: icons.chatbot, title: 'Chatbot IA Multiagente', price: '$4,999/mes', desc: 'Atención al cliente 24/7 con agentes especializados que resuelven el 80% de consultas sin intervención humana. Web, WhatsApp y Telegram.', demo: 'https://chatbot-multiagente-ia.vercel.app' },
-  { icon: icons.automation, title: 'Automatización de Procesos', price: '$2,999/proyecto', desc: 'Conectamos tu CRM, email, facturación y herramientas en flujos automáticos con Make.com y n8n. Elimina la carga administrativa.', demo: null },
-  { icon: icons.content, title: 'Generación de Contenido con IA', price: '$3,499/mes', desc: 'Copy para redes sociales, prompts DALL-E 3, paletas visuales y calendario de publicación. 4 plataformas, contenido ilimitado.', demo: 'https://content-studio-ai-blush.vercel.app' },
-  { icon: icons.finance, title: 'Dashboard Financiero con IA', price: '$5,999/proyecto', desc: 'Detección de anomalías, reconciliación de gastos y proyecciones de flujo de caja. Importa tus datos y obtén insights al instante.', demo: 'https://finance-ai-dashboard-omega.vercel.app' },
-  { icon: icons.hr, title: 'Filtrado de CVs con IA', price: '$1,999/proceso', desc: 'Evalúa candidatos automáticamente contra tu perfil de puesto. Scoring, ranking y recomendaciones por candidato.', demo: 'https://hr-scout-llm.vercel.app' },
-  { icon: icons.portal, title: 'Portal de Clientes No-Code', price: '$4,499/proyecto', desc: 'Portal completo con proyectos, facturas, tickets y documentos. Sin backend, sin servidor, listo en días.', demo: 'https://client-hub-nocode.vercel.app' },
-]
-
-const steps = [
-  { num: '01', title: 'Diagnóstico Gratis', desc: 'Analizamos tus procesos y detectamos oportunidades de automatización (30 min, sin compromiso)' },
-  { num: '02', title: 'Propuesta a la Medida', desc: 'Diseñamos la solución técnica con tiempos, costos y ROI estimado' },
-  { num: '03', title: 'Implementación Ágil', desc: 'Construimos, testeamos y desplegamos en sprints de 1-2 semanas' },
-  { num: '04', title: 'Soporte Continuo', desc: 'Monitoreo, ajustes y capacitación para tu equipo' },
-]
-
-const demos = [
-  { title: 'Chatbot Multiagente', url: 'https://chatbot-multiagente-ia.vercel.app', color: '#6366F1' },
-  { title: 'Content Studio IA', url: 'https://content-studio-ai-blush.vercel.app', color: '#10B981' },
-  { title: 'Finance AI Dashboard', url: 'https://finance-ai-dashboard-omega.vercel.app', color: '#F59E0B' },
-  { title: 'HR Scout LLM', url: 'https://hr-scout-llm.vercel.app', color: '#EF4444' },
-  { title: 'Client Hub No-Code', url: 'https://client-hub-nocode.vercel.app', color: '#8B5CF6' },
-]
-
+/* ───────────────── Data Helpers ───────────────── */
 const techStack = [
   'Claude API', 'GPT-4o', 'Make.com', 'n8n', 'Zapier',
   'Airtable', 'Softr', 'DALL-E 3', 'React', 'Python', 'Node.js',
@@ -235,9 +605,29 @@ const s = {
   },
 }
 
+/* ───────────────── Chatbot Knowledge Base ───────────────── */
+const chatbotKB = {
+  es: {
+    services: `Nuestros 6 servicios:\n\n1. Chatbot IA Multiagente — $4,999/mes. 5 agentes especializados, resolución automática del 80%, integración con WhatsApp, Slack, web. Implementación: 2-3 semanas.\n\n2. Automatización de Procesos — $2,999/proyecto. Conectamos tus herramientas (CRM, email, bases de datos) con flujos inteligentes. Reduce tareas manuales de horas a minutos.\n\n3. Generación de Contenido con IA — $3,499/mes. Contenido para 4 plataformas, 5 tonos, A/B testing. Reduce producción de contenido un 90%.\n\n4. Dashboard Financiero con IA — $5,999/proyecto. Detección de anomalías, proyección de flujo de caja, chatbot financiero con voz.\n\n5. Filtrado de CVs con IA — $1,999/proceso. Scoring automático 0-100, detección de gaps, reporte comparativo.\n\n6. Portal de Clientes No-Code — $4,499/proyecto. Portal completo con tickets, facturas, documentos, asistente IA.`,
+    pricing: `Precios y Paquetes:\n\n• Starter: $7,999/mes — Chatbot + Automatización\n• Growth: $12,999/mes — 4 soluciones integradas\n• Enterprise: Precio personalizado\n\nTodos incluyen 30 días de soporte post-implementación.`,
+    process: `Nuestro proceso en 4 pasos:\n\n1. Diagnóstico Gratis (30 min call)\n2. Propuesta a la Medida (en 48h)\n3. Implementación Ágil (1-3 semanas)\n4. Soporte Continuo`,
+    schedule: `¡Perfecto! Puedes agendar tu diagnóstico gratuito de 30 minutos directamente en la sección de contacto. Scroll abajo o haz clic en "Contacto" en el menú. Sin compromiso, con ideas concretas para tu negocio.`,
+    default: `Puedo ayudarte con información sobre:\n• Nuestros 6 servicios de IA\n• Precios y paquetes\n• El proceso de trabajo\n• Agendar una llamada gratuita\n\n¿Qué te interesa saber?`,
+  },
+  en: {
+    services: `Our 6 services:\n\n1. Multi-Agent AI Chatbot — $4,999/mo. 5 specialized agents, 80% auto-resolution, WhatsApp, Slack & web integration. Implementation: 2-3 weeks.\n\n2. Process Automation — $2,999/project. We connect your tools (CRM, email, databases) with intelligent workflows. Reduces manual tasks from hours to minutes.\n\n3. AI Content Generation — $3,499/mo. Content for 4 platforms, 5 tones, A/B testing. Reduces content production by 90%.\n\n4. AI Financial Dashboard — $5,999/project. Anomaly detection, cash flow projection, voice-enabled financial chatbot.\n\n5. AI Resume Screening — $1,999/process. Automatic scoring 0-100, gap detection, comparative report.\n\n6. No-Code Client Portal — $4,499/project. Complete portal with tickets, invoices, documents, AI assistant.`,
+    pricing: `Pricing & Bundles:\n\n• Starter: $7,999/mo — Chatbot + Automation\n• Growth: $12,999/mo — 4 integrated solutions\n• Enterprise: Custom pricing\n\nAll include 30 days of post-implementation support.`,
+    process: `Our 4-step process:\n\n1. Free Diagnosis (30 min call)\n2. Custom Proposal (within 48h)\n3. Agile Implementation (1-3 weeks)\n4. Ongoing Support`,
+    schedule: `Perfect! You can schedule your free 30-minute diagnosis directly in the contact section. Scroll down or click "Contact" in the menu. No commitment, with concrete ideas for your business.`,
+    default: `I can help you with:\n• Our 6 AI services\n• Pricing and bundles\n• Our work process\n• Scheduling a free call\n\nWhat would you like to know?`,
+  },
+}
+
 /* ───────────────── Components ───────────────── */
 
 function Navbar() {
+  const { lang, setLang } = useLang()
+  const tr = t[lang]
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -248,11 +638,11 @@ function Navbar() {
   }, [])
 
   const links = [
-    { label: 'Servicios', href: '#servicios' },
-    { label: 'Proceso', href: '#proceso' },
-    { label: 'Demos', href: '#demos' },
-    { label: 'Sobre mí', href: '#sobre' },
-    { label: 'Contacto', href: '#contacto' },
+    { label: tr.navServices, href: '#servicios' },
+    { label: tr.navProcess, href: '#proceso' },
+    { label: tr.navDemos, href: '#demos' },
+    { label: tr.navAbout, href: '#sobre' },
+    { label: tr.navContact, href: '#contacto' },
   ]
 
   const navStyle = {
@@ -291,6 +681,18 @@ function Navbar() {
     transition: 'transform 0.2s, box-shadow 0.2s',
   }
 
+  const langToggleStyle = {
+    display: 'flex', gap: 0, borderRadius: 8, overflow: 'hidden',
+    border: '1px solid rgba(99,102,241,0.3)',
+  }
+
+  const langBtnStyle = (active) => ({
+    padding: '6px 12px', border: 'none', fontSize: '0.8rem', fontWeight: 600,
+    background: active ? '#6366F1' : 'transparent',
+    color: active ? '#fff' : '#94A3B8',
+    cursor: 'pointer', transition: 'all 0.2s',
+  })
+
   return (
     <nav style={navStyle}>
       <div style={innerStyle}>
@@ -307,19 +709,29 @@ function Navbar() {
               >{l.label}</a>
             </li>
           ))}
+          <li style={langToggleStyle}>
+            <button style={langBtnStyle(lang === 'es')} onClick={() => setLang('es')}>ES</button>
+            <button style={langBtnStyle(lang === 'en')} onClick={() => setLang('en')}>EN</button>
+          </li>
           <li>
             <a href="#contacto" style={ctaStyle}
               onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 24px rgba(99,102,241,0.3)' }}
               onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = 'none' }}
-            >Agenda tu llamada</a>
+            >{tr.navCta}</a>
           </li>
         </ul>
 
         {/* Mobile hamburger */}
-        <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)}
-          style={{ background: 'none', border: 'none', color: '#fff', display: 'none' }}>
-          {menuOpen ? icons.close : icons.menu}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }} className="nav-mobile-controls">
+          <div style={{ ...langToggleStyle }} className="nav-lang-mobile">
+            <button style={langBtnStyle(lang === 'es')} onClick={() => setLang('es')}>ES</button>
+            <button style={langBtnStyle(lang === 'en')} onClick={() => setLang('en')}>EN</button>
+          </div>
+          <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)}
+            style={{ background: 'none', border: 'none', color: '#fff', display: 'none' }}>
+            {menuOpen ? icons.close : icons.menu}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -335,7 +747,7 @@ function Navbar() {
             >{l.label}</a>
           ))}
           <a href="#contacto" onClick={() => setMenuOpen(false)}
-            style={{ ...ctaStyle, display: 'inline-block', marginTop: 16 }}>Agenda tu llamada</a>
+            style={{ ...ctaStyle, display: 'inline-block', marginTop: 16 }}>{tr.navCta}</a>
         </div>
       )}
     </nav>
@@ -343,6 +755,8 @@ function Navbar() {
 }
 
 function Hero() {
+  const { lang } = useLang()
+  const tr = t[lang]
   return (
     <section style={{
       position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center',
@@ -378,25 +792,25 @@ function Hero() {
           ...s.badge,
           background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8',
         }}>
-          IA & Automatización para empresas
+          {tr.heroBadge}
         </div>
         <h1 style={{
           fontFamily: "'Syne', sans-serif", fontWeight: 800,
           fontSize: 'clamp(2rem, 5.5vw, 3.8rem)',
           lineHeight: 1.15, color: '#fff', maxWidth: 900, margin: '0 auto 24px',
         }}>
-          Tu negocio merece trabajar{' '}
+          {tr.heroTitle1}
           <span style={{
             background: 'linear-gradient(135deg, #6366F1, #10B981)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>con IA</span>
-          , no contra ella
+          }}>{tr.heroHighlight}</span>
+          {tr.heroTitle2}
         </h1>
         <p style={{
           fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#94A3B8',
           maxWidth: 680, margin: '0 auto 40px', lineHeight: 1.7,
         }}>
-          Implementamos soluciones de Inteligencia Artificial y automatización que reducen costos, aceleran procesos y liberan a tu equipo para lo que realmente importa.
+          {tr.heroSub}
         </p>
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
           <a href="#contacto" style={{
@@ -410,7 +824,7 @@ function Hero() {
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.45)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.3)' }}
           >
-            Agenda tu diagnóstico gratis {icons.arrow}
+            {tr.heroCta} {icons.arrow}
           </a>
           <a href="#servicios" style={{
             padding: '16px 36px', borderRadius: 12,
@@ -423,17 +837,17 @@ function Hero() {
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.12)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.06)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)' }}
           >
-            Ver servicios
+            {tr.heroCtaSecondary}
           </a>
         </div>
 
         {/* Trust metrics */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 48, marginTop: 64, flexWrap: 'wrap' }}>
           {[
-            { num: '6+', label: 'Soluciones en producción' },
-            { num: '80%', label: 'Consultas resueltas por IA' },
-            { num: '20+', label: 'Horas/semana ahorradas' },
-            { num: '5', label: 'Demos en vivo' },
+            { num: '6+', label: tr.heroMetric1 },
+            { num: '80%', label: tr.heroMetric2 },
+            { num: '20+', label: tr.heroMetric3 },
+            { num: '5', label: tr.heroMetric4 },
           ].map((m, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
               <div style={{
@@ -451,15 +865,83 @@ function Hero() {
   )
 }
 
+function TrustSignals() {
+  const { lang } = useLang()
+  const tr = t[lang]
+
+  const counters = [
+    { end: 8, suffix: '', label: tr.trust1, color: '#6366F1' },
+    { end: 32, suffix: '', label: tr.trust2, color: '#10B981' },
+    { end: 130, suffix: '+', label: tr.trust3, color: '#F59E0B' },
+    { end: 6, suffix: '', label: tr.trust4, color: '#8B5CF6' },
+  ]
+
+  return (
+    <section style={{ padding: '80px 0', background: 'linear-gradient(180deg, #0A0B0F 0%, #0F1017 100%)' }}>
+      <div style={s.container} className="fade-section">
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
+            {tr.trustBadge}
+          </div>
+          <h2 style={s.sectionTitle}>{tr.trustTitle}</h2>
+        </div>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 24,
+        }}>
+          {counters.map((c, i) => (
+            <CounterCard key={i} end={c.end} suffix={c.suffix} label={c.label} color={c.color} delay={i * 200} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function CounterCard({ end, suffix, label, color, delay }) {
+  const { count, ref } = useCountUp(end, 1500)
+
+  return (
+    <div ref={ref} style={{
+      background: 'rgba(255,255,255,0.03)',
+      border: '1px solid rgba(255,255,255,0.06)',
+      borderRadius: 16, padding: '32px 24px', textAlign: 'center',
+      transition: 'border-color 0.3s, transform 0.3s',
+    }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = color + '60'; e.currentTarget.style.transform = 'translateY(-4px)' }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
+    >
+      <div style={{
+        fontFamily: "'Syne', sans-serif", fontWeight: 800,
+        fontSize: '2.8rem',
+        background: `linear-gradient(135deg, ${color}, ${color}AA)`,
+        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+        marginBottom: 8,
+      }}>
+        {count}{suffix}
+      </div>
+      <div style={{ fontSize: '0.95rem', color: '#CBD5E1', fontWeight: 500 }}>{label}</div>
+    </div>
+  )
+}
+
 function PainPoints() {
+  const { lang } = useLang()
+  const tr = t[lang]
+  const painPoints = [
+    { icon: icons.clock, title: tr.pain1, color: '#EF4444' },
+    { icon: icons.users, title: tr.pain2, color: '#F59E0B' },
+    { icon: icons.chart, title: tr.pain3, color: '#8B5CF6' },
+  ]
+
   return (
     <section style={{ ...s.sectionPad, background: 'linear-gradient(180deg, #0A0B0F 0%, #0F1017 100%)' }}>
       <div style={s.container} className="fade-section">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div style={{ ...s.badge, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#F87171' }}>
-            El problema
+            {tr.painBadge}
           </div>
-          <h2 style={s.sectionTitle}>Esto le pasa a tu empresa hoy</h2>
+          <h2 style={s.sectionTitle}>{tr.painTitle}</h2>
         </div>
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
@@ -486,15 +968,27 @@ function PainPoints() {
 }
 
 function Services() {
+  const { lang } = useLang()
+  const tr = t[lang]
+
+  const services = [
+    { icon: icons.chatbot, title: tr.svc1Title, price: tr.svc1Price, desc: tr.svc1Desc, demo: 'https://chatbot-multiagente-ia.vercel.app' },
+    { icon: icons.automation, title: tr.svc2Title, price: tr.svc2Price, desc: tr.svc2Desc, demo: null },
+    { icon: icons.content, title: tr.svc3Title, price: tr.svc3Price, desc: tr.svc3Desc, demo: 'https://content-studio-ai-blush.vercel.app' },
+    { icon: icons.finance, title: tr.svc4Title, price: tr.svc4Price, desc: tr.svc4Desc, demo: 'https://finance-ai-dashboard-omega.vercel.app' },
+    { icon: icons.hr, title: tr.svc5Title, price: tr.svc5Price, desc: tr.svc5Desc, demo: 'https://hr-scout-llm.vercel.app' },
+    { icon: icons.portal, title: tr.svc6Title, price: tr.svc6Price, desc: tr.svc6Desc, demo: 'https://client-hub-nocode.vercel.app' },
+  ]
+
   return (
     <section id="servicios" style={{ ...s.sectionPad, background: '#0A0B0F' }}>
       <div style={s.container} className="fade-section">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            Servicios
+            {tr.servicesBadge}
           </div>
-          <h2 style={s.sectionTitle}>Soluciones que generan resultados</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>Cada proyecto se adapta a tus necesidades. Sin contratos largos, con resultados medibles.</p>
+          <h2 style={s.sectionTitle}>{tr.servicesTitle}</h2>
+          <p style={{ ...s.sectionSub, margin: '0 auto' }}>{tr.servicesSub}</p>
         </div>
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
@@ -537,9 +1031,9 @@ function Services() {
                   fontSize: '1.1rem',
                   background: 'linear-gradient(135deg, #6366F1, #10B981)',
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                }}>Desde {sv.price}</span>
+                }}>{tr.svcFrom} {sv.price}</span>
                 <span style={{ color: '#6366F1', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.9rem', fontWeight: 500 }}>
-                  {sv.demo ? 'Ver demo' : 'Contactar'} {icons.arrow}
+                  {sv.demo ? tr.svcDemo : tr.svcContact} {icons.arrow}
                 </span>
               </div>
             </Wrapper>
@@ -551,6 +1045,16 @@ function Services() {
 }
 
 function Process() {
+  const { lang } = useLang()
+  const tr = t[lang]
+
+  const steps = [
+    { num: '01', title: tr.step1Title, desc: tr.step1Desc },
+    { num: '02', title: tr.step2Title, desc: tr.step2Desc },
+    { num: '03', title: tr.step3Title, desc: tr.step3Desc },
+    { num: '04', title: tr.step4Title, desc: tr.step4Desc },
+  ]
+
   return (
     <section id="proceso" style={{
       ...s.sectionPad,
@@ -559,10 +1063,10 @@ function Process() {
       <div style={s.container} className="fade-section">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div style={{ ...s.badge, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#34D399' }}>
-            Proceso
+            {tr.processBadge}
           </div>
-          <h2 style={s.sectionTitle}>Como trabajamos</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>De la idea al resultado en 4 pasos claros.</p>
+          <h2 style={s.sectionTitle}>{tr.processTitle}</h2>
+          <p style={{ ...s.sectionSub, margin: '0 auto' }}>{tr.processSub}</p>
         </div>
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
@@ -599,18 +1103,30 @@ function Process() {
 }
 
 function Demos() {
+  const { lang } = useLang()
+  const tr = t[lang]
+
+  const demos = [
+    { title: tr.demo1Title, url: 'https://chatbot-multiagente-ia.vercel.app', color: '#6366F1', metrics: [tr.demo1M1, tr.demo1M2, tr.demo1M3] },
+    { title: tr.demo2Title, url: 'https://content-studio-ai-blush.vercel.app', color: '#10B981', metrics: [tr.demo2M1, tr.demo2M2, tr.demo2M3] },
+    { title: tr.demo3Title, url: 'https://finance-ai-dashboard-omega.vercel.app', color: '#F59E0B', metrics: [tr.demo3M1, tr.demo3M2, tr.demo3M3] },
+    { title: tr.demo4Title, url: 'https://hr-scout-llm.vercel.app', color: '#EF4444', metrics: [tr.demo4M1, tr.demo4M2, tr.demo4M3] },
+    { title: tr.demo5Title, url: 'https://client-hub-nocode.vercel.app', color: '#8B5CF6', metrics: [tr.demo5M1, tr.demo5M2, tr.demo5M3] },
+    { title: tr.demo6Title, url: 'https://client-hub-nocode.vercel.app', color: '#EC4899', metrics: [tr.demo6M1, tr.demo6M2, tr.demo6M3] },
+  ]
+
   return (
     <section id="demos" style={{ ...s.sectionPad, background: '#0A0B0F' }}>
       <div style={s.container} className="fade-section">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            Portafolio
+            {tr.demosBadge}
           </div>
-          <h2 style={s.sectionTitle}>Demos en vivo</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>Proyectos reales, funcionando ahora mismo. Haz clic y pruébalos.</p>
+          <h2 style={s.sectionTitle}>{tr.demosTitle}</h2>
+          <p style={{ ...s.sectionSub, margin: '0 auto' }}>{tr.demosSub}</p>
         </div>
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
           gap: 24,
         }}>
           {demos.map((d, i) => (
@@ -624,9 +1140,9 @@ function Demos() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = d.color + '60'; e.currentTarget.style.transform = 'translateY(-4px)' }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
             >
-              {/* Preview placeholder */}
+              {/* Preview area */}
               <div style={{
-                height: 180, background: `linear-gradient(135deg, ${d.color}15, ${d.color}05)`,
+                height: 160, background: `linear-gradient(135deg, ${d.color}15, ${d.color}05)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 borderBottom: '1px solid rgba(255,255,255,0.06)',
                 position: 'relative', overflow: 'hidden',
@@ -653,15 +1169,31 @@ function Demos() {
                   color: d.color, opacity: 0.6,
                 }}>{d.title.split(' ')[0]}</span>
               </div>
-              <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+              {/* Metrics */}
+              <div style={{
+                display: 'flex', gap: 8, padding: '12px 20px',
+                borderBottom: '1px solid rgba(255,255,255,0.04)',
+              }}>
+                {d.metrics.map((m, mi) => (
+                  <span key={mi} style={{
+                    padding: '4px 10px', borderRadius: 6,
+                    background: d.color + '12', color: d.color,
+                    fontSize: '0.75rem', fontWeight: 600,
+                  }}>{m}</span>
+                ))}
+              </div>
+
+              <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <h3 style={{ fontWeight: 600, fontSize: '1rem', color: '#E2E8F0' }}>{d.title}</h3>
                 <span style={{
-                  padding: '8px 16px', borderRadius: 8,
-                  background: d.color + '15', color: d.color,
-                  fontSize: '0.85rem', fontWeight: 600,
+                  padding: '10px 20px', borderRadius: 8,
+                  background: d.color + '20', color: d.color,
+                  fontSize: '0.85rem', fontWeight: 700,
                   display: 'flex', alignItems: 'center', gap: 6,
+                  transition: 'background 0.2s',
                 }}>
-                  Probar demo {icons.external}
+                  {tr.demoCta} {icons.external}
                 </span>
               </div>
             </a>
@@ -673,6 +1205,8 @@ function Demos() {
 }
 
 function TechStack() {
+  const { lang } = useLang()
+  const tr = t[lang]
   return (
     <section style={{
       ...s.sectionPad,
@@ -681,14 +1215,14 @@ function TechStack() {
       <div style={s.container} className="fade-section">
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <div style={{ ...s.badge, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#34D399' }}>
-            Tecnologias
+            {tr.techBadge}
           </div>
-          <h2 style={s.sectionTitle}>Nuestro stack</h2>
+          <h2 style={s.sectionTitle}>{tr.techTitle}</h2>
         </div>
         <div style={{
           display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center',
         }}>
-          {techStack.map((t, i) => (
+          {techStack.map((tech, i) => (
             <span key={i} style={{
               padding: '12px 24px', borderRadius: 12,
               background: 'rgba(255,255,255,0.04)',
@@ -699,7 +1233,7 @@ function TechStack() {
               onMouseEnter={e => { e.target.style.borderColor = '#6366F180'; e.target.style.background = 'rgba(99,102,241,0.08)'; e.target.style.color = '#C7D2FE' }}
               onMouseLeave={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.background = 'rgba(255,255,255,0.04)'; e.target.style.color = '#CBD5E1' }}
             >
-              {t}
+              {tech}
             </span>
           ))}
         </div>
@@ -709,19 +1243,20 @@ function TechStack() {
 }
 
 function About() {
+  const { lang } = useLang()
+  const tr = t[lang]
   return (
     <section id="sobre" style={{ ...s.sectionPad, background: '#0A0B0F' }}>
       <div style={{ ...s.container, maxWidth: 900 }} className="fade-section">
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            Sobre mi
+            {tr.aboutBadge}
           </div>
-          <h2 style={s.sectionTitle}>Christian Hernandez Escamilla</h2>
+          <h2 style={s.sectionTitle}>{tr.aboutName}</h2>
         </div>
         <div style={{
           display: 'flex', gap: 40, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center',
         }}>
-          {/* Photo placeholder */}
           <div style={{
             width: 200, height: 200, borderRadius: '50%',
             background: 'linear-gradient(135deg, #6366F1, #10B981)',
@@ -731,10 +1266,10 @@ function About() {
           }}>CH</div>
           <div style={{ flex: 1, minWidth: 280 }}>
             <p style={{ color: '#CBD5E1', fontSize: '1.05rem', lineHeight: 1.8, marginBottom: 24 }}>
-              Soy Christian Hernández, Ingeniero en Software especializado en IA & Automatización. He diseñado y desplegado sistemas multiagente, chatbots inteligentes, dashboards financieros y portales No-Code para empresas. Mi enfoque: traducir necesidades de negocio en soluciones técnicas que generan ROI desde el día uno.
+              {tr.aboutBio}
             </p>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              {['5+ proyectos IA desplegados', 'Stack full: React, Python, Node.js', 'Resultados medibles en semanas'].map((item, i) => (
+              {[tr.aboutTag1, tr.aboutTag2, tr.aboutTag3].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#94A3B8', fontSize: '0.9rem' }}>
                   {icons.check} {item}
                 </div>
@@ -748,21 +1283,23 @@ function About() {
 }
 
 function Results() {
+  const { lang } = useLang()
+  const tr = t[lang]
   const results = [
-    { icon: '🤖', metric: '80%', label: 'de consultas resueltas sin humanos', desc: 'Chatbot multiagente con 5 IAs especializadas, base de conocimiento y árboles de decisión' },
-    { icon: '⚡', metric: '90%', label: 'menos tiempo en producción de contenido', desc: 'Generador de copy + visual para 4 plataformas en segundos, no horas' },
-    { icon: '📊', metric: '2σ', label: 'detección estadística de anomalías', desc: 'Z-score sobre transacciones reales con proyecciones por regresión lineal' },
-    { icon: '⏱️', metric: '15 min', label: 'vs horas en filtrado de CVs', desc: 'Scoring automático, matching por sinónimos y heatmap de cobertura de skills' },
+    { icon: '\u{1F916}', metric: tr.res1Metric, label: tr.res1Label, desc: tr.res1Desc },
+    { icon: '\u{26A1}', metric: tr.res2Metric, label: tr.res2Label, desc: tr.res2Desc },
+    { icon: '\u{1F4CA}', metric: tr.res3Metric, label: tr.res3Label, desc: tr.res3Desc },
+    { icon: '\u{23F1}\u{FE0F}', metric: tr.res4Metric, label: tr.res4Label, desc: tr.res4Desc },
   ]
   return (
     <section style={{ ...s.sectionPad, background: 'linear-gradient(180deg, #0F1017 0%, #0A0B0F 100%)' }}>
       <div style={s.container} className="fade-section">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div style={{ ...s.badge, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#34D399' }}>
-            Resultados reales
+            {tr.resultsBadge}
           </div>
-          <h2 style={s.sectionTitle}>No prometemos, demostramos</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>Cada métrica viene de proyectos reales que puedes probar tú mismo en las demos.</p>
+          <h2 style={s.sectionTitle}>{tr.resultsTitle}</h2>
+          <p style={{ ...s.sectionSub, margin: '0 auto' }}>{tr.resultsSub}</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
           {results.map((r, i) => (
@@ -791,7 +1328,137 @@ function Results() {
   )
 }
 
+function Testimonials() {
+  const { lang } = useLang()
+  const tr = t[lang]
+
+  const testimonials = [
+    { text: tr.test1, author: tr.test1Author, role: tr.test1Role, color: '#6366F1' },
+    { text: tr.test2, author: tr.test2Author, role: tr.test2Role, color: '#10B981' },
+    { text: tr.test3, author: tr.test3Author, role: tr.test3Role, color: '#F59E0B' },
+  ]
+
+  return (
+    <section style={{ ...s.sectionPad, background: '#0A0B0F' }}>
+      <div style={s.container} className="fade-section">
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
+            {tr.testimonialsBadge}
+          </div>
+          <h2 style={s.sectionTitle}>{tr.testimonialsTitle}</h2>
+        </div>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: 24,
+        }}>
+          {testimonials.map((test, i) => (
+            <div key={i} style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 16, padding: 32,
+              transition: 'border-color 0.3s, transform 0.3s',
+              display: 'flex', flexDirection: 'column',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = test.color + '40'; e.currentTarget.style.transform = 'translateY(-4px)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
+            >
+              <div style={{ marginBottom: 16, opacity: 0.5 }}>{icons.quote}</div>
+              <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
+                {[...Array(5)].map((_, si) => <span key={si}>{icons.star}</span>)}
+              </div>
+              <p style={{ color: '#CBD5E1', fontSize: '1rem', lineHeight: 1.7, flex: 1, marginBottom: 24, fontStyle: 'italic' }}>
+                "{test.text}"
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20 }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: '50%',
+                  background: `linear-gradient(135deg, ${test.color}, ${test.color}88)`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#fff', fontWeight: 700, fontSize: '0.9rem',
+                }}>
+                  {test.author.split(' ').map(n => n[0]).join('')}
+                </div>
+                <div>
+                  <div style={{ color: '#fff', fontWeight: 600, fontSize: '0.95rem' }}>{test.author}</div>
+                  <div style={{ color: '#64748B', fontSize: '0.85rem' }}>{test.role}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FAQ() {
+  const { lang } = useLang()
+  const tr = t[lang]
+  const [openIndex, setOpenIndex] = useState(null)
+
+  const faqs = [
+    { q: tr.faq1Q, a: tr.faq1A },
+    { q: tr.faq2Q, a: tr.faq2A },
+    { q: tr.faq3Q, a: tr.faq3A },
+    { q: tr.faq4Q, a: tr.faq4A },
+    { q: tr.faq5Q, a: tr.faq5A },
+  ]
+
+  return (
+    <section style={{ ...s.sectionPad, background: 'linear-gradient(180deg, #0F1017 0%, #0A0B0F 100%)' }}>
+      <div style={{ ...s.container, maxWidth: 800 }} className="fade-section">
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
+            {tr.faqBadge}
+          </div>
+          <h2 style={s.sectionTitle}>{tr.faqTitle}</h2>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {faqs.map((faq, i) => (
+            <div key={i} style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 12, overflow: 'hidden',
+              transition: 'border-color 0.3s',
+              borderColor: openIndex === i ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.06)',
+            }}>
+              <button
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                style={{
+                  width: '100%', padding: '20px 24px',
+                  background: 'none', border: 'none',
+                  color: '#E2E8F0', fontSize: '1.05rem', fontWeight: 600,
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  textAlign: 'left', cursor: 'pointer',
+                }}
+              >
+                {faq.q}
+                <span style={{
+                  transform: openIndex === i ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.3s', flexShrink: 0, marginLeft: 16,
+                }}>
+                  {icons.chevronDown}
+                </span>
+              </button>
+              {openIndex === i && (
+                <div style={{
+                  padding: '0 24px 20px',
+                  color: '#94A3B8', fontSize: '0.95rem', lineHeight: 1.7,
+                }}>
+                  {faq.a}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function Contact() {
+  const { lang } = useLang()
+  const tr = t[lang]
   const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = (e) => {
@@ -817,11 +1484,11 @@ function Contact() {
       <div style={s.container} className="fade-section">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            Contacto
+            {tr.contactBadge}
           </div>
-          <h2 style={s.sectionTitle}>Hablemos de tu proyecto</h2>
+          <h2 style={s.sectionTitle}>{tr.contactTitle}</h2>
           <p style={{ ...s.sectionSub, margin: '0 auto' }}>
-            Agenda tu diagnóstico gratuito de 30 minutos. Sin compromiso, con ideas concretas.
+            {tr.contactSub}
           </p>
         </div>
 
@@ -829,21 +1496,20 @@ function Contact() {
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: 48, maxWidth: 900, margin: '0 auto',
         }}>
-          {/* Form */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <input type="text" placeholder="Nombre" required style={inputStyle}
+            <input type="text" placeholder={tr.contactName} required style={inputStyle}
               onFocus={e => e.target.style.borderColor = '#6366F1'}
               onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
             />
-            <input type="email" placeholder="Email" required style={inputStyle}
+            <input type="email" placeholder={tr.contactEmail} required style={inputStyle}
               onFocus={e => e.target.style.borderColor = '#6366F1'}
               onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
             />
-            <input type="text" placeholder="Empresa" style={inputStyle}
+            <input type="text" placeholder={tr.contactCompany} style={inputStyle}
               onFocus={e => e.target.style.borderColor = '#6366F1'}
               onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
             />
-            <textarea placeholder="¿Qué quieres automatizar?" rows={4} required
+            <textarea placeholder={tr.contactMessage} rows={4} required
               style={{ ...inputStyle, resize: 'vertical', minHeight: 100 }}
               onFocus={e => e.target.style.borderColor = '#6366F1'}
               onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
@@ -857,17 +1523,16 @@ function Contact() {
               boxShadow: '0 8px 32px rgba(99,102,241,0.3)',
               transition: 'all 0.3s',
             }}>
-              {submitted ? '\✓ Enviado \— Te contactaremos pronto' : 'Enviar'}
+              {submitted ? tr.contactSent : tr.contactSubmit}
             </button>
           </form>
 
-          {/* Contact info */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24, justifyContent: 'center' }}>
             <div style={{
               background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
               borderRadius: 16, padding: 24,
             }}>
-              <h4 style={{ color: '#fff', fontWeight: 600, marginBottom: 16, fontSize: '1.05rem' }}>Contacto directo</h4>
+              <h4 style={{ color: '#fff', fontWeight: 600, marginBottom: 16, fontSize: '1.05rem' }}>{tr.contactDirect}</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <a href="tel:5579605324" style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#CBD5E1', fontSize: '0.95rem' }}>
                   {icons.phone} 55 7960 5324
@@ -881,7 +1546,7 @@ function Contact() {
               background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
               borderRadius: 16, padding: 24,
             }}>
-              <h4 style={{ color: '#fff', fontWeight: 600, marginBottom: 16, fontSize: '1.05rem' }}>Redes sociales</h4>
+              <h4 style={{ color: '#fff', fontWeight: 600, marginBottom: 16, fontSize: '1.05rem' }}>{tr.contactSocial}</h4>
               <div style={{ display: 'flex', gap: 16 }}>
                 <a href="https://linkedin.com/in/christianhernandez-ia" target="_blank" rel="noopener noreferrer"
                   style={{
@@ -917,6 +1582,8 @@ function Contact() {
 }
 
 function Footer() {
+  const { lang } = useLang()
+  const tr = t[lang]
   return (
     <footer style={{
       padding: '32px 0',
@@ -925,10 +1592,237 @@ function Footer() {
     }}>
       <div style={{ ...s.container, textAlign: 'center' }}>
         <p style={{ color: '#64748B', fontSize: '0.9rem' }}>
-          &copy; 2026 Impulso IA &mdash; Automatiza. Escala. Transforma.
+          {tr.footerText}
         </p>
       </div>
     </footer>
+  )
+}
+
+/* ───────────────── Floating CTA Button ───────────────── */
+function FloatingCTA() {
+  const { lang } = useLang()
+  const tr = t[lang]
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400)
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  if (!visible) return null
+
+  return (
+    <a href="#contacto" className="floating-cta" style={{
+      position: 'fixed', bottom: 90, right: 24, zIndex: 998,
+      padding: '12px 24px', borderRadius: 12,
+      background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
+      color: '#fff', fontWeight: 700, fontSize: '0.9rem',
+      boxShadow: '0 8px 32px rgba(99,102,241,0.4)',
+      display: 'flex', alignItems: 'center', gap: 8,
+      transition: 'transform 0.2s, box-shadow 0.2s',
+      textDecoration: 'none',
+    }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.5)' }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.4)' }}
+    >
+      {icons.phone} {tr.floatingCta}
+    </a>
+  )
+}
+
+/* ───────────────── AI Chatbot ───────────────── */
+function Chatbot() {
+  const { lang } = useLang()
+  const tr = t[lang]
+  const kb = chatbotKB[lang]
+  const [open, setOpen] = useState(false)
+  const [messages, setMessages] = useState([])
+  const [input, setInput] = useState('')
+  const messagesEndRef = useRef(null)
+
+  useEffect(() => {
+    if (open && messages.length === 0) {
+      setMessages([{ from: 'bot', text: tr.chatWelcome }])
+    }
+  }, [open])
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  const getBotResponse = (userMsg) => {
+    const lower = userMsg.toLowerCase()
+    if (lower.includes('servicio') || lower.includes('service') || lower.includes('qué ofrecen') || lower.includes('what do you offer')) {
+      return kb.services
+    }
+    if (lower.includes('precio') || lower.includes('cost') || lower.includes('pricing') || lower.includes('paquete') || lower.includes('bundle') || lower.includes('cuánto')) {
+      return kb.pricing
+    }
+    if (lower.includes('proceso') || lower.includes('process') || lower.includes('cómo trabaj') || lower.includes('how do you work') || lower.includes('paso')) {
+      return kb.process
+    }
+    if (lower.includes('agenda') || lower.includes('schedule') || lower.includes('llamada') || lower.includes('call') || lower.includes('contacto') || lower.includes('contact')) {
+      return kb.schedule
+    }
+    if (lower.includes('tiempo') || lower.includes('time') || lower.includes('cuánto tarda') || lower.includes('how long') || lower.includes('implementa')) {
+      return lang === 'es'
+        ? 'La implementación típica toma entre 1 y 3 semanas, dependiendo de la complejidad. Trabajamos en sprints ágiles para entregar valor rápidamente.'
+        : 'Typical implementation takes 1-3 weeks, depending on complexity. We work in agile sprints to deliver value quickly.'
+    }
+    return kb.default
+  }
+
+  const handleSend = (text) => {
+    const msg = text || input.trim()
+    if (!msg) return
+    setMessages(prev => [...prev, { from: 'user', text: msg }])
+    setInput('')
+    setTimeout(() => {
+      setMessages(prev => [...prev, { from: 'bot', text: getBotResponse(msg) }])
+    }, 600)
+  }
+
+  const quickActions = [
+    { label: tr.chatQuick1, action: () => handleSend(lang === 'es' ? 'Qué servicios ofrecen?' : 'What services do you offer?') },
+    { label: tr.chatQuick2, action: () => handleSend(lang === 'es' ? 'Cuáles son los precios?' : 'What are your prices?') },
+    { label: tr.chatQuick3, action: () => handleSend(lang === 'es' ? 'Cuál es el proceso?' : 'What is the process?') },
+    { label: tr.chatQuick4, action: () => handleSend(lang === 'es' ? 'Quiero agendar una llamada' : 'I want to schedule a call') },
+  ]
+
+  return (
+    <>
+      {/* Chat toggle button */}
+      <button onClick={() => setOpen(!open)} style={{
+        position: 'fixed', bottom: 24, right: 24, zIndex: 1001,
+        width: 60, height: 60, borderRadius: '50%',
+        background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
+        border: 'none', color: '#fff',
+        boxShadow: '0 8px 32px rgba(99,102,241,0.4)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+      }}
+        onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.5)' }}
+        onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.4)' }}
+      >
+        {open ? icons.close : icons.chatbot}
+      </button>
+
+      {/* Chat window */}
+      {open && (
+        <div style={{
+          position: 'fixed', bottom: 96, right: 24, zIndex: 1001,
+          width: 380, maxHeight: 520,
+          background: '#12131A',
+          border: '1px solid rgba(99,102,241,0.2)',
+          borderRadius: 16, overflow: 'hidden',
+          display: 'flex', flexDirection: 'column',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+        }}>
+          {/* Header */}
+          <div style={{
+            padding: '16px 20px',
+            background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(16,185,129,0.1))',
+            borderBottom: '1px solid rgba(99,102,241,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: '50%',
+                background: 'linear-gradient(135deg, #6366F1, #10B981)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                {icons.chatbot}
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff' }}>{tr.chatTitle}</div>
+                <div style={{ fontSize: '0.7rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', display: 'inline-block' }}/> Online
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <>
+              {/* Messages */}
+              <div style={{
+                flex: 1, overflowY: 'auto', padding: '16px', minHeight: 250, maxHeight: 320,
+                display: 'flex', flexDirection: 'column', gap: 12,
+              }}>
+                {messages.map((msg, i) => (
+                  <div key={i} style={{
+                    alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
+                    maxWidth: '85%',
+                    padding: '10px 14px', borderRadius: 12,
+                    background: msg.from === 'user'
+                      ? 'linear-gradient(135deg, #6366F1, #4F46E5)'
+                      : 'rgba(255,255,255,0.06)',
+                    color: msg.from === 'user' ? '#fff' : '#CBD5E1',
+                    fontSize: '0.88rem', lineHeight: 1.5,
+                    whiteSpace: 'pre-line',
+                  }}>
+                    {msg.text}
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Quick actions */}
+              {messages.length <= 1 && (
+                <div style={{
+                  padding: '8px 16px', display: 'flex', gap: 6, flexWrap: 'wrap',
+                  borderTop: '1px solid rgba(255,255,255,0.06)',
+                }}>
+                  {quickActions.map((qa, i) => (
+                    <button key={i} onClick={qa.action} style={{
+                      padding: '6px 12px', borderRadius: 8,
+                      background: 'rgba(99,102,241,0.1)',
+                      border: '1px solid rgba(99,102,241,0.3)',
+                      color: '#818CF8', fontSize: '0.78rem', fontWeight: 600,
+                      cursor: 'pointer', transition: 'all 0.2s',
+                    }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.2)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'rgba(99,102,241,0.1)'}
+                    >
+                      {qa.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Input */}
+              <div style={{
+                padding: '12px 16px',
+                borderTop: '1px solid rgba(255,255,255,0.06)',
+                display: 'flex', gap: 8,
+              }}>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSend()}
+                  placeholder={tr.chatPlaceholder}
+                  style={{
+                    flex: 1, padding: '10px 14px', borderRadius: 8,
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#E2E8F0', fontSize: '0.9rem', outline: 'none',
+                  }}
+                />
+                <button onClick={() => handleSend()} style={{
+                  padding: '10px 16px', borderRadius: 8, border: 'none',
+                  background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
+                  color: '#fff', fontWeight: 600, fontSize: '0.85rem',
+                }}>
+                  {icons.arrow}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </>
   )
 }
 
@@ -937,22 +1831,27 @@ const responsiveStyles = `
   @media (max-width: 768px) {
     .nav-desktop { display: none !important; }
     .nav-hamburger { display: block !important; }
+    .nav-lang-mobile { display: flex !important; }
+    .floating-cta { display: none !important; }
   }
   @media (min-width: 769px) {
     .nav-mobile-menu { display: none !important; }
+    .nav-mobile-controls .nav-lang-mobile { display: none !important; }
   }
 `
 
 /* ───────────────── App ───────────────── */
 export default function App() {
+  const [lang, setLang] = useState('es')
   useFadeIn()
 
   return (
-    <>
+    <LangContext.Provider value={{ lang, setLang }}>
       <style>{globalStyles}</style>
       <style>{responsiveStyles}</style>
       <Navbar />
       <Hero />
+      <TrustSignals />
       <PainPoints />
       <Services />
       <Process />
@@ -960,8 +1859,12 @@ export default function App() {
       <TechStack />
       <About />
       <Results />
+      <Testimonials />
+      <FAQ />
       <Contact />
       <Footer />
-    </>
+      <FloatingCTA />
+      <Chatbot />
+    </LangContext.Provider>
   )
 }
