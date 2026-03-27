@@ -31,7 +31,7 @@ const t = {
     trustTitle: 'Números que hablan por nosotros',
     trust1: 'Sistemas IA Entregados',
     trust2: 'Claude Tools en Producción',
-    trust3: 'Tests (pytest + PHPUnit)',
+    trust3: 'Tests Automatizados',
     trust4: 'Demos en Vivo Disponibles',
     // Pain points
     painBadge: 'El problema',
@@ -64,6 +64,9 @@ const t = {
     svc6Title: 'Portal de Clientes No-Code',
     svc6Price: '$4,499/proyecto',
     svc6Desc: 'Portal completo con proyectos, facturas, tickets y documentos. Sin backend, sin servidor, listo en días.',
+    svc7Title: 'Orquestación de Agentes IA',
+    svc7Price: '$7,999/proyecto',
+    svc7Desc: 'Despliega enjambres de agentes inteligentes que se auto-reparan, colaboran en 6 topologías y procesan datos con pipelines RAG. Infraestructura enterprise con Terraform y Kubernetes.',
     // Process
     processBadge: 'Proceso',
     processTitle: 'Como trabajamos',
@@ -105,16 +108,20 @@ const t = {
     demo6M1: 'Portal completo',
     demo6M2: 'Sin backend',
     demo6M3: 'Listo en días',
+    demo7Title: 'NexusForge AI',
+    demo7M1: '22 agentes IA',
+    demo7M2: '6 topologías',
+    demo7M3: '231 tests',
     // Tech
     techBadge: 'Tecnologías',
     techTitle: 'Nuestro stack',
     // About
     aboutBadge: 'Sobre mí',
     aboutName: 'Christian Hernandez Escamilla',
-    aboutBio: 'Soy Christian Hernández, Ingeniero en Software especializado en IA & Automatización. He diseñado y desplegado sistemas multiagente, chatbots inteligentes, dashboards financieros y portales No-Code para empresas. Mi enfoque: traducir necesidades de negocio en soluciones técnicas que generan ROI desde el día uno.',
-    aboutTag1: '5+ proyectos IA desplegados',
-    aboutTag2: 'Stack full: React, Python, Node.js',
-    aboutTag3: 'Resultados medibles en semanas',
+    aboutBio: 'Soy Christian Hernández, Ingeniero en Software especializado en IA & Automatización. He diseñado y desplegado 15 sistemas en producción con 861+ tests automatizados, incluyendo chatbots multiagente, dashboards financieros, portales No-Code y NexusForge: una plataforma de orquestación de 22 agentes IA con infraestructura Terraform + Kubernetes. Mi enfoque: traducir necesidades de negocio en soluciones técnicas que generan ROI desde el día uno.',
+    aboutTag1: '15 sistemas IA en producción',
+    aboutTag2: 'Stack: React, Python, Node.js, Terraform',
+    aboutTag3: '861+ tests automatizados',
     // Results
     resultsBadge: 'Resultados reales',
     resultsTitle: 'No prometemos, demostramos',
@@ -131,6 +138,9 @@ const t = {
     res4Metric: '15 min',
     res4Label: 'vs horas en filtrado de CVs',
     res4Desc: 'Scoring automático, matching por sinónimos y heatmap de cobertura de skills',
+    res5Metric: '22',
+    res5Label: 'agentes IA orquestados en enjambre',
+    res5Desc: '6 topologías de enjambre, auto-reparación, pipeline RAG y 231 tests automatizados con NexusForge',
     // Testimonials
     testimonialsBadge: 'Testimonios',
     testimonialsTitle: 'Lo que dicen nuestros clientes',
@@ -156,6 +166,8 @@ const t = {
     faq4A: 'Sí, todas nuestras demos están disponibles en línea. Pruébalas directamente desde la sección de demos.',
     faq5Q: '¿Ofrecen soporte post-implementación?',
     faq5A: 'Sí, 30 días de soporte incluidos con cada proyecto, más planes de soporte continuo disponibles.',
+    faq6Q: '¿Qué es NexusForge AI?',
+    faq6A: 'NexusForge AI es nuestra plataforma enterprise de orquestación de agentes IA. Permite desplegar 22 agentes que colaboran en 6 topologías de enjambre, con auto-reparación, pipeline RAG y infraestructura Terraform + Kubernetes. Ideal para empresas que necesitan automatización inteligente a escala.',
     // Contact
     contactBadge: 'Contacto',
     contactTitle: 'Hablemos de tu proyecto',
@@ -203,7 +215,7 @@ const t = {
     trustTitle: 'Numbers that speak for themselves',
     trust1: 'AI Systems Shipped',
     trust2: 'Claude Tools in Production',
-    trust3: 'Tests (pytest + PHPUnit)',
+    trust3: 'Automated Tests',
     trust4: 'Live Demos Available',
     painBadge: 'The problem',
     painTitle: "This is happening to your business today",
@@ -234,6 +246,9 @@ const t = {
     svc6Title: 'No-Code Client Portal',
     svc6Price: '$4,499/project',
     svc6Desc: 'Complete portal with projects, invoices, tickets & documents. No backend, no server, ready in days.',
+    svc7Title: 'AI Agent Orchestration',
+    svc7Price: '$7,999/project',
+    svc7Desc: 'Deploy intelligent agent swarms that self-heal, collaborate in 6 topologies, and process data through RAG pipelines. Enterprise infrastructure with Terraform and Kubernetes.',
     processBadge: 'Process',
     processTitle: 'How we work',
     processSub: 'From idea to results in 4 clear steps.',
@@ -273,14 +288,18 @@ const t = {
     demo6M1: 'Complete portal',
     demo6M2: 'No backend',
     demo6M3: 'Ready in days',
+    demo7Title: 'NexusForge AI',
+    demo7M1: '22 AI agents',
+    demo7M2: '6 topologies',
+    demo7M3: '231 tests',
     techBadge: 'Technologies',
     techTitle: 'Our stack',
     aboutBadge: 'About me',
     aboutName: 'Christian Hernandez Escamilla',
-    aboutBio: "I'm Christian Hernández, Software Engineer specializing in AI & Automation. I've designed and deployed multi-agent systems, intelligent chatbots, financial dashboards, and No-Code portals for businesses. My focus: translating business needs into technical solutions that generate ROI from day one.",
-    aboutTag1: '5+ AI projects deployed',
-    aboutTag2: 'Full stack: React, Python, Node.js',
-    aboutTag3: 'Measurable results in weeks',
+    aboutBio: "I'm Christian Hernández, Software Engineer specializing in AI & Automation. I've designed and deployed 15 production systems with 861+ automated tests, including multi-agent chatbots, financial dashboards, No-Code portals, and NexusForge: an enterprise orchestration platform with 22 AI agents and Terraform + Kubernetes infrastructure. My focus: translating business needs into technical solutions that generate ROI from day one.",
+    aboutTag1: '15 AI systems in production',
+    aboutTag2: 'Stack: React, Python, Node.js, Terraform',
+    aboutTag3: '861+ automated tests',
     resultsBadge: 'Real results',
     resultsTitle: "We don't promise, we prove",
     resultsSub: 'Every metric comes from real projects you can try yourself in the demos.',
@@ -296,6 +315,9 @@ const t = {
     res4Metric: '15 min',
     res4Label: 'vs hours in resume screening',
     res4Desc: 'Automatic scoring, synonym matching and skill coverage heatmap',
+    res5Metric: '22',
+    res5Label: 'AI agents orchestrated in swarms',
+    res5Desc: '6 swarm topologies, self-healing, RAG pipeline and 231 automated tests with NexusForge',
     testimonialsBadge: 'Testimonials',
     testimonialsTitle: 'What our clients say',
     test1: 'We implemented the multi-agent chatbot and now resolve 80% of queries without human intervention.',
@@ -319,6 +341,8 @@ const t = {
     faq4A: 'Yes, all our demos are available online. Try them directly from the demos section.',
     faq5Q: 'Do you offer post-implementation support?',
     faq5A: 'Yes, 30 days of support included with every project, plus ongoing support plans available.',
+    faq6Q: 'What is NexusForge AI?',
+    faq6A: 'NexusForge AI is our enterprise AI agent orchestration platform. It deploys 22 agents collaborating in 6 swarm topologies, with self-healing, RAG pipeline, and Terraform + Kubernetes infrastructure. Ideal for companies that need intelligent automation at scale.',
     contactBadge: 'Contact',
     contactTitle: "Let's talk about your project",
     contactSub: 'Schedule your free 30-minute diagnosis. No commitment, with concrete ideas.',
@@ -489,6 +513,14 @@ const icons = {
       <path d="M3 9h18M9 21V9"/>
     </svg>
   ),
+  orchestration: (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="5" r="3"/>
+      <circle cx="5" cy="19" r="3"/>
+      <circle cx="19" cy="19" r="3"/>
+      <path d="M12 8v3M8.5 17.5L10.5 13M15.5 17.5L13.5 13"/>
+    </svg>
+  ),
   phone: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
@@ -577,8 +609,9 @@ const icons = {
 
 /* ───────────────── Data Helpers ───────────────── */
 const techStack = [
-  'Claude API', 'GPT-4o', 'Make.com', 'n8n', 'Zapier',
+  'Claude API', 'GPT-4o', 'Groq API', 'Make.com', 'n8n', 'Zapier',
   'Airtable', 'Softr', 'DALL-E 3', 'React', 'Python', 'Node.js',
+  'FastAPI', 'PostgreSQL', 'Redis', 'Docker', 'Terraform', 'Kubernetes',
 ]
 
 /* ───────────────── Inline Style Helpers ───────────────── */
@@ -608,18 +641,18 @@ const s = {
 /* ───────────────── Chatbot Knowledge Base ───────────────── */
 const chatbotKB = {
   es: {
-    services: `Nuestros 6 servicios:\n\n1. Chatbot IA Multiagente — $4,999/mes. 5 agentes especializados, resolución automática del 80%, integración con WhatsApp, Slack, web. Implementación: 2-3 semanas.\n\n2. Automatización de Procesos — $2,999/proyecto. Conectamos tus herramientas (CRM, email, bases de datos) con flujos inteligentes. Reduce tareas manuales de horas a minutos.\n\n3. Generación de Contenido con IA — $3,499/mes. Contenido para 4 plataformas, 5 tonos, A/B testing. Reduce producción de contenido un 90%.\n\n4. Dashboard Financiero con IA — $5,999/proyecto. Detección de anomalías, proyección de flujo de caja, chatbot financiero con voz.\n\n5. Filtrado de CVs con IA — $1,999/proceso. Scoring automático 0-100, detección de gaps, reporte comparativo.\n\n6. Portal de Clientes No-Code — $4,499/proyecto. Portal completo con tickets, facturas, documentos, asistente IA.`,
+    services: `Nuestros 7 servicios:\n\n1. Chatbot IA Multiagente — $4,999/mes. 5 agentes especializados, resolución automática del 80%, integración con WhatsApp, Slack, web. Implementación: 2-3 semanas.\n\n2. Automatización de Procesos — $2,999/proyecto. Conectamos tus herramientas (CRM, email, bases de datos) con flujos inteligentes. Reduce tareas manuales de horas a minutos.\n\n3. Generación de Contenido con IA — $3,499/mes. Contenido para 4 plataformas, 5 tonos, A/B testing. Reduce producción de contenido un 90%.\n\n4. Dashboard Financiero con IA — $5,999/proyecto. Detección de anomalías, proyección de flujo de caja, chatbot financiero.\n\n5. Filtrado de CVs con IA — $1,999/proceso. Scoring automático 0-100, detección de gaps, reporte comparativo.\n\n6. Portal de Clientes No-Code — $4,499/proyecto. Portal completo con tickets, facturas, documentos, asistente IA.\n\n7. Orquestación de Agentes IA — $7,999/proyecto. 22 agentes IA, 6 topologías de enjambre, auto-reparación, pipeline RAG. Infraestructura enterprise con Terraform y Kubernetes.`,
     pricing: `Precios y Paquetes:\n\n• Starter: $7,999/mes — Chatbot + Automatización\n• Growth: $12,999/mes — 4 soluciones integradas\n• Enterprise: Precio personalizado\n\nTodos incluyen 30 días de soporte post-implementación.`,
     process: `Nuestro proceso en 4 pasos:\n\n1. Diagnóstico Gratis (30 min call)\n2. Propuesta a la Medida (en 48h)\n3. Implementación Ágil (1-3 semanas)\n4. Soporte Continuo`,
     schedule: `¡Perfecto! Puedes agendar tu diagnóstico gratuito de 30 minutos directamente en la sección de contacto. Scroll abajo o haz clic en "Contacto" en el menú. Sin compromiso, con ideas concretas para tu negocio.`,
-    default: `Puedo ayudarte con información sobre:\n• Nuestros 6 servicios de IA\n• Precios y paquetes\n• El proceso de trabajo\n• Agendar una llamada gratuita\n\n¿Qué te interesa saber?`,
+    default: `Puedo ayudarte con información sobre:\n• Nuestros 7 servicios de IA\n• Precios y paquetes\n• El proceso de trabajo\n• Agendar una llamada gratuita\n\n¿Qué te interesa saber?`,
   },
   en: {
-    services: `Our 6 services:\n\n1. Multi-Agent AI Chatbot — $4,999/mo. 5 specialized agents, 80% auto-resolution, WhatsApp, Slack & web integration. Implementation: 2-3 weeks.\n\n2. Process Automation — $2,999/project. We connect your tools (CRM, email, databases) with intelligent workflows. Reduces manual tasks from hours to minutes.\n\n3. AI Content Generation — $3,499/mo. Content for 4 platforms, 5 tones, A/B testing. Reduces content production by 90%.\n\n4. AI Financial Dashboard — $5,999/project. Anomaly detection, cash flow projection, voice-enabled financial chatbot.\n\n5. AI Resume Screening — $1,999/process. Automatic scoring 0-100, gap detection, comparative report.\n\n6. No-Code Client Portal — $4,499/project. Complete portal with tickets, invoices, documents, AI assistant.`,
+    services: `Our 7 services:\n\n1. Multi-Agent AI Chatbot — $4,999/mo. 5 specialized agents, 80% auto-resolution, WhatsApp, Slack & web integration. Implementation: 2-3 weeks.\n\n2. Process Automation — $2,999/project. We connect your tools (CRM, email, databases) with intelligent workflows. Reduces manual tasks from hours to minutes.\n\n3. AI Content Generation — $3,499/mo. Content for 4 platforms, 5 tones, A/B testing. Reduces content production by 90%.\n\n4. AI Financial Dashboard — $5,999/project. Anomaly detection, cash flow projection, financial chatbot.\n\n5. AI Resume Screening — $1,999/process. Automatic scoring 0-100, gap detection, comparative report.\n\n6. No-Code Client Portal — $4,499/project. Complete portal with tickets, invoices, documents, AI assistant.\n\n7. AI Agent Orchestration — $7,999/project. 22 AI agents, 6 swarm topologies, self-healing, RAG pipeline. Enterprise infrastructure with Terraform and Kubernetes.`,
     pricing: `Pricing & Bundles:\n\n• Starter: $7,999/mo — Chatbot + Automation\n• Growth: $12,999/mo — 4 integrated solutions\n• Enterprise: Custom pricing\n\nAll include 30 days of post-implementation support.`,
     process: `Our 4-step process:\n\n1. Free Diagnosis (30 min call)\n2. Custom Proposal (within 48h)\n3. Agile Implementation (1-3 weeks)\n4. Ongoing Support`,
     schedule: `Perfect! You can schedule your free 30-minute diagnosis directly in the contact section. Scroll down or click "Contact" in the menu. No commitment, with concrete ideas for your business.`,
-    default: `I can help you with:\n• Our 6 AI services\n• Pricing and bundles\n• Our work process\n• Scheduling a free call\n\nWhat would you like to know?`,
+    default: `I can help you with:\n• Our 7 AI services\n• Pricing and bundles\n• Our work process\n• Scheduling a free call\n\nWhat would you like to know?`,
   },
 }
 
@@ -844,10 +877,10 @@ function Hero() {
         {/* Trust metrics */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 48, marginTop: 64, flexWrap: 'wrap' }}>
           {[
-            { num: '6+', label: tr.heroMetric1 },
+            { num: '7+', label: tr.heroMetric1 },
             { num: '80%', label: tr.heroMetric2 },
             { num: '20+', label: tr.heroMetric3 },
-            { num: '5', label: tr.heroMetric4 },
+            { num: '7', label: tr.heroMetric4 },
           ].map((m, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
               <div style={{
@@ -870,10 +903,10 @@ function TrustSignals() {
   const tr = t[lang]
 
   const counters = [
-    { end: 8, suffix: '', label: tr.trust1, color: '#6366F1' },
+    { end: 15, suffix: '', label: tr.trust1, color: '#6366F1' },
     { end: 32, suffix: '', label: tr.trust2, color: '#10B981' },
-    { end: 130, suffix: '+', label: tr.trust3, color: '#F59E0B' },
-    { end: 6, suffix: '', label: tr.trust4, color: '#8B5CF6' },
+    { end: 861, suffix: '+', label: tr.trust3, color: '#F59E0B' },
+    { end: 7, suffix: '', label: tr.trust4, color: '#8B5CF6' },
   ]
 
   return (
@@ -978,6 +1011,7 @@ function Services() {
     { icon: icons.finance, title: tr.svc4Title, price: tr.svc4Price, desc: tr.svc4Desc, demo: 'https://finance-ai-dashboard-omega.vercel.app' },
     { icon: icons.hr, title: tr.svc5Title, price: tr.svc5Price, desc: tr.svc5Desc, demo: 'https://hr-scout-llm.vercel.app' },
     { icon: icons.portal, title: tr.svc6Title, price: tr.svc6Price, desc: tr.svc6Desc, demo: 'https://client-hub-nocode.vercel.app' },
+    { icon: icons.orchestration, title: tr.svc7Title, price: tr.svc7Price, desc: tr.svc7Desc, demo: 'https://frontend-silk-three-66.vercel.app' },
   ]
 
   return (
@@ -1113,6 +1147,7 @@ function Demos() {
     { title: tr.demo4Title, url: 'https://hr-scout-llm.vercel.app', color: '#EF4444', metrics: [tr.demo4M1, tr.demo4M2, tr.demo4M3] },
     { title: tr.demo5Title, url: 'https://client-hub-nocode.vercel.app', color: '#8B5CF6', metrics: [tr.demo5M1, tr.demo5M2, tr.demo5M3] },
     { title: tr.demo6Title, url: 'https://client-hub-nocode.vercel.app', color: '#EC4899', metrics: [tr.demo6M1, tr.demo6M2, tr.demo6M3] },
+    { title: tr.demo7Title, url: 'https://frontend-silk-three-66.vercel.app', color: '#F97316', metrics: [tr.demo7M1, tr.demo7M2, tr.demo7M3] },
   ]
 
   return (
@@ -1290,6 +1325,7 @@ function Results() {
     { icon: '\u{26A1}', metric: tr.res2Metric, label: tr.res2Label, desc: tr.res2Desc },
     { icon: '\u{1F4CA}', metric: tr.res3Metric, label: tr.res3Label, desc: tr.res3Desc },
     { icon: '\u{23F1}\u{FE0F}', metric: tr.res4Metric, label: tr.res4Label, desc: tr.res4Desc },
+    { icon: '\u{1F310}', metric: tr.res5Metric, label: tr.res5Label, desc: tr.res5Desc },
   ]
   return (
     <section style={{ ...s.sectionPad, background: 'linear-gradient(180deg, #0F1017 0%, #0A0B0F 100%)' }}>
@@ -1402,6 +1438,7 @@ function FAQ() {
     { q: tr.faq3Q, a: tr.faq3A },
     { q: tr.faq4Q, a: tr.faq4A },
     { q: tr.faq5Q, a: tr.faq5A },
+    { q: tr.faq6Q, a: tr.faq6A },
   ]
 
   return (
@@ -1665,6 +1702,11 @@ function Chatbot() {
     }
     if (lower.includes('agenda') || lower.includes('schedule') || lower.includes('llamada') || lower.includes('call') || lower.includes('contacto') || lower.includes('contact')) {
       return kb.schedule
+    }
+    if (lower.includes('nexusforge') || lower.includes('orquestaci') || lower.includes('orchestrat') || lower.includes('enjambre') || lower.includes('swarm') || lower.includes('agentes')) {
+      return lang === 'es'
+        ? 'NexusForge AI es nuestra plataforma enterprise de orquestación de agentes IA. Cuenta con 22 agentes especializados, 6 topologías de enjambre (cadena, estrella, malla, jerárquica, broadcast, debate), auto-reparación automática, pipeline RAG y 231 tests automatizados. Infraestructura desplegada con Terraform y Kubernetes. Precio: $7,999/proyecto.'
+        : 'NexusForge AI is our enterprise AI agent orchestration platform. It features 22 specialized agents, 6 swarm topologies (chain, star, mesh, hierarchical, broadcast, debate), automatic self-healing, RAG pipeline, and 231 automated tests. Infrastructure deployed with Terraform and Kubernetes. Price: $7,999/project.'
     }
     if (lower.includes('tiempo') || lower.includes('time') || lower.includes('cuánto tarda') || lower.includes('how long') || lower.includes('implementa')) {
       return lang === 'es'
