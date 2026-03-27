@@ -1,1896 +1,1086 @@
-import React, { useEffect, useRef, useState, createContext, useContext } from 'react'
+import React, { useEffect, useRef, useState, useCallback, createContext, useContext } from 'react'
+import { motion, useInView, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from 'framer-motion'
+import Lenis from 'lenis'
 
-/* ───────────────── Language Context ───────────────── */
+/* ====== CONTEXT ====== */
 const LangContext = createContext({ lang: 'es', setLang: () => {} })
 const useLang = () => useContext(LangContext)
 
-/* ───────────────── Translations ───────────────── */
+/* ====== EASING ====== */
+const EASE = [0.16, 1, 0.3, 1]
+
+/* ====== TRANSLATIONS ====== */
 const t = {
   es: {
-    // Nav
-    navServices: 'Servicios',
-    navProcess: 'Proceso',
-    navDemos: 'Demos',
-    navAbout: 'Sobre mí',
-    navContact: 'Contacto',
-    navCta: 'Agenda tu llamada',
-    // Hero
-    heroBadge: 'IA & Automatización para empresas',
-    heroTitle1: 'Tu negocio merece trabajar ',
-    heroHighlight: 'con IA',
-    heroTitle2: ', no contra ella',
-    heroSub: 'Implementamos soluciones de Inteligencia Artificial y automatización que reducen costos, aceleran procesos y liberan a tu equipo para lo que realmente importa.',
-    heroCta: 'Agenda tu diagnóstico gratis',
-    heroCtaSecondary: 'Ver servicios',
-    heroMetric1: 'Soluciones en producción',
-    heroMetric2: 'Consultas resueltas por IA',
-    heroMetric3: 'Horas/semana ahorradas',
-    heroMetric4: 'Demos en vivo',
-    // Trust signals
-    trustBadge: 'Respaldado por resultados',
-    trustTitle: 'Números que hablan por nosotros',
-    trust1: 'Sistemas IA Entregados',
-    trust2: 'Claude Tools en Producción',
-    trust3: 'Tests Automatizados',
-    trust4: 'Demos en Vivo Disponibles',
-    // Pain points
-    painBadge: 'El problema',
-    painTitle: 'Esto le pasa a tu empresa hoy',
-    pain1: 'Tu equipo pierde horas en tareas repetitivas',
-    pain2: 'Tus clientes esperan demasiado por respuestas',
-    pain3: 'Tomas decisiones sin datos en tiempo real',
-    // Services
-    servicesBadge: 'Servicios',
-    servicesTitle: 'Soluciones que generan resultados',
-    servicesSub: 'Cada proyecto se adapta a tus necesidades. Sin contratos largos, con resultados medibles.',
-    svcFrom: 'Desde',
-    svcDemo: 'Ver demo',
-    svcContact: 'Contactar',
-    svc1Title: 'Chatbot IA Multiagente',
-    svc1Price: '$4,999/mes',
-    svc1Desc: 'Atención al cliente 24/7 con agentes especializados que resuelven el 80% de consultas sin intervención humana. Web, WhatsApp y Telegram.',
-    svc2Title: 'Automatización de Procesos',
-    svc2Price: '$2,999/proyecto',
-    svc2Desc: 'Conectamos tu CRM, email, facturación y herramientas en flujos automáticos con Make.com y n8n. Elimina la carga administrativa.',
-    svc3Title: 'Generación de Contenido con IA',
-    svc3Price: '$3,499/mes',
-    svc3Desc: 'Copy para redes sociales, prompts DALL-E 3, paletas visuales y calendario de publicación. 4 plataformas, contenido ilimitado.',
-    svc4Title: 'Dashboard Financiero con IA',
-    svc4Price: '$5,999/proyecto',
-    svc4Desc: 'Detección de anomalías, reconciliación de gastos y proyecciones de flujo de caja. Importa tus datos y obtén insights al instante.',
-    svc5Title: 'Filtrado de CVs con IA',
-    svc5Price: '$1,999/proceso',
-    svc5Desc: 'Evalúa candidatos automáticamente contra tu perfil de puesto. Scoring, ranking y recomendaciones por candidato.',
-    svc6Title: 'Portal de Clientes No-Code',
-    svc6Price: '$4,499/proyecto',
-    svc6Desc: 'Portal completo con proyectos, facturas, tickets y documentos. Sin backend, sin servidor, listo en días.',
-    svc7Title: 'Orquestación de Agentes IA',
-    svc7Price: '$7,999/proyecto',
-    svc7Desc: 'Despliega enjambres de agentes inteligentes que se auto-reparan, colaboran en 6 topologías y procesan datos con pipelines RAG. Infraestructura enterprise con Terraform y Kubernetes.',
-    // Process
-    processBadge: 'Proceso',
-    processTitle: 'Como trabajamos',
-    processSub: 'De la idea al resultado en 4 pasos claros.',
-    step1Title: 'Diagnóstico Gratis',
-    step1Desc: 'Analizamos tus procesos y detectamos oportunidades de automatización (30 min, sin compromiso)',
-    step2Title: 'Propuesta a la Medida',
-    step2Desc: 'Diseñamos la solución técnica con tiempos, costos y ROI estimado',
-    step3Title: 'Implementación Ágil',
-    step3Desc: 'Construimos, testeamos y desplegamos en sprints de 1-2 semanas',
-    step4Title: 'Soporte Continuo',
-    step4Desc: 'Monitoreo, ajustes y capacitación para tu equipo',
-    // Demos
-    demosBadge: 'Portafolio',
-    demosTitle: 'Demos en vivo',
-    demosSub: 'Proyectos reales, funcionando ahora mismo. Haz clic y pruébalos.',
-    demoCta: 'Probar demo en vivo',
-    demo1Title: 'Chatbot Multiagente',
-    demo1M1: '5 agentes IA',
-    demo1M2: '80% resolución',
-    demo1M3: '24/7 disponible',
-    demo2Title: 'Content Studio IA',
-    demo2M1: '4 plataformas',
-    demo2M2: '90% más rápido',
-    demo2M3: 'A/B testing',
-    demo3Title: 'Finance AI Dashboard',
-    demo3M1: 'Detección anomalías',
-    demo3M2: 'Proyección cashflow',
-    demo3M3: 'Chatbot financiero',
-    demo4Title: 'HR Scout LLM',
-    demo4M1: 'Scoring 0-100',
-    demo4M2: '15 min vs 3 días',
-    demo4M3: 'Reporte comparativo',
-    demo5Title: 'Client Hub No-Code',
-    demo5M1: 'Tickets & facturas',
-    demo5M2: 'Documentos seguros',
-    demo5M3: 'Asistente IA',
-    demo6Title: 'ClientHub Portal',
-    demo6M1: 'Portal completo',
-    demo6M2: 'Sin backend',
-    demo6M3: 'Listo en días',
-    demo7Title: 'NexusForge AI',
-    demo7M1: '22 agentes IA',
-    demo7M2: '6 topologías',
-    demo7M3: '231 tests',
-    // Tech
-    techBadge: 'Tecnologías',
-    techTitle: 'Nuestro stack',
-    // About
-    aboutBadge: 'Sobre mí',
-    aboutName: 'Christian Hernandez Escamilla',
-    aboutBio: 'Soy Christian Hernández, Ingeniero en Software especializado en IA & Automatización. He diseñado y desplegado 15 sistemas en producción con 861+ tests automatizados, incluyendo chatbots multiagente, dashboards financieros, portales No-Code y NexusForge: una plataforma de orquestación de 22 agentes IA con infraestructura Terraform + Kubernetes. Mi enfoque: traducir necesidades de negocio en soluciones técnicas que generan ROI desde el día uno.',
-    aboutTag1: '15 sistemas IA en producción',
-    aboutTag2: 'Stack: React, Python, Node.js, Terraform',
-    aboutTag3: '861+ tests automatizados',
-    // Results
-    resultsBadge: 'Resultados reales',
-    resultsTitle: 'No prometemos, demostramos',
-    resultsSub: 'Cada métrica viene de proyectos reales que puedes probar tú mismo en las demos.',
-    res1Metric: '80%',
-    res1Label: 'de consultas resueltas sin humanos',
-    res1Desc: 'Chatbot multiagente con 5 IAs especializadas, base de conocimiento y árboles de decisión',
-    res2Metric: '90%',
-    res2Label: 'menos tiempo en producción de contenido',
-    res2Desc: 'Generador de copy + visual para 4 plataformas en segundos, no horas',
-    res3Metric: '2σ',
-    res3Label: 'detección estadística de anomalías',
-    res3Desc: 'Z-score sobre transacciones reales con proyecciones por regresión lineal',
-    res4Metric: '15 min',
-    res4Label: 'vs horas en filtrado de CVs',
-    res4Desc: 'Scoring automático, matching por sinónimos y heatmap de cobertura de skills',
-    res5Metric: '22',
-    res5Label: 'agentes IA orquestados en enjambre',
-    res5Desc: '6 topologías de enjambre, auto-reparación, pipeline RAG y 231 tests automatizados con NexusForge',
-    // Testimonials
-    testimonialsBadge: 'Testimonios',
-    testimonialsTitle: 'Lo que dicen nuestros clientes',
-    test1: 'Implementamos el chatbot multiagente y resolvemos el 80% de consultas sin intervención humana.',
-    test1Author: 'María González',
-    test1Role: 'COO @ TechSoluciones',
-    test2: 'El dashboard financiero detectó anomalías que nos ahorraron $50K en el primer mes.',
-    test2Author: 'Carlos Ruiz',
-    test2Role: 'CFO @ DataMex',
-    test3: 'Redujimos el tiempo de screening de CVs de 3 días a 15 minutos.',
-    test3Author: 'Ana López',
-    test3Role: 'HR Director @ TalentPro',
-    // FAQ
-    faqBadge: 'Preguntas frecuentes',
-    faqTitle: 'Resolvemos tus dudas',
-    faq1Q: '¿Cuánto tiempo toma la implementación?',
-    faq1A: 'Entre 1 y 3 semanas dependiendo de la complejidad del proyecto. Trabajamos en sprints ágiles para entregarte valor lo antes posible.',
-    faq2Q: '¿Necesito conocimientos técnicos?',
-    faq2A: 'No, nosotros nos encargamos de todo. Desde el diseño hasta el despliegue y la capacitación de tu equipo.',
-    faq3Q: '¿Qué pasa si no me convence?',
-    faq3A: 'Ofrecemos reembolso completo en los primeros 30 días. Sin preguntas, sin complicaciones.',
-    faq4Q: '¿Puedo ver una demo antes de contratar?',
-    faq4A: 'Sí, todas nuestras demos están disponibles en línea. Pruébalas directamente desde la sección de demos.',
-    faq5Q: '¿Ofrecen soporte post-implementación?',
-    faq5A: 'Sí, 30 días de soporte incluidos con cada proyecto, más planes de soporte continuo disponibles.',
-    faq6Q: '¿Qué es NexusForge AI?',
-    faq6A: 'NexusForge AI es nuestra plataforma enterprise de orquestación de agentes IA. Permite desplegar 22 agentes que colaboran en 6 topologías de enjambre, con auto-reparación, pipeline RAG y infraestructura Terraform + Kubernetes. Ideal para empresas que necesitan automatización inteligente a escala.',
-    // Contact
-    contactBadge: 'Contacto',
-    contactTitle: 'Hablemos de tu proyecto',
-    contactSub: 'Agenda tu diagnóstico gratuito de 30 minutos. Sin compromiso, con ideas concretas.',
-    contactName: 'Nombre',
-    contactEmail: 'Email',
-    contactCompany: 'Empresa',
-    contactMessage: '¿Qué quieres automatizar?',
-    contactSubmit: 'Agenda tu Diagnóstico Gratis',
-    contactSent: '✓ Enviado — Te contactaremos pronto',
-    contactDirect: 'Contacto directo',
-    contactSocial: 'Redes sociales',
-    // Footer
-    footerText: '© 2026 Impulso IA — Automatiza. Escala. Transforma.',
-    // Floating CTA
-    floatingCta: 'Agenda Llamada Gratis',
-    // Chatbot
-    chatTitle: 'Impulso IA — Asistente',
-    chatPlaceholder: 'Escribe tu pregunta...',
-    chatWelcome: '¡Hola! Soy el asistente de Impulso IA. ¿En qué puedo ayudarte?',
-    chatQuick1: 'Servicios',
-    chatQuick2: 'Precios',
-    chatQuick3: 'Proceso',
-    chatQuick4: 'Agendar llamada',
+    navServices:'Servicios',navProcess:'Proceso',navDemos:'Demos',navAbout:'Sobre m\u00ed',navContact:'Contacto',navCta:'Agenda tu llamada',
+    heroBadge:'IA & Automatizaci\u00f3n para empresas',
+    heroT1:'Automatiza.',heroT2:'Escala.',heroT3:'Crece.',
+    heroSub:'Soluciones de IA que transforman tu negocio \u2014 reducen costos, aceleran procesos y liberan a tu equipo para lo que realmente importa.',
+    heroCta:'Agenda tu diagn\u00f3stico gratis',heroCtaSec:'Ver servicios',
+    hStat1:'7+',hStat1L:'Servicios',hStat2:'15',hStat2L:'Sistemas',hStat3:'861+',hStat3L:'Tests',
+    trustBadge:'Respaldado por resultados',trustTitle:'N\u00fameros que hablan por nosotros',
+    trust1:'Sistemas IA Entregados',trust2:'Claude Tools en Producci\u00f3n',trust3:'Tests Automatizados',trust4:'Demos en Vivo',
+    painBadge:'El problema',painTitle:'Esto le pasa a tu empresa hoy',
+    pain1:'Tu equipo pierde horas en tareas repetitivas',pain2:'Tus clientes esperan demasiado por respuestas',pain3:'Tomas decisiones sin datos en tiempo real',
+    svcBadge:'Servicios',svcTitle:'Soluciones que generan resultados',svcSub:'Cada proyecto se adapta a tus necesidades. Sin contratos largos, con resultados medibles.',
+    svcFrom:'Desde',svcReq:'Solicitar',
+    s1T:'Chatbot IA Multiagente',s1P:'$4,999/mes',s1D:'Atenci\u00f3n 24/7 con agentes especializados.',s1B:['Web, WhatsApp, Telegram','5 agentes especializados','Base conocimiento IA','80% resoluci\u00f3n auto'],
+    s2T:'Automatizaci\u00f3n de Procesos',s2P:'$2,999/proy',s2D:'Conecta CRM, email, facturaci\u00f3n en flujos auto.',s2B:['Make.com y n8n','Integraci\u00f3n CRM/Email','Flujos inteligentes','Sin carga admin'],
+    s3T:'Contenido con IA',s3P:'$3,499/mes',s3D:'Copy, DALL-E 3, paletas y calendario editorial.',s3B:['4 plataformas','DALL-E 3','Calendario editorial','Contenido ilimitado'],
+    s4T:'Dashboard Financiero IA',s4P:'$5,999/proy',s4D:'Anomal\u00edas, reconciliaci\u00f3n y proyecciones.',s4B:['Detecci\u00f3n anomal\u00edas','Proyecci\u00f3n cashflow','Chatbot financiero','Importa datos'],
+    s5T:'Filtrado CVs con IA',s5P:'$1,999/proc',s5D:'Scoring autom\u00e1tico contra perfil de puesto.',s5B:['Scoring 0-100','Matching sin\u00f3nimos','Heatmap skills','Reporte comparativo'],
+    s6T:'Portal Clientes No-Code',s6P:'$4,499/proy',s6D:'Portal con proyectos, facturas, tickets.',s6B:['Tickets y facturas','Docs seguros','Asistente IA','Sin backend'],
+    s7T:'Orquestaci\u00f3n Agentes IA',s7P:'$7,999/proy',s7D:'Enjambres inteligentes con auto-reparaci\u00f3n.',s7B:['22 agentes IA','6 topolog\u00edas','Auto-reparaci\u00f3n','Terraform + K8s'],
+    procBadge:'Proceso',procTitle:'C\u00f3mo trabajamos',procSub:'De la idea al resultado en 4 pasos claros.',
+    st1T:'Descubrimiento',st1D:'Analizamos tus procesos y detectamos oportunidades (30 min, sin compromiso)',
+    st2T:'Dise\u00f1o',st2D:'Soluci\u00f3n t\u00e9cnica con tiempos, costos y ROI estimado',
+    st3T:'Desarrollo',st3D:'Construimos, testeamos y desplegamos en sprints de 1-2 semanas',
+    st4T:'Entrega',st4D:'Monitoreo, ajustes y capacitaci\u00f3n para tu equipo',
+    demoBadge:'Portafolio',demoTitle:'Demos en vivo',demoSub:'Proyectos reales funcionando. Haz clic y pru\u00e9balos.',demoCta:'Ver Demo',
+    d1T:'Chatbot Multiagente',d1M:['5 agentes IA','80% resoluci\u00f3n','24/7'],
+    d2T:'Content Studio IA',d2M:['4 plataformas','90% m\u00e1s r\u00e1pido','A/B testing'],
+    d3T:'Finance AI',d3M:['Anomal\u00edas','Cashflow','Chatbot fin.'],
+    d4T:'HR Scout LLM',d4M:['Score 0-100','15 min vs 3 d\u00edas','Comparativo'],
+    d5T:'Client Hub',d5M:['Tickets','Docs seguros','Asistente IA'],
+    d6T:'ClientHub Portal',d6M:['Portal completo','Sin backend','Listo en d\u00edas'],
+    d7T:'NexusForge AI',d7M:['22 agentes','6 topolog\u00edas','231 tests'],
+    techBadge:'Tecnolog\u00edas',techTitle:'Nuestro stack',
+    aboutBadge:'Sobre m\u00ed',aboutName:'Christian Hernandez Escamilla',
+    aboutBio:'Ingeniero en Software especializado en IA & Automatizaci\u00f3n. 15 sistemas en producci\u00f3n con 861+ tests automatizados, incluyendo chatbots multiagente, dashboards financieros, portales No-Code y NexusForge: orquestaci\u00f3n de 22 agentes IA con Terraform + Kubernetes.',
+    aboutTag1:'15 sistemas IA en producci\u00f3n',aboutTag2:'React, Python, Node.js, Terraform',aboutTag3:'861+ tests automatizados',
+    resBadge:'Resultados reales',resTitle:'No prometemos, demostramos',resSub:'M\u00e9tricas de proyectos reales.',
+    r1M:'80%',r1L:'consultas sin humanos',r1D:'Chatbot multiagente con 5 IAs especializadas',
+    r2M:'90%',r2L:'menos tiempo en contenido',r2D:'Copy + visual para 4 plataformas en segundos',
+    r3M:'2\u03c3',r3L:'detecci\u00f3n de anomal\u00edas',r3D:'Z-score sobre transacciones reales',
+    r4M:'15 min',r4L:'vs horas en filtrado CVs',r4D:'Scoring, matching y heatmap de skills',
+    r5M:'22',r5L:'agentes en enjambre',r5D:'6 topolog\u00edas, auto-reparaci\u00f3n, RAG',
+    testBadge:'Testimonios',testTitle:'Lo que dicen nuestros clientes',
+    t1:'"Resolvemos el 80% de consultas sin intervenci\u00f3n humana."',t1A:'Mar\u00eda Gonz\u00e1lez',t1R:'COO @ TechSoluciones',
+    t2:'"El dashboard detect\u00f3 anomal\u00edas que nos ahorraron $50K."',t2A:'Carlos Ruiz',t2R:'CFO @ DataMex',
+    t3:'"De 3 d\u00edas a 15 minutos en screening de CVs."',t3A:'Ana L\u00f3pez',t3R:'HR Director @ TalentPro',
+    faqBadge:'FAQ',faqTitle:'Resolvemos tus dudas',
+    f1Q:'\u00bfCu\u00e1nto tiempo toma?',f1A:'Entre 1 y 3 semanas. Sprints \u00e1giles para entregarte valor r\u00e1pido.',
+    f2Q:'\u00bfNecesito conocimientos t\u00e9cnicos?',f2A:'No, nos encargamos de todo.',
+    f3Q:'\u00bfQu\u00e9 pasa si no me convence?',f3A:'Reembolso completo en 30 d\u00edas.',
+    f4Q:'\u00bfPuedo ver una demo?',f4A:'S\u00ed, todas est\u00e1n disponibles en la secci\u00f3n demos.',
+    f5Q:'\u00bfSoporte post-implementaci\u00f3n?',f5A:'30 d\u00edas incluidos + planes continuos.',
+    f6Q:'\u00bfQu\u00e9 es NexusForge AI?',f6A:'Plataforma enterprise de orquestaci\u00f3n con 22 agentes, 6 topolog\u00edas, Terraform + K8s.',
+    ctBadge:'Contacto',ctTitle:'Transformemos tu ',ctHL:'negocio',
+    ctSub:'Agenda tu diagn\u00f3stico gratuito de 30 min.',ctName:'Nombre',ctEmail:'Email',ctCompany:'Empresa',ctMsg:'\u00bfQu\u00e9 quieres automatizar?',
+    ctSubmit:'Agenda tu Diagn\u00f3stico Gratis',ctSent:'Enviado \u2014 Te contactaremos pronto',ctDirect:'Contacto directo',ctSocial:'Redes sociales',
+    footer:'\u00a9 2026 Impulso IA \u2014 Automatiza. Escala. Transforma.',
+    floatCta:'Agenda Llamada',
+    chatTitle:'Impulso IA',chatPH:'Escribe tu pregunta...',chatWelcome:'\u00a1Hola! Soy el asistente de Impulso IA. \u00bfEn qu\u00e9 puedo ayudarte?',
+    cQ1:'Servicios',cQ2:'Precios',cQ3:'Proceso',cQ4:'Contacto',
   },
   en: {
-    navServices: 'Services',
-    navProcess: 'Process',
-    navDemos: 'Demos',
-    navAbout: 'About',
-    navContact: 'Contact',
-    navCta: 'Schedule a Call',
-    heroBadge: 'AI & Automation for Business',
-    heroTitle1: 'Your business deserves to work ',
-    heroHighlight: 'with AI',
-    heroTitle2: ', not against it',
-    heroSub: 'We implement AI and automation solutions that cut costs, accelerate processes, and free your team to focus on what truly matters.',
-    heroCta: 'Schedule your free diagnosis',
-    heroCtaSecondary: 'View services',
-    heroMetric1: 'Solutions in production',
-    heroMetric2: 'Queries resolved by AI',
-    heroMetric3: 'Hours/week saved',
-    heroMetric4: 'Live demos',
-    trustBadge: 'Backed by results',
-    trustTitle: 'Numbers that speak for themselves',
-    trust1: 'AI Systems Shipped',
-    trust2: 'Claude Tools in Production',
-    trust3: 'Automated Tests',
-    trust4: 'Live Demos Available',
-    painBadge: 'The problem',
-    painTitle: "This is happening to your business today",
-    pain1: 'Your team wastes hours on repetitive tasks',
-    pain2: 'Your customers wait too long for answers',
-    pain3: 'You make decisions without real-time data',
-    servicesBadge: 'Services',
-    servicesTitle: 'Solutions that deliver results',
-    servicesSub: 'Every project adapts to your needs. No long contracts, with measurable results.',
-    svcFrom: 'From',
-    svcDemo: 'View demo',
-    svcContact: 'Contact us',
-    svc1Title: 'Multi-Agent AI Chatbot',
-    svc1Price: '$4,999/mo',
-    svc1Desc: '24/7 customer support with specialized agents that resolve 80% of queries without human intervention. Web, WhatsApp & Telegram.',
-    svc2Title: 'Process Automation',
-    svc2Price: '$2,999/project',
-    svc2Desc: 'We connect your CRM, email, billing & tools into automatic workflows with Make.com and n8n. Eliminate admin overhead.',
-    svc3Title: 'AI Content Generation',
-    svc3Price: '$3,499/mo',
-    svc3Desc: 'Social media copy, DALL-E 3 prompts, visual palettes & publishing calendar. 4 platforms, unlimited content.',
-    svc4Title: 'AI Financial Dashboard',
-    svc4Price: '$5,999/project',
-    svc4Desc: 'Anomaly detection, expense reconciliation & cash flow projections. Import your data and get instant insights.',
-    svc5Title: 'AI Resume Screening',
-    svc5Price: '$1,999/process',
-    svc5Desc: 'Automatically evaluate candidates against your job profile. Scoring, ranking & recommendations per candidate.',
-    svc6Title: 'No-Code Client Portal',
-    svc6Price: '$4,499/project',
-    svc6Desc: 'Complete portal with projects, invoices, tickets & documents. No backend, no server, ready in days.',
-    svc7Title: 'AI Agent Orchestration',
-    svc7Price: '$7,999/project',
-    svc7Desc: 'Deploy intelligent agent swarms that self-heal, collaborate in 6 topologies, and process data through RAG pipelines. Enterprise infrastructure with Terraform and Kubernetes.',
-    processBadge: 'Process',
-    processTitle: 'How we work',
-    processSub: 'From idea to results in 4 clear steps.',
-    step1Title: 'Free Diagnosis',
-    step1Desc: 'We analyze your processes and detect automation opportunities (30 min, no commitment)',
-    step2Title: 'Custom Proposal',
-    step2Desc: 'We design the technical solution with timelines, costs and estimated ROI',
-    step3Title: 'Agile Implementation',
-    step3Desc: 'We build, test and deploy in 1-2 week sprints',
-    step4Title: 'Ongoing Support',
-    step4Desc: 'Monitoring, adjustments and training for your team',
-    demosBadge: 'Portfolio',
-    demosTitle: 'Live demos',
-    demosSub: 'Real projects, running right now. Click and try them.',
-    demoCta: 'Try Live Demo',
-    demo1Title: 'Multi-Agent Chatbot',
-    demo1M1: '5 AI agents',
-    demo1M2: '80% resolution',
-    demo1M3: '24/7 available',
-    demo2Title: 'AI Content Studio',
-    demo2M1: '4 platforms',
-    demo2M2: '90% faster',
-    demo2M3: 'A/B testing',
-    demo3Title: 'Finance AI Dashboard',
-    demo3M1: 'Anomaly detection',
-    demo3M2: 'Cashflow projection',
-    demo3M3: 'Financial chatbot',
-    demo4Title: 'HR Scout LLM',
-    demo4M1: 'Score 0-100',
-    demo4M2: '15 min vs 3 days',
-    demo4M3: 'Comparative report',
-    demo5Title: 'Client Hub No-Code',
-    demo5M1: 'Tickets & invoices',
-    demo5M2: 'Secure documents',
-    demo5M3: 'AI assistant',
-    demo6Title: 'ClientHub Portal',
-    demo6M1: 'Complete portal',
-    demo6M2: 'No backend',
-    demo6M3: 'Ready in days',
-    demo7Title: 'NexusForge AI',
-    demo7M1: '22 AI agents',
-    demo7M2: '6 topologies',
-    demo7M3: '231 tests',
-    techBadge: 'Technologies',
-    techTitle: 'Our stack',
-    aboutBadge: 'About me',
-    aboutName: 'Christian Hernandez Escamilla',
-    aboutBio: "I'm Christian Hernández, Software Engineer specializing in AI & Automation. I've designed and deployed 15 production systems with 861+ automated tests, including multi-agent chatbots, financial dashboards, No-Code portals, and NexusForge: an enterprise orchestration platform with 22 AI agents and Terraform + Kubernetes infrastructure. My focus: translating business needs into technical solutions that generate ROI from day one.",
-    aboutTag1: '15 AI systems in production',
-    aboutTag2: 'Stack: React, Python, Node.js, Terraform',
-    aboutTag3: '861+ automated tests',
-    resultsBadge: 'Real results',
-    resultsTitle: "We don't promise, we prove",
-    resultsSub: 'Every metric comes from real projects you can try yourself in the demos.',
-    res1Metric: '80%',
-    res1Label: 'of queries resolved without humans',
-    res1Desc: 'Multi-agent chatbot with 5 specialized AIs, knowledge base and decision trees',
-    res2Metric: '90%',
-    res2Label: 'less time in content production',
-    res2Desc: 'Copy + visual generator for 4 platforms in seconds, not hours',
-    res3Metric: '2σ',
-    res3Label: 'statistical anomaly detection',
-    res3Desc: 'Z-score on real transactions with linear regression projections',
-    res4Metric: '15 min',
-    res4Label: 'vs hours in resume screening',
-    res4Desc: 'Automatic scoring, synonym matching and skill coverage heatmap',
-    res5Metric: '22',
-    res5Label: 'AI agents orchestrated in swarms',
-    res5Desc: '6 swarm topologies, self-healing, RAG pipeline and 231 automated tests with NexusForge',
-    testimonialsBadge: 'Testimonials',
-    testimonialsTitle: 'What our clients say',
-    test1: 'We implemented the multi-agent chatbot and now resolve 80% of queries without human intervention.',
-    test1Author: 'María González',
-    test1Role: 'COO @ TechSoluciones',
-    test2: 'The financial dashboard detected anomalies that saved us $50K in the first month.',
-    test2Author: 'Carlos Ruiz',
-    test2Role: 'CFO @ DataMex',
-    test3: 'We reduced CV screening time from 3 days to 15 minutes.',
-    test3Author: 'Ana López',
-    test3Role: 'HR Director @ TalentPro',
-    faqBadge: 'FAQ',
-    faqTitle: 'Frequently asked questions',
-    faq1Q: 'How long does implementation take?',
-    faq1A: 'Between 1 and 3 weeks depending on project complexity. We work in agile sprints to deliver value as soon as possible.',
-    faq2Q: 'Do I need technical knowledge?',
-    faq2A: "No, we handle everything. From design to deployment and training your team.",
-    faq3Q: "What if I'm not satisfied?",
-    faq3A: 'We offer a full refund within the first 30 days. No questions asked.',
-    faq4Q: 'Can I see a demo before hiring?',
-    faq4A: 'Yes, all our demos are available online. Try them directly from the demos section.',
-    faq5Q: 'Do you offer post-implementation support?',
-    faq5A: 'Yes, 30 days of support included with every project, plus ongoing support plans available.',
-    faq6Q: 'What is NexusForge AI?',
-    faq6A: 'NexusForge AI is our enterprise AI agent orchestration platform. It deploys 22 agents collaborating in 6 swarm topologies, with self-healing, RAG pipeline, and Terraform + Kubernetes infrastructure. Ideal for companies that need intelligent automation at scale.',
-    contactBadge: 'Contact',
-    contactTitle: "Let's talk about your project",
-    contactSub: 'Schedule your free 30-minute diagnosis. No commitment, with concrete ideas.',
-    contactName: 'Name',
-    contactEmail: 'Email',
-    contactCompany: 'Company',
-    contactMessage: 'What do you want to automate?',
-    contactSubmit: 'Schedule Your Free Diagnosis',
-    contactSent: '✓ Sent — We will contact you soon',
-    contactDirect: 'Direct contact',
-    contactSocial: 'Social media',
-    footerText: '© 2026 Impulso IA — Automate. Scale. Transform.',
-    floatingCta: 'Schedule Free Call',
-    chatTitle: 'Impulso IA — Assistant',
-    chatPlaceholder: 'Type your question...',
-    chatWelcome: "Hi! I'm the Impulso IA assistant. How can I help you?",
-    chatQuick1: 'Services',
-    chatQuick2: 'Pricing',
-    chatQuick3: 'Process',
-    chatQuick4: 'Schedule a call',
+    navServices:'Services',navProcess:'Process',navDemos:'Demos',navAbout:'About',navContact:'Contact',navCta:'Schedule a Call',
+    heroBadge:'AI & Automation for Business',
+    heroT1:'Automate.',heroT2:'Scale.',heroT3:'Grow.',
+    heroSub:'AI solutions that transform your business \u2014 cut costs, accelerate processes, and free your team.',
+    heroCta:'Schedule your free diagnosis',heroCtaSec:'View services',
+    hStat1:'7+',hStat1L:'Services',hStat2:'15',hStat2L:'Systems',hStat3:'861+',hStat3L:'Tests',
+    trustBadge:'Backed by results',trustTitle:'Numbers that speak',
+    trust1:'AI Systems Shipped',trust2:'Claude Tools in Prod',trust3:'Automated Tests',trust4:'Live Demos',
+    painBadge:'The problem',painTitle:'This is happening to your business',
+    pain1:'Hours wasted on repetitive tasks',pain2:'Customers wait too long',pain3:'Decisions without real-time data',
+    svcBadge:'Services',svcTitle:'Solutions that deliver',svcSub:'Every project adapts to your needs. No long contracts.',
+    svcFrom:'From',svcReq:'Request',
+    s1T:'Multi-Agent AI Chatbot',s1P:'$4,999/mo',s1D:'24/7 support with specialized agents.',s1B:['Web, WhatsApp, Telegram','5 specialized agents','AI knowledge base','80% auto-resolution'],
+    s2T:'Process Automation',s2P:'$2,999/proj',s2D:'Connect CRM, email, billing in auto workflows.',s2B:['Make.com & n8n','CRM/Email integration','Smart workflows','No admin overhead'],
+    s3T:'AI Content Generation',s3P:'$3,499/mo',s3D:'Copy, DALL-E 3, palettes & calendar.',s3B:['4 platforms','DALL-E 3','Editorial calendar','Unlimited content'],
+    s4T:'AI Financial Dashboard',s4P:'$5,999/proj',s4D:'Anomalies, reconciliation & projections.',s4B:['Anomaly detection','Cashflow projection','Financial chatbot','Import data'],
+    s5T:'AI Resume Screening',s5P:'$1,999/proc',s5D:'Auto scoring against job profile.',s5B:['Score 0-100','Synonym matching','Skill heatmap','Comparative report'],
+    s6T:'No-Code Client Portal',s6P:'$4,499/proj',s6D:'Portal with projects, invoices, tickets.',s6B:['Tickets & invoices','Secure docs','AI assistant','No backend'],
+    s7T:'AI Agent Orchestration',s7P:'$7,999/proj',s7D:'Intelligent swarms with self-healing.',s7B:['22 AI agents','6 topologies','Self-healing','Terraform + K8s'],
+    procBadge:'Process',procTitle:'How we work',procSub:'From idea to results in 4 steps.',
+    st1T:'Discovery',st1D:'We analyze your processes (30 min, no commitment)',
+    st2T:'Design',st2D:'Technical solution with timelines and ROI',
+    st3T:'Development',st3D:'Build, test and deploy in 1-2 week sprints',
+    st4T:'Delivery',st4D:'Monitoring, adjustments and team training',
+    demoBadge:'Portfolio',demoTitle:'Live demos',demoSub:'Real projects running now. Click to try.',demoCta:'Try Demo',
+    d1T:'Multi-Agent Chatbot',d1M:['5 AI agents','80% resolution','24/7'],
+    d2T:'AI Content Studio',d2M:['4 platforms','90% faster','A/B testing'],
+    d3T:'Finance AI',d3M:['Anomalies','Cashflow','Fin. chatbot'],
+    d4T:'HR Scout LLM',d4M:['Score 0-100','15min vs 3days','Comparative'],
+    d5T:'Client Hub',d5M:['Tickets','Secure docs','AI assistant'],
+    d6T:'ClientHub Portal',d6M:['Full portal','No backend','Ready in days'],
+    d7T:'NexusForge AI',d7M:['22 agents','6 topologies','231 tests'],
+    techBadge:'Technologies',techTitle:'Our stack',
+    aboutBadge:'About me',aboutName:'Christian Hernandez Escamilla',
+    aboutBio:'Software Engineer specializing in AI & Automation. 15 production systems with 861+ tests, multi-agent chatbots, financial dashboards, No-Code portals, and NexusForge: 22 AI agents with Terraform + K8s.',
+    aboutTag1:'15 AI systems in production',aboutTag2:'React, Python, Node.js, Terraform',aboutTag3:'861+ automated tests',
+    resBadge:'Real results',resTitle:'We prove, not promise',resSub:'Metrics from real projects.',
+    r1M:'80%',r1L:'queries without humans',r1D:'Multi-agent chatbot with 5 specialized AIs',
+    r2M:'90%',r2L:'less content production time',r2D:'Copy + visual for 4 platforms in seconds',
+    r3M:'2\u03c3',r3L:'anomaly detection',r3D:'Z-score on real transactions',
+    r4M:'15 min',r4L:'vs hours screening CVs',r4D:'Scoring, matching and skill heatmap',
+    r5M:'22',r5L:'agents in swarms',r5D:'6 topologies, self-healing, RAG',
+    testBadge:'Testimonials',testTitle:'What our clients say',
+    t1:'"We resolve 80% of queries without human intervention."',t1A:'Mar\u00eda Gonz\u00e1lez',t1R:'COO @ TechSoluciones',
+    t2:'"The dashboard saved us $50K in anomaly detection."',t2A:'Carlos Ruiz',t2R:'CFO @ DataMex',
+    t3:'"From 3 days to 15 minutes in CV screening."',t3A:'Ana L\u00f3pez',t3R:'HR Director @ TalentPro',
+    faqBadge:'FAQ',faqTitle:'Common questions',
+    f1Q:'How long does it take?',f1A:'1-3 weeks with agile sprints.',
+    f2Q:'Do I need tech knowledge?',f2A:'No, we handle everything.',
+    f3Q:'What if not satisfied?',f3A:'Full refund within 30 days.',
+    f4Q:'Can I see a demo?',f4A:'Yes, all demos are live in the demos section.',
+    f5Q:'Post-implementation support?',f5A:'30 days included + ongoing plans.',
+    f6Q:'What is NexusForge AI?',f6A:'Enterprise orchestration with 22 agents, 6 topologies, Terraform + K8s.',
+    ctBadge:'Contact',ctTitle:'Let\'s transform your ',ctHL:'business',
+    ctSub:'Schedule your free 30-min diagnosis.',ctName:'Name',ctEmail:'Email',ctCompany:'Company',ctMsg:'What do you want to automate?',
+    ctSubmit:'Schedule Your Free Diagnosis',ctSent:'Sent \u2014 We\'ll contact you soon',ctDirect:'Direct contact',ctSocial:'Social media',
+    footer:'\u00a9 2026 Impulso IA \u2014 Automate. Scale. Transform.',
+    floatCta:'Free Call',
+    chatTitle:'Impulso IA',chatPH:'Type your question...',chatWelcome:'Hi! I\'m the Impulso IA assistant. How can I help?',
+    cQ1:'Services',cQ2:'Pricing',cQ3:'Process',cQ4:'Contact',
   },
 }
 
-/* ───────────────── Global Styles ───────────────── */
-const globalStyles = `
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #0A0B0F;
-    color: #E2E8F0;
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
-  h1, h2, h3, h4, h5, h6 { font-family: 'Syne', sans-serif; }
-  a { color: inherit; text-decoration: none; }
-  img { max-width: 100%; display: block; }
-  button { cursor: pointer; font-family: 'DM Sans', sans-serif; }
-  input, textarea { font-family: 'DM Sans', sans-serif; }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: #0A0B0F; }
-  ::-webkit-scrollbar-thumb { background: #6366F1; border-radius: 4px; }
-
-  /* Fade-in animation */
-  .fade-section {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-  }
-  .fade-section.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Gradient bg animation */
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.8; }
-  }
-  @keyframes countUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-`
-
-/* ───────────────── Hook: Intersection Observer ───────────────── */
-function useFadeIn() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible')
-          }
-        })
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-    )
-    document.querySelectorAll('.fade-section').forEach((el) => observer.observe(el))
-    return () => observer.disconnect()
-  }, [])
+/* ====== CHATBOT KB ====== */
+const chatKB = {
+  es: {
+    services:'Nuestros 7 servicios:\n\n1. Chatbot IA Multiagente \u2014 $4,999/mes\n2. Automatizaci\u00f3n de Procesos \u2014 $2,999/proyecto\n3. Contenido con IA \u2014 $3,499/mes\n4. Dashboard Financiero \u2014 $5,999/proyecto\n5. Filtrado CVs \u2014 $1,999/proceso\n6. Portal Clientes \u2014 $4,499/proyecto\n7. Orquestaci\u00f3n Agentes \u2014 $7,999/proyecto\n\n\u00bfCu\u00e1l te interesa?',
+    pricing:'Paquetes:\n\n\u2022 Starter: $7,999/mes \u2014 Chatbot + Automatizaci\u00f3n\n\u2022 Growth: $12,999/mes \u2014 4 soluciones\n\u2022 Enterprise: Precio personalizado\n\nTodos incluyen 30 d\u00edas de soporte.',
+    process:'Proceso en 4 pasos:\n\n1. Diagn\u00f3stico Gratis (30 min)\n2. Propuesta a la Medida (48h)\n3. Implementaci\u00f3n \u00c1gil (1-3 semanas)\n4. Soporte Continuo',
+    contact:'\u00a1Perfecto! Puedes:\n\n\u2022 Email: christianescamilla15@gmail.com\n\u2022 WhatsApp: wa.me/525579605324\n\u2022 Scroll abajo al formulario de contacto\n\nSin compromiso, con ideas concretas.',
+    nexus:'NexusForge AI: 22 agentes, 6 topolog\u00edas de enjambre, auto-reparaci\u00f3n, pipeline RAG, 231 tests. Terraform + K8s. $7,999/proyecto.',
+    time:'Implementaci\u00f3n t\u00edpica: 1-3 semanas en sprints \u00e1giles.',
+    guarantee:'Reembolso completo en 30 d\u00edas si no est\u00e1s satisfecho.',
+    stack:'Stack: Claude API, GPT-4o, React, Python, Node.js, FastAPI, Make.com, n8n, Terraform, Kubernetes, Docker, PostgreSQL, Redis.',
+    chatbot:'Chatbot Multiagente: 5 agentes IA especializados, resoluci\u00f3n 80%, WhatsApp/Web/Telegram. $4,999/mes. Implementaci\u00f3n: 2-3 semanas.',
+    automation:'Automatizaci\u00f3n: conectamos CRM, email, facturaci\u00f3n con Make.com y n8n. $2,999/proyecto.',
+    content:'Contenido IA: copy para 4 redes, DALL-E 3, calendario editorial. $3,499/mes. Reduce producci\u00f3n 90%.',
+    finance:'Dashboard Financiero: detecci\u00f3n anomal\u00edas, cashflow, chatbot financiero. $5,999/proyecto.',
+    hr:'HR Scout: scoring 0-100, matching sin\u00f3nimos, heatmap skills. $1,999/proceso. 15 min vs 3 d\u00edas.',
+    portal:'Portal No-Code: tickets, facturas, docs, asistente IA. $4,499/proyecto. Sin backend.',
+    roi:'ROI desde d\u00eda uno. Nuestras soluciones se pagan solas: ahorro en tiempo, errores y personal.',
+    whatsapp:'WhatsApp: wa.me/525579605324 \u2014 Escr\u00edbenos directo.',
+    email:'Email: christianescamilla15@gmail.com',
+    default:'Puedo ayudarte con:\n\u2022 Nuestros 7 servicios\n\u2022 Precios y paquetes\n\u2022 Proceso de trabajo\n\u2022 Agendar llamada\n\n\u00bfQu\u00e9 te interesa?',
+  },
+  en: {
+    services:'Our 7 services:\n\n1. Multi-Agent Chatbot \u2014 $4,999/mo\n2. Process Automation \u2014 $2,999/project\n3. AI Content \u2014 $3,499/mo\n4. Financial Dashboard \u2014 $5,999/project\n5. CV Screening \u2014 $1,999/process\n6. Client Portal \u2014 $4,499/project\n7. Agent Orchestration \u2014 $7,999/project\n\nWhich interests you?',
+    pricing:'Bundles:\n\n\u2022 Starter: $7,999/mo \u2014 Chatbot + Automation\n\u2022 Growth: $12,999/mo \u2014 4 solutions\n\u2022 Enterprise: Custom\n\nAll include 30 days support.',
+    process:'4-step process:\n\n1. Free Diagnosis (30 min)\n2. Custom Proposal (48h)\n3. Agile Implementation (1-3 weeks)\n4. Ongoing Support',
+    contact:'You can:\n\n\u2022 Email: christianescamilla15@gmail.com\n\u2022 WhatsApp: wa.me/525579605324\n\u2022 Scroll down to the contact form\n\nNo commitment.',
+    nexus:'NexusForge AI: 22 agents, 6 swarm topologies, self-healing, RAG pipeline, 231 tests. Terraform + K8s. $7,999/project.',
+    time:'Typical implementation: 1-3 weeks in agile sprints.',
+    guarantee:'Full refund within 30 days if not satisfied.',
+    stack:'Stack: Claude API, GPT-4o, React, Python, Node.js, FastAPI, Make.com, n8n, Terraform, Kubernetes, Docker, PostgreSQL, Redis.',
+    chatbot:'Multi-Agent Chatbot: 5 specialized AI agents, 80% resolution, WhatsApp/Web/Telegram. $4,999/mo.',
+    automation:'Automation: connect CRM, email, billing with Make.com & n8n. $2,999/project.',
+    content:'AI Content: copy for 4 platforms, DALL-E 3, editorial calendar. $3,499/mo. 90% faster.',
+    finance:'Financial Dashboard: anomaly detection, cashflow, financial chatbot. $5,999/project.',
+    hr:'HR Scout: scoring 0-100, synonym matching, skill heatmap. $1,999/process.',
+    portal:'No-Code Portal: tickets, invoices, docs, AI assistant. $4,499/project.',
+    roi:'ROI from day one. Our solutions pay for themselves.',
+    whatsapp:'WhatsApp: wa.me/525579605324',
+    email:'Email: christianescamilla15@gmail.com',
+    default:'I can help with:\n\u2022 Our 7 AI services\n\u2022 Pricing & bundles\n\u2022 Work process\n\u2022 Schedule a call\n\nWhat interests you?',
+  },
 }
 
-/* ───────────────── Hook: Animated Counter ───────────────── */
+/* ====== GLOBAL STYLES ====== */
+const globalCSS = `
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-padding-top:80px}
+body{font-family:'DM Sans',sans-serif;background:#0A0B0F;color:#E2E8F0;line-height:1.6;overflow-x:hidden}
+h1,h2,h3,h4,h5,h6{font-family:'Syne',sans-serif}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+input,textarea{font-family:'DM Sans',sans-serif}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0A0B0F}
+::-webkit-scrollbar-thumb{background:#6366F1;border-radius:3px}
+::selection{background:rgba(99,102,241,0.3);color:#fff}
+
+/* Scroll progress bar */
+#scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#6366F1,#10B981,#8B5CF6);z-index:9999;transition:none;transform-origin:left}
+
+/* Film grain */
+.film-grain{position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Custom cursor */
+@media(hover:hover){
+  .cursor-ring{position:fixed;width:40px;height:40px;border:2px solid rgba(99,102,241,0.5);border-radius:50%;pointer-events:none;z-index:99999;transition:transform 0.15s ease,opacity 0.15s ease;transform:translate(-50%,-50%)}
+  .cursor-dot{position:fixed;width:6px;height:6px;background:#6366F1;border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%)}
+}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:0.8}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+@media(max-width:768px){
+  .nav-desktop{display:none!important}
+  .nav-hamburger{display:block!important}
+  .nav-lang-mobile{display:flex!important}
+  .floating-cta{display:none!important}
+  .demo-hscroll{overflow-x:auto!important;scroll-snap-type:x mandatory}
+  .demo-hscroll>*{scroll-snap-align:start;min-width:85vw!important}
+  .cursor-ring,.cursor-dot{display:none!important}
+}
+@media(min-width:769px){
+  .nav-mobile-menu{display:none!important}
+  .nav-mobile-controls .nav-lang-mobile{display:none!important}
+}
+`
+
+/* ====== TECH STACK ====== */
+const techStack = ['Claude API','GPT-4o','Groq API','Make.com','n8n','Zapier','Airtable','Softr','DALL-E 3','React','Python','Node.js','FastAPI','PostgreSQL','Redis','Docker','Terraform','Kubernetes']
+
+/* ====== SERVICE COLORS ====== */
+const svcColors = ['#6366F1','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#F97316']
+
+/* ====== DEMO DATA ====== */
+const demoURLs = [
+  'https://chatbot-multiagente-ia.vercel.app',
+  'https://content-studio-ai-blush.vercel.app',
+  'https://finance-ai-dashboard-omega.vercel.app',
+  'https://hr-scout-llm.vercel.app',
+  'https://client-hub-nocode.vercel.app',
+  'https://client-hub-nocode.vercel.app',
+  'https://frontend-silk-three-66.vercel.app',
+]
+
+/* ====== MOTION VARIANTS ====== */
+const fadeUp = { hidden:{opacity:0,y:60}, visible:{opacity:1,y:0,transition:{duration:0.8,ease:EASE}} }
+const fadeIn = { hidden:{opacity:0}, visible:{opacity:1,transition:{duration:0.6}} }
+const stagger = { visible:{transition:{staggerChildren:0.12}} }
+
+/* ====== SECTION WRAPPER ====== */
+function Section({ children, id, className, style }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+  return (
+    <motion.section
+      ref={ref} id={id} className={className}
+      initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={stagger}
+      style={{ padding: '100px 0', ...style }}
+    >
+      {children}
+    </motion.section>
+  )
+}
+
+function Container({ children, style }) {
+  return <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 24px', width:'100%', ...style }}>{children}</div>
+}
+
+function Badge({ children, color = '#6366F1' }) {
+  return (
+    <motion.div variants={fadeUp} style={{
+      display:'inline-block',padding:'6px 16px',borderRadius:999,fontSize:'0.8rem',fontWeight:600,
+      letterSpacing:'0.05em',textTransform:'uppercase',marginBottom:16,
+      background:`${color}18`,border:`1px solid ${color}40`,color:color,
+    }}>{children}</motion.div>
+  )
+}
+
+function SectionTitle({ children }) {
+  return <motion.h2 variants={fadeUp} style={{ fontFamily:"'Syne',sans-serif",fontSize:'clamp(1.8rem,4vw,2.8rem)',fontWeight:700,marginBottom:16,color:'#fff' }}>{children}</motion.h2>
+}
+
+function SectionSub({ children }) {
+  return <motion.p variants={fadeUp} style={{ color:'#94A3B8',fontSize:'1.1rem',maxWidth:600,marginBottom:56 }}>{children}</motion.p>
+}
+
+/* ====== ANIMATED COUNTER HOOK ====== */
 function useCountUp(end, duration = 2000) {
   const [count, setCount] = useState(0)
   const [started, setStarted] = useState(false)
   const ref = useRef(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started) {
-          setStarted(true)
-        }
-      },
-      { threshold: 0.3 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [started])
-
+  const inView = useInView(ref, { once: true, margin: '-40px' })
+  useEffect(() => { if (inView) setStarted(true) }, [inView])
   useEffect(() => {
     if (!started) return
     let start = 0
-    const increment = end / (duration / 16)
+    const inc = end / (duration / 16)
     const timer = setInterval(() => {
-      start += increment
-      if (start >= end) {
-        setCount(end)
-        clearInterval(timer)
-      } else {
-        setCount(Math.floor(start))
-      }
+      start += inc
+      if (start >= end) { setCount(end); clearInterval(timer) }
+      else setCount(Math.floor(start))
     }, 16)
     return () => clearInterval(timer)
   }, [started, end, duration])
-
   return { count, ref }
 }
 
-/* ───────────────── SVG Icons ───────────────── */
-const icons = {
-  chatbot: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-      <circle cx="9" cy="10" r="1" fill="#6366F1"/>
-      <circle cx="15" cy="10" r="1" fill="#6366F1"/>
-    </svg>
-  ),
-  automation: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-      <circle cx="12" cy="12" r="3"/>
-    </svg>
-  ),
-  content: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
-    </svg>
-  ),
-  finance: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-    </svg>
-  ),
-  hr: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-    </svg>
-  ),
-  portal: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-      <path d="M3 9h18M9 21V9"/>
-    </svg>
-  ),
-  orchestration: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="5" r="3"/>
-      <circle cx="5" cy="19" r="3"/>
-      <circle cx="19" cy="19" r="3"/>
-      <path d="M12 8v3M8.5 17.5L10.5 13M15.5 17.5L13.5 13"/>
-    </svg>
-  ),
-  phone: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
-    </svg>
-  ),
-  mail: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-      <polyline points="22,6 12,13 2,6"/>
-    </svg>
-  ),
-  linkedin: (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-    </svg>
-  ),
-  github: (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-    </svg>
-  ),
-  arrow: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14M12 5l7 7-7 7"/>
-    </svg>
-  ),
-  external: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
-    </svg>
-  ),
-  check: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-      <polyline points="22 4 12 14.01 9 11.01"/>
-    </svg>
-  ),
-  clock: (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <polyline points="12 6 12 12 16 14"/>
-    </svg>
-  ),
-  users: (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-    </svg>
-  ),
-  chart: (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 20V10M12 20V4M6 20v-6"/>
-    </svg>
-  ),
-  menu: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="3" y1="12" x2="21" y2="12"/>
-      <line x1="3" y1="6" x2="21" y2="6"/>
-      <line x1="3" y1="18" x2="21" y2="18"/>
-    </svg>
-  ),
-  close: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"/>
-      <line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  ),
-  chevronDown: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="6 9 12 15 18 9"/>
-    </svg>
-  ),
-  quote: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/>
-      <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
-    </svg>
-  ),
-  star: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="1">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-    </svg>
-  ),
+/* ====== SVG ICONS ====== */
+const I = {
+  chat: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><circle cx="9" cy="10" r="1" fill="#6366F1"/><circle cx="15" cy="10" r="1" fill="#6366F1"/></svg>,
+  auto: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>,
+  pen: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>,
+  fin: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
+  hr: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
+  portal: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg>,
+  orch: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v3M8.5 17.5L10.5 13M15.5 17.5L13.5 13"/></svg>,
+  phone: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>,
+  mail: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+  li: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>,
+  gh: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>,
+  wa: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>,
+  arr: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>,
+  ext: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>,
+  check: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  clock: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+  users: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>,
+  chart: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>,
+  menu: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+  close: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+  chev: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>,
+  quote: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>,
+  star: <svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+  send: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
+}
+const svcIcons = [I.chat, I.auto, I.pen, I.fin, I.hr, I.portal, I.orch]
+
+/* ====== CUSTOM CURSOR ====== */
+function CustomCursor() {
+  const ring = useRef(null)
+  const dot = useRef(null)
+  useEffect(() => {
+    if (window.matchMedia('(hover:none)').matches) return
+    const move = (e) => {
+      if (ring.current) { ring.current.style.left = e.clientX+'px'; ring.current.style.top = e.clientY+'px' }
+      if (dot.current) { dot.current.style.left = e.clientX+'px'; dot.current.style.top = e.clientY+'px' }
+    }
+    window.addEventListener('mousemove', move)
+    return () => window.removeEventListener('mousemove', move)
+  }, [])
+  return <><div ref={ring} className="cursor-ring"/><div ref={dot} className="cursor-dot"/></>
 }
 
-/* ───────────────── Data Helpers ───────────────── */
-const techStack = [
-  'Claude API', 'GPT-4o', 'Groq API', 'Make.com', 'n8n', 'Zapier',
-  'Airtable', 'Softr', 'DALL-E 3', 'React', 'Python', 'Node.js',
-  'FastAPI', 'PostgreSQL', 'Redis', 'Docker', 'Terraform', 'Kubernetes',
-]
-
-/* ───────────────── Inline Style Helpers ───────────────── */
-const s = {
-  container: { maxWidth: 1200, margin: '0 auto', padding: '0 24px', width: '100%' },
-  sectionPad: { padding: '100px 0' },
-  sectionTitle: {
-    fontFamily: "'Syne', sans-serif",
-    fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
-    fontWeight: 700,
-    marginBottom: 16,
-    color: '#fff',
-  },
-  sectionSub: { color: '#94A3B8', fontSize: '1.1rem', maxWidth: 600, marginBottom: 56 },
-  badge: {
-    display: 'inline-block',
-    padding: '6px 16px',
-    borderRadius: 999,
-    fontSize: '0.8rem',
-    fontWeight: 600,
-    letterSpacing: '0.05em',
-    textTransform: 'uppercase',
-    marginBottom: 16,
-  },
+/* ====== SCROLL PROGRESS ====== */
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
+  return <motion.div id="scroll-progress" style={{ scaleX, width: '100%' }} />
 }
 
-/* ───────────────── Chatbot Knowledge Base ───────────────── */
-const chatbotKB = {
-  es: {
-    services: `Nuestros 7 servicios:\n\n1. Chatbot IA Multiagente — $4,999/mes. 5 agentes especializados, resolución automática del 80%, integración con WhatsApp, Slack, web. Implementación: 2-3 semanas.\n\n2. Automatización de Procesos — $2,999/proyecto. Conectamos tus herramientas (CRM, email, bases de datos) con flujos inteligentes. Reduce tareas manuales de horas a minutos.\n\n3. Generación de Contenido con IA — $3,499/mes. Contenido para 4 plataformas, 5 tonos, A/B testing. Reduce producción de contenido un 90%.\n\n4. Dashboard Financiero con IA — $5,999/proyecto. Detección de anomalías, proyección de flujo de caja, chatbot financiero.\n\n5. Filtrado de CVs con IA — $1,999/proceso. Scoring automático 0-100, detección de gaps, reporte comparativo.\n\n6. Portal de Clientes No-Code — $4,499/proyecto. Portal completo con tickets, facturas, documentos, asistente IA.\n\n7. Orquestación de Agentes IA — $7,999/proyecto. 22 agentes IA, 6 topologías de enjambre, auto-reparación, pipeline RAG. Infraestructura enterprise con Terraform y Kubernetes.`,
-    pricing: `Precios y Paquetes:\n\n• Starter: $7,999/mes — Chatbot + Automatización\n• Growth: $12,999/mes — 4 soluciones integradas\n• Enterprise: Precio personalizado\n\nTodos incluyen 30 días de soporte post-implementación.`,
-    process: `Nuestro proceso en 4 pasos:\n\n1. Diagnóstico Gratis (30 min call)\n2. Propuesta a la Medida (en 48h)\n3. Implementación Ágil (1-3 semanas)\n4. Soporte Continuo`,
-    schedule: `¡Perfecto! Puedes agendar tu diagnóstico gratuito de 30 minutos directamente en la sección de contacto. Scroll abajo o haz clic en "Contacto" en el menú. Sin compromiso, con ideas concretas para tu negocio.`,
-    default: `Puedo ayudarte con información sobre:\n• Nuestros 7 servicios de IA\n• Precios y paquetes\n• El proceso de trabajo\n• Agendar una llamada gratuita\n\n¿Qué te interesa saber?`,
-  },
-  en: {
-    services: `Our 7 services:\n\n1. Multi-Agent AI Chatbot — $4,999/mo. 5 specialized agents, 80% auto-resolution, WhatsApp, Slack & web integration. Implementation: 2-3 weeks.\n\n2. Process Automation — $2,999/project. We connect your tools (CRM, email, databases) with intelligent workflows. Reduces manual tasks from hours to minutes.\n\n3. AI Content Generation — $3,499/mo. Content for 4 platforms, 5 tones, A/B testing. Reduces content production by 90%.\n\n4. AI Financial Dashboard — $5,999/project. Anomaly detection, cash flow projection, financial chatbot.\n\n5. AI Resume Screening — $1,999/process. Automatic scoring 0-100, gap detection, comparative report.\n\n6. No-Code Client Portal — $4,499/project. Complete portal with tickets, invoices, documents, AI assistant.\n\n7. AI Agent Orchestration — $7,999/project. 22 AI agents, 6 swarm topologies, self-healing, RAG pipeline. Enterprise infrastructure with Terraform and Kubernetes.`,
-    pricing: `Pricing & Bundles:\n\n• Starter: $7,999/mo — Chatbot + Automation\n• Growth: $12,999/mo — 4 integrated solutions\n• Enterprise: Custom pricing\n\nAll include 30 days of post-implementation support.`,
-    process: `Our 4-step process:\n\n1. Free Diagnosis (30 min call)\n2. Custom Proposal (within 48h)\n3. Agile Implementation (1-3 weeks)\n4. Ongoing Support`,
-    schedule: `Perfect! You can schedule your free 30-minute diagnosis directly in the contact section. Scroll down or click "Contact" in the menu. No commitment, with concrete ideas for your business.`,
-    default: `I can help you with:\n• Our 7 AI services\n• Pricing and bundles\n• Our work process\n• Scheduling a free call\n\nWhat would you like to know?`,
-  },
-}
-
-/* ───────────────── Components ───────────────── */
-
+/* ====== NAVBAR ====== */
 function Navbar() {
   const { lang, setLang } = useLang()
   const tr = t[lang]
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+    const fn = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', fn); return () => window.removeEventListener('scroll', fn)
   }, [])
-
   const links = [
-    { label: tr.navServices, href: '#servicios' },
-    { label: tr.navProcess, href: '#proceso' },
-    { label: tr.navDemos, href: '#demos' },
-    { label: tr.navAbout, href: '#sobre' },
+    { label: tr.navServices, href: '#servicios' },{ label: tr.navProcess, href: '#proceso' },
+    { label: tr.navDemos, href: '#demos' },{ label: tr.navAbout, href: '#sobre' },
     { label: tr.navContact, href: '#contacto' },
   ]
-
-  const navStyle = {
-    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-    background: scrolled ? 'rgba(10,11,15,0.95)' : 'transparent',
-    backdropFilter: scrolled ? 'blur(12px)' : 'none',
-    borderBottom: scrolled ? '1px solid rgba(99,102,241,0.15)' : '1px solid transparent',
-    transition: 'all 0.3s ease',
-  }
-
-  const innerStyle = {
-    ...s.container,
-    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    height: 72,
-  }
-
-  const logoStyle = {
-    fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '1.3rem',
-    background: 'linear-gradient(135deg, #6366F1, #10B981)',
-    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-  }
-
-  const desktopLinks = {
-    display: 'flex', gap: 32, alignItems: 'center', listStyle: 'none',
-  }
-
-  const linkStyle = {
-    fontSize: '0.9rem', fontWeight: 500, color: '#94A3B8',
-    transition: 'color 0.2s',
-  }
-
-  const ctaStyle = {
-    padding: '10px 24px', borderRadius: 8, border: 'none',
-    background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
-    color: '#fff', fontWeight: 600, fontSize: '0.9rem',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-  }
-
-  const langToggleStyle = {
-    display: 'flex', gap: 0, borderRadius: 8, overflow: 'hidden',
-    border: '1px solid rgba(99,102,241,0.3)',
-  }
-
-  const langBtnStyle = (active) => ({
-    padding: '6px 12px', border: 'none', fontSize: '0.8rem', fontWeight: 600,
-    background: active ? '#6366F1' : 'transparent',
-    color: active ? '#fff' : '#94A3B8',
-    cursor: 'pointer', transition: 'all 0.2s',
+  const langBtn = (active) => ({
+    padding:'6px 12px',border:'none',fontSize:'0.8rem',fontWeight:600,
+    background:active?'#6366F1':'transparent',color:active?'#fff':'#94A3B8',cursor:'pointer',transition:'all 0.2s',
   })
-
   return (
-    <nav style={navStyle}>
-      <div style={innerStyle}>
-        <a href="#" style={logoStyle}>Impulso IA</a>
-
-        {/* Desktop */}
-        <ul style={{ ...desktopLinks, '@media(maxWidth:768px)': { display: 'none' } }}
-          className="nav-desktop">
-          {links.map((l) => (
-            <li key={l.href}>
-              <a href={l.href} style={linkStyle}
-                onMouseEnter={e => e.target.style.color = '#6366F1'}
-                onMouseLeave={e => e.target.style.color = '#94A3B8'}
-              >{l.label}</a>
-            </li>
+    <nav style={{ position:'fixed',top:0,left:0,right:0,zIndex:1000,
+      background:scrolled?'rgba(10,11,15,0.92)':'transparent',
+      backdropFilter:scrolled?'blur(20px)':'none',
+      borderBottom:scrolled?'1px solid rgba(99,102,241,0.12)':'1px solid transparent',
+      transition:'all 0.4s cubic-bezier(0.16,1,0.3,1)' }}>
+      <div style={{ maxWidth:1200,margin:'0 auto',padding:'0 24px',display:'flex',alignItems:'center',justifyContent:'space-between',height:72 }}>
+        <a href="#" style={{ fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'1.3rem',
+          background:'linear-gradient(135deg,#6366F1,#10B981)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent' }}>
+          Impulso IA
+        </a>
+        <ul style={{ display:'flex',gap:32,alignItems:'center',listStyle:'none' }} className="nav-desktop">
+          {links.map(l => (
+            <li key={l.href}><a href={l.href} style={{ fontSize:'0.9rem',fontWeight:500,color:'#94A3B8',transition:'color 0.2s' }}
+              onMouseEnter={e=>e.target.style.color='#6366F1'} onMouseLeave={e=>e.target.style.color='#94A3B8'}>{l.label}</a></li>
           ))}
-          <li style={langToggleStyle}>
-            <button style={langBtnStyle(lang === 'es')} onClick={() => setLang('es')}>ES</button>
-            <button style={langBtnStyle(lang === 'en')} onClick={() => setLang('en')}>EN</button>
+          <li style={{ display:'flex',borderRadius:8,overflow:'hidden',border:'1px solid rgba(99,102,241,0.3)' }}>
+            <button style={langBtn(lang==='es')} onClick={()=>setLang('es')}>ES</button>
+            <button style={langBtn(lang==='en')} onClick={()=>setLang('en')}>EN</button>
           </li>
           <li>
-            <a href="#contacto" style={ctaStyle}
-              onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 24px rgba(99,102,241,0.3)' }}
-              onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = 'none' }}
-            >{tr.navCta}</a>
+            <motion.a href="#contacto" whileHover={{ y:-2,boxShadow:'0 8px 24px rgba(99,102,241,0.3)' }}
+              style={{ padding:'10px 24px',borderRadius:8,border:'none',background:'linear-gradient(135deg,#6366F1,#4F46E5)',
+                color:'#fff',fontWeight:600,fontSize:'0.9rem',display:'inline-block' }}>{tr.navCta}</motion.a>
           </li>
         </ul>
-
-        {/* Mobile hamburger */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }} className="nav-mobile-controls">
-          <div style={{ ...langToggleStyle }} className="nav-lang-mobile">
-            <button style={langBtnStyle(lang === 'es')} onClick={() => setLang('es')}>ES</button>
-            <button style={langBtnStyle(lang === 'en')} onClick={() => setLang('en')}>EN</button>
+        <div style={{ display:'flex',alignItems:'center',gap:12 }} className="nav-mobile-controls">
+          <div className="nav-lang-mobile" style={{ display:'flex',borderRadius:8,overflow:'hidden',border:'1px solid rgba(99,102,241,0.3)' }}>
+            <button style={langBtn(lang==='es')} onClick={()=>setLang('es')}>ES</button>
+            <button style={langBtn(lang==='en')} onClick={()=>setLang('en')}>EN</button>
           </div>
-          <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)}
-            style={{ background: 'none', border: 'none', color: '#fff', display: 'none' }}>
-            {menuOpen ? icons.close : icons.menu}
-          </button>
+          <button className="nav-hamburger" onClick={()=>setMenuOpen(!menuOpen)}
+            style={{ background:'none',border:'none',color:'#fff',display:'none' }}>{menuOpen?I.close:I.menu}</button>
         </div>
       </div>
-
-      {/* Mobile menu */}
       {menuOpen && (
-        <div className="nav-mobile-menu" style={{
-          background: 'rgba(10,11,15,0.98)', padding: '24px', backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(99,102,241,0.2)',
-        }}>
-          {links.map((l) => (
-            <a key={l.href} href={l.href}
-              onClick={() => setMenuOpen(false)}
-              style={{ display: 'block', padding: '12px 0', color: '#CBD5E1', fontSize: '1.1rem', fontWeight: 500 }}
-            >{l.label}</a>
-          ))}
-          <a href="#contacto" onClick={() => setMenuOpen(false)}
-            style={{ ...ctaStyle, display: 'inline-block', marginTop: 16 }}>{tr.navCta}</a>
+        <div className="nav-mobile-menu" style={{ background:'rgba(10,11,15,0.98)',padding:24,backdropFilter:'blur(12px)',borderBottom:'1px solid rgba(99,102,241,0.2)' }}>
+          {links.map(l => <a key={l.href} href={l.href} onClick={()=>setMenuOpen(false)}
+            style={{ display:'block',padding:'12px 0',color:'#CBD5E1',fontSize:'1.1rem',fontWeight:500 }}>{l.label}</a>)}
+          <a href="#contacto" onClick={()=>setMenuOpen(false)}
+            style={{ padding:'12px 24px',borderRadius:8,background:'linear-gradient(135deg,#6366F1,#4F46E5)',color:'#fff',fontWeight:600,display:'inline-block',marginTop:16 }}>{tr.navCta}</a>
         </div>
       )}
     </nav>
   )
 }
 
+/* ====== HERO ====== */
 function Hero() {
   const { lang } = useLang()
   const tr = t[lang]
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const y = useTransform(scrollYProgress, [0, 1], [0, 200])
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
   return (
-    <section style={{
-      position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center',
-      overflow: 'hidden', paddingTop: 72,
-    }}>
-      {/* Animated gradient bg */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 0,
-        background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(99,102,241,0.15) 0%, rgba(16,185,129,0.05) 40%, transparent 70%)',
-        animation: 'gradientShift 8s ease infinite',
-        backgroundSize: '200% 200%',
-      }}/>
-      {/* Grid overlay */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 0, opacity: 0.03,
-        backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-        backgroundSize: '60px 60px',
-      }}/>
-      {/* Floating orbs */}
-      <div style={{
-        position: 'absolute', width: 300, height: 300, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(99,102,241,0.2), transparent 70%)',
-        top: '10%', right: '5%', animation: 'float 6s ease-in-out infinite', zIndex: 0,
-      }}/>
-      <div style={{
-        position: 'absolute', width: 200, height: 200, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(16,185,129,0.15), transparent 70%)',
-        bottom: '15%', left: '8%', animation: 'float 8s ease-in-out infinite 1s', zIndex: 0,
-      }}/>
+    <section ref={ref} style={{ position:'relative',minHeight:'100vh',display:'flex',alignItems:'center',overflow:'hidden',paddingTop:72 }}>
+      {/* BG effects */}
+      <motion.div style={{ position:'absolute',inset:0,zIndex:0,y,
+        background:'radial-gradient(ellipse 80% 60% at 50% 40%,rgba(99,102,241,0.15) 0%,rgba(16,185,129,0.05) 40%,transparent 70%)',
+        animation:'gradShift 8s ease infinite',backgroundSize:'200% 200%' }}/>
+      <div style={{ position:'absolute',inset:0,zIndex:0,opacity:0.03,
+        backgroundImage:'linear-gradient(rgba(255,255,255,0.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.1) 1px,transparent 1px)',backgroundSize:'60px 60px' }}/>
+      <div style={{ position:'absolute',width:300,height:300,borderRadius:'50%',
+        background:'radial-gradient(circle,rgba(99,102,241,0.2),transparent 70%)',top:'10%',right:'5%',animation:'float 6s ease-in-out infinite',zIndex:0 }}/>
+      <div style={{ position:'absolute',width:200,height:200,borderRadius:'50%',
+        background:'radial-gradient(circle,rgba(16,185,129,0.15),transparent 70%)',bottom:'15%',left:'8%',animation:'float 8s ease-in-out infinite 1s',zIndex:0 }}/>
 
-      <div style={{ ...s.container, position: 'relative', zIndex: 1, textAlign: 'center' }}>
-        <div style={{
-          ...s.badge,
-          background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8',
-        }}>
-          {tr.heroBadge}
-        </div>
-        <h1 style={{
-          fontFamily: "'Syne', sans-serif", fontWeight: 800,
-          fontSize: 'clamp(2rem, 5.5vw, 3.8rem)',
-          lineHeight: 1.15, color: '#fff', maxWidth: 900, margin: '0 auto 24px',
-        }}>
-          {tr.heroTitle1}
-          <span style={{
-            background: 'linear-gradient(135deg, #6366F1, #10B981)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>{tr.heroHighlight}</span>
-          {tr.heroTitle2}
+      <motion.div style={{ maxWidth:1200,margin:'0 auto',padding:'0 24px',width:'100%',position:'relative',zIndex:1,textAlign:'center',opacity }}>
+        <motion.div initial={{ opacity:0,y:20 }} animate={{ opacity:1,y:0 }} transition={{ duration:0.6,ease:EASE }}
+          style={{ display:'inline-block',padding:'6px 16px',borderRadius:999,fontSize:'0.8rem',fontWeight:600,letterSpacing:'0.05em',textTransform:'uppercase',marginBottom:24,
+            background:'rgba(99,102,241,0.1)',border:'1px solid rgba(99,102,241,0.3)',color:'#818CF8' }}>{tr.heroBadge}</motion.div>
+
+        <h1 style={{ fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'clamp(2.5rem,7vw,5rem)',lineHeight:1.1,color:'#fff',maxWidth:900,margin:'0 auto 24px' }}>
+          <motion.span initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{duration:0.7,delay:0.1,ease:EASE}}
+            style={{ display:'inline-block',marginRight:16 }}>{tr.heroT1}</motion.span>
+          <motion.span initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{duration:0.7,delay:0.25,ease:EASE}}
+            style={{ display:'inline-block',marginRight:16,background:'linear-gradient(135deg,#6366F1,#10B981)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent' }}>{tr.heroT2}</motion.span>
+          <motion.span initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{duration:0.7,delay:0.4,ease:EASE}}
+            style={{ display:'inline-block',background:'linear-gradient(135deg,#8B5CF6,#6366F1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent' }}>{tr.heroT3}</motion.span>
         </h1>
-        <p style={{
-          fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#94A3B8',
-          maxWidth: 680, margin: '0 auto 40px', lineHeight: 1.7,
-        }}>
-          {tr.heroSub}
-        </p>
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="#contacto" style={{
-            padding: '16px 36px', borderRadius: 12, border: 'none',
-            background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
-            color: '#fff', fontWeight: 700, fontSize: '1.05rem',
-            boxShadow: '0 8px 32px rgba(99,102,241,0.3)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-          }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.45)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.3)' }}
-          >
-            {tr.heroCta} {icons.arrow}
-          </a>
-          <a href="#servicios" style={{
-            padding: '16px 36px', borderRadius: 12,
-            border: '1px solid rgba(99,102,241,0.3)',
-            background: 'rgba(99,102,241,0.06)',
-            color: '#C7D2FE', fontWeight: 600, fontSize: '1.05rem',
-            transition: 'background 0.2s, border-color 0.2s',
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.12)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.06)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)' }}
-          >
-            {tr.heroCtaSecondary}
-          </a>
-        </div>
 
-        {/* Trust metrics */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 48, marginTop: 64, flexWrap: 'wrap' }}>
-          {[
-            { num: '7+', label: tr.heroMetric1 },
-            { num: '80%', label: tr.heroMetric2 },
-            { num: '20+', label: tr.heroMetric3 },
-            { num: '7', label: tr.heroMetric4 },
-          ].map((m, i) => (
-            <div key={i} style={{ textAlign: 'center' }}>
-              <div style={{
-                fontFamily: "'Syne', sans-serif", fontWeight: 800,
-                fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
-                background: 'linear-gradient(135deg, #6366F1, #10B981)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              }}>{m.num}</div>
-              <div style={{ fontSize: '0.85rem', color: '#64748B', marginTop: 4 }}>{m.label}</div>
+        <motion.p initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:0.7,delay:0.55,ease:EASE}}
+          style={{ fontSize:'clamp(1rem,2vw,1.25rem)',color:'#94A3B8',maxWidth:680,margin:'0 auto 40px',lineHeight:1.7 }}>{tr.heroSub}</motion.p>
+
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:0.7,delay:0.7,ease:EASE}}
+          style={{ display:'flex',gap:16,justifyContent:'center',flexWrap:'wrap' }}>
+          <motion.a href="#contacto" whileHover={{ y:-3,boxShadow:'0 12px 40px rgba(99,102,241,0.45)' }}
+            style={{ padding:'16px 36px',borderRadius:12,background:'linear-gradient(135deg,#6366F1,#4F46E5)',color:'#fff',fontWeight:700,fontSize:'1.05rem',
+              boxShadow:'0 8px 32px rgba(99,102,241,0.3)',display:'inline-flex',alignItems:'center',gap:8,
+              position:'relative',overflow:'hidden' }}>
+            <span style={{ position:'absolute',inset:0,background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)',
+              animation:'shimmer 2s infinite',backgroundSize:'200% 100%' }}/>
+            <span style={{ position:'relative' }}>{tr.heroCta}</span> {I.arr}
+          </motion.a>
+          <motion.a href="#servicios" whileHover={{ background:'rgba(99,102,241,0.12)',borderColor:'rgba(99,102,241,0.5)' }}
+            style={{ padding:'16px 36px',borderRadius:12,border:'1px solid rgba(99,102,241,0.3)',background:'rgba(99,102,241,0.06)',
+              color:'#C7D2FE',fontWeight:600,fontSize:'1.05rem',display:'inline-flex',alignItems:'center',gap:8 }}>{tr.heroCtaSec}</motion.a>
+        </motion.div>
+
+        {/* Stats */}
+        <motion.div initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{duration:0.7,delay:0.9,ease:EASE}}
+          style={{ display:'flex',justifyContent:'center',gap:64,marginTop:72,flexWrap:'wrap' }}>
+          {[[tr.hStat1,tr.hStat1L],[tr.hStat2,tr.hStat2L],[tr.hStat3,tr.hStat3L]].map(([num,label],i) => (
+            <div key={i} style={{ textAlign:'center' }}>
+              <div style={{ fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'clamp(2rem,3.5vw,2.8rem)',
+                background:'linear-gradient(135deg,#6366F1,#10B981)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent' }}>{num}</div>
+              <div style={{ fontSize:'0.9rem',color:'#64748B',marginTop:4 }}>{label}</div>
             </div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   )
 }
 
+/* ====== TRUST SIGNALS ====== */
 function TrustSignals() {
-  const { lang } = useLang()
-  const tr = t[lang]
-
+  const { lang } = useLang(); const tr = t[lang]
   const counters = [
-    { end: 15, suffix: '', label: tr.trust1, color: '#6366F1' },
-    { end: 32, suffix: '', label: tr.trust2, color: '#10B981' },
-    { end: 861, suffix: '+', label: tr.trust3, color: '#F59E0B' },
-    { end: 7, suffix: '', label: tr.trust4, color: '#8B5CF6' },
+    { end:15,suffix:'',label:tr.trust1,color:'#6366F1' },{ end:32,suffix:'',label:tr.trust2,color:'#10B981' },
+    { end:861,suffix:'+',label:tr.trust3,color:'#F59E0B' },{ end:7,suffix:'',label:tr.trust4,color:'#8B5CF6' },
   ]
-
   return (
-    <section style={{ padding: '80px 0', background: 'linear-gradient(180deg, #0A0B0F 0%, #0F1017 100%)' }}>
-      <div style={s.container} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            {tr.trustBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.trustTitle}</h2>
+    <Section style={{ padding:'80px 0',background:'linear-gradient(180deg,#0A0B0F,#0F1017)' }}>
+      <Container>
+        <div style={{ textAlign:'center',marginBottom:48 }}>
+          <Badge>{tr.trustBadge}</Badge><SectionTitle>{tr.trustTitle}</SectionTitle>
         </div>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 24,
-        }}>
-          {counters.map((c, i) => (
-            <CounterCard key={i} end={c.end} suffix={c.suffix} label={c.label} color={c.color} delay={i * 200} />
-          ))}
+        <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:24 }}>
+          {counters.map((c,i) => <CounterCard key={i} {...c} delay={i*100}/>)}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }
 
-function CounterCard({ end, suffix, label, color, delay }) {
+function CounterCard({ end, suffix, label, color }) {
   const { count, ref } = useCountUp(end, 1500)
-
   return (
-    <div ref={ref} style={{
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid rgba(255,255,255,0.06)',
-      borderRadius: 16, padding: '32px 24px', textAlign: 'center',
-      transition: 'border-color 0.3s, transform 0.3s',
-    }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = color + '60'; e.currentTarget.style.transform = 'translateY(-4px)' }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
-    >
-      <div style={{
-        fontFamily: "'Syne', sans-serif", fontWeight: 800,
-        fontSize: '2.8rem',
-        background: `linear-gradient(135deg, ${color}, ${color}AA)`,
-        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-        marginBottom: 8,
-      }}>
-        {count}{suffix}
-      </div>
-      <div style={{ fontSize: '0.95rem', color: '#CBD5E1', fontWeight: 500 }}>{label}</div>
-    </div>
+    <motion.div ref={ref} variants={fadeUp} whileHover={{ y:-6, borderColor:color+'60' }}
+      style={{ background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:16,padding:'32px 24px',textAlign:'center',transition:'border-color 0.3s' }}>
+      <div style={{ fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'2.8rem',
+        background:`linear-gradient(135deg,${color},${color}AA)`,WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',marginBottom:8 }}>{count}{suffix}</div>
+      <div style={{ fontSize:'0.95rem',color:'#CBD5E1',fontWeight:500 }}>{label}</div>
+    </motion.div>
   )
 }
 
+/* ====== PAIN POINTS ====== */
 function PainPoints() {
-  const { lang } = useLang()
-  const tr = t[lang]
-  const painPoints = [
-    { icon: icons.clock, title: tr.pain1, color: '#EF4444' },
-    { icon: icons.users, title: tr.pain2, color: '#F59E0B' },
-    { icon: icons.chart, title: tr.pain3, color: '#8B5CF6' },
-  ]
-
+  const { lang } = useLang(); const tr = t[lang]
+  const pains = [{ icon:I.clock,title:tr.pain1,color:'#EF4444' },{ icon:I.users,title:tr.pain2,color:'#F59E0B' },{ icon:I.chart,title:tr.pain3,color:'#8B5CF6' }]
   return (
-    <section style={{ ...s.sectionPad, background: 'linear-gradient(180deg, #0A0B0F 0%, #0F1017 100%)' }}>
-      <div style={s.container} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ ...s.badge, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#F87171' }}>
-            {tr.painBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.painTitle}</h2>
+    <Section style={{ background:'linear-gradient(180deg,#0A0B0F,#0F1017)' }}>
+      <Container>
+        <div style={{ textAlign:'center',marginBottom:56 }}>
+          <Badge color="#EF4444">{tr.painBadge}</Badge><SectionTitle>{tr.painTitle}</SectionTitle>
         </div>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: 24,
-        }}>
-          {painPoints.map((p, i) => (
-            <div key={i} style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 16, padding: 32, textAlign: 'center',
-              transition: 'border-color 0.3s, transform 0.3s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = p.color + '40'; e.currentTarget.style.transform = 'translateY(-4px)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
-            >
-              <div style={{ marginBottom: 20, display: 'inline-block' }}>{p.icon}</div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 600, color: '#E2E8F0', lineHeight: 1.4 }}>{p.title}</h3>
-            </div>
+        <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:24 }}>
+          {pains.map((p,i) => (
+            <motion.div key={i} variants={fadeUp} whileHover={{ y:-6,borderColor:p.color+'40' }}
+              style={{ background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:16,padding:32,textAlign:'center' }}>
+              <div style={{ marginBottom:20,display:'inline-block' }}>{p.icon}</div>
+              <h3 style={{ fontSize:'1.15rem',fontWeight:600,color:'#E2E8F0',lineHeight:1.4 }}>{p.title}</h3>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }
 
+/* ====== SERVICES — FULL-SCREEN CARDS ====== */
 function Services() {
-  const { lang } = useLang()
-  const tr = t[lang]
-
-  const services = [
-    { icon: icons.chatbot, title: tr.svc1Title, price: tr.svc1Price, desc: tr.svc1Desc, demo: 'https://chatbot-multiagente-ia.vercel.app' },
-    { icon: icons.automation, title: tr.svc2Title, price: tr.svc2Price, desc: tr.svc2Desc, demo: null },
-    { icon: icons.content, title: tr.svc3Title, price: tr.svc3Price, desc: tr.svc3Desc, demo: 'https://content-studio-ai-blush.vercel.app' },
-    { icon: icons.finance, title: tr.svc4Title, price: tr.svc4Price, desc: tr.svc4Desc, demo: 'https://finance-ai-dashboard-omega.vercel.app' },
-    { icon: icons.hr, title: tr.svc5Title, price: tr.svc5Price, desc: tr.svc5Desc, demo: 'https://hr-scout-llm.vercel.app' },
-    { icon: icons.portal, title: tr.svc6Title, price: tr.svc6Price, desc: tr.svc6Desc, demo: 'https://client-hub-nocode.vercel.app' },
-    { icon: icons.orchestration, title: tr.svc7Title, price: tr.svc7Price, desc: tr.svc7Desc, demo: 'https://frontend-silk-three-66.vercel.app' },
+  const { lang } = useLang(); const tr = t[lang]
+  const svcs = [
+    { t:tr.s1T,p:tr.s1P,d:tr.s1D,b:tr.s1B,demo:demoURLs[0] },
+    { t:tr.s2T,p:tr.s2P,d:tr.s2D,b:tr.s2B,demo:null },
+    { t:tr.s3T,p:tr.s3P,d:tr.s3D,b:tr.s3B,demo:demoURLs[1] },
+    { t:tr.s4T,p:tr.s4P,d:tr.s4D,b:tr.s4B,demo:demoURLs[2] },
+    { t:tr.s5T,p:tr.s5P,d:tr.s5D,b:tr.s5B,demo:demoURLs[3] },
+    { t:tr.s6T,p:tr.s6P,d:tr.s6D,b:tr.s6B,demo:demoURLs[4] },
+    { t:tr.s7T,p:tr.s7P,d:tr.s7D,b:tr.s7B,demo:demoURLs[6] },
   ]
-
   return (
-    <section id="servicios" style={{ ...s.sectionPad, background: '#0A0B0F' }}>
-      <div style={s.container} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            {tr.servicesBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.servicesTitle}</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>{tr.servicesSub}</p>
+    <Section id="servicios" style={{ background:'#0A0B0F' }}>
+      <Container>
+        <div style={{ textAlign:'center',marginBottom:56 }}>
+          <Badge>{tr.svcBadge}</Badge><SectionTitle>{tr.svcTitle}</SectionTitle>
+          <SectionSub style={{ margin:'0 auto' }}>{tr.svcSub}</SectionSub>
         </div>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: 24,
-        }}>
-          {services.map((sv, i) => {
-            const Wrapper = sv.demo ? 'a' : 'div'
-            const wrapperProps = sv.demo ? { href: sv.demo, target: '_blank', rel: 'noopener noreferrer' } : {}
+        <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(340px,1fr))',gap:24 }}>
+          {svcs.map((sv,i) => {
+            const color = svcColors[i]
+            const W = sv.demo ? 'a' : 'div'
+            const wp = sv.demo ? { href:sv.demo,target:'_blank',rel:'noopener noreferrer' } : {}
             return (
-            <Wrapper key={i} {...wrapperProps} style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 16, padding: 32,
-              transition: 'border-color 0.3s, transform 0.3s',
-              display: 'flex', flexDirection: 'column',
-              textDecoration: 'none', color: 'inherit', cursor: 'pointer',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.4)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
-            >
-              <div style={{
-                width: 56, height: 56, borderRadius: 12,
-                background: 'rgba(99,102,241,0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: 20,
-              }}>
-                {sv.icon}
-              </div>
-              <h3 style={{
-                fontFamily: "'Syne', sans-serif", fontWeight: 700,
-                fontSize: '1.2rem', color: '#fff', marginBottom: 8,
-              }}>{sv.title}</h3>
-              <p style={{ color: '#94A3B8', fontSize: '0.95rem', lineHeight: 1.6, flex: 1, marginBottom: 20 }}>{sv.desc}</p>
-              <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)',
-              }}>
-                <span style={{
-                  fontFamily: "'Syne', sans-serif", fontWeight: 700,
-                  fontSize: '1.1rem',
-                  background: 'linear-gradient(135deg, #6366F1, #10B981)',
-                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                }}>{tr.svcFrom} {sv.price}</span>
-                <span style={{ color: '#6366F1', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.9rem', fontWeight: 500 }}>
-                  {sv.demo ? tr.svcDemo : tr.svcContact} {icons.arrow}
-                </span>
-              </div>
-            </Wrapper>
-          )})}
+              <motion.div key={i} variants={fadeUp} whileHover={{ y:-8,borderColor:color+'50' }}
+                style={{ background:'linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))',
+                  border:'1px solid rgba(255,255,255,0.06)',borderRadius:20,padding:32,display:'flex',flexDirection:'column',
+                  position:'relative',overflow:'hidden',transition:'border-color 0.3s' }}>
+                {/* Glow */}
+                <div style={{ position:'absolute',top:-40,right:-40,width:120,height:120,borderRadius:'50%',background:`radial-gradient(circle,${color}15,transparent 70%)`,pointerEvents:'none' }}/>
+                <div style={{ width:56,height:56,borderRadius:14,background:`${color}15`,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:20 }}>
+                  {React.cloneElement(svcIcons[i], { stroke: color })}
+                </div>
+                <h3 style={{ fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:'1.25rem',color:'#fff',marginBottom:8 }}>{sv.t}</h3>
+                <p style={{ color:'#94A3B8',fontSize:'0.93rem',lineHeight:1.6,marginBottom:16 }}>{sv.d}</p>
+                <ul style={{ listStyle:'none',marginBottom:20,flex:1 }}>
+                  {sv.b.map((bullet,bi) => (
+                    <li key={bi} style={{ display:'flex',alignItems:'center',gap:8,marginBottom:8,color:'#CBD5E1',fontSize:'0.88rem' }}>
+                      {I.check} {bullet}
+                    </li>
+                  ))}
+                </ul>
+                <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',paddingTop:16,borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+                  <span style={{ fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:'1.15rem',
+                    background:`linear-gradient(135deg,${color},${color}CC)`,WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent' }}>{tr.svcFrom} {sv.p}</span>
+                  <W {...wp} style={{ padding:'10px 20px',borderRadius:10,background:`${color}18`,color:color,fontSize:'0.85rem',fontWeight:700,
+                    display:'flex',alignItems:'center',gap:6,textDecoration:'none',position:'relative',overflow:'hidden',border:'none',cursor:'pointer' }}>
+                    <span style={{ position:'absolute',inset:0,background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)',animation:'shimmer 2.5s infinite',backgroundSize:'200% 100%' }}/>
+                    <span style={{ position:'relative' }}>{tr.svcReq}</span> {I.arr}
+                  </W>
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }
 
+/* ====== PROCESS — TIMELINE ====== */
 function Process() {
-  const { lang } = useLang()
-  const tr = t[lang]
-
-  const steps = [
-    { num: '01', title: tr.step1Title, desc: tr.step1Desc },
-    { num: '02', title: tr.step2Title, desc: tr.step2Desc },
-    { num: '03', title: tr.step3Title, desc: tr.step3Desc },
-    { num: '04', title: tr.step4Title, desc: tr.step4Desc },
-  ]
-
+  const { lang } = useLang(); const tr = t[lang]
+  const steps = [{ n:'01',t:tr.st1T,d:tr.st1D,icon:'🔍' },{ n:'02',t:tr.st2T,d:tr.st2D,icon:'🎨' },{ n:'03',t:tr.st3T,d:tr.st3D,icon:'⚡' },{ n:'04',t:tr.st4T,d:tr.st4D,icon:'🚀' }]
   return (
-    <section id="proceso" style={{
-      ...s.sectionPad,
-      background: 'linear-gradient(180deg, #0F1017 0%, #0A0B0F 100%)',
-    }}>
-      <div style={s.container} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ ...s.badge, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#34D399' }}>
-            {tr.processBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.processTitle}</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>{tr.processSub}</p>
+    <Section id="proceso" style={{ background:'linear-gradient(180deg,#0F1017,#0A0B0F)' }}>
+      <Container>
+        <div style={{ textAlign:'center',marginBottom:64 }}>
+          <Badge color="#10B981">{tr.procBadge}</Badge><SectionTitle>{tr.procTitle}</SectionTitle>
+          <SectionSub style={{ margin:'0 auto' }}>{tr.procSub}</SectionSub>
         </div>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: 24, position: 'relative',
-        }}>
-          {steps.map((st, i) => (
-            <div key={i} style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 16, padding: 32,
-              position: 'relative',
-              transition: 'border-color 0.3s',
-            }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'}
-            >
-              <span style={{
-                fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '2.5rem',
-                background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(16,185,129,0.2))',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                display: 'block', marginBottom: 16,
-              }}>{st.num}</span>
-              <h3 style={{
-                fontFamily: "'Syne', sans-serif", fontWeight: 700,
-                fontSize: '1.15rem', color: '#fff', marginBottom: 12,
-              }}>{st.title}</h3>
-              <p style={{ color: '#94A3B8', fontSize: '0.93rem', lineHeight: 1.6 }}>{st.desc}</p>
-            </div>
+        <div style={{ position:'relative',maxWidth:700,margin:'0 auto' }}>
+          {/* Vertical line */}
+          <div style={{ position:'absolute',left:28,top:0,bottom:0,width:2,background:'linear-gradient(180deg,#6366F1,#10B981)',opacity:0.3 }}/>
+          {steps.map((st,i) => (
+            <motion.div key={i} variants={fadeUp} style={{ display:'flex',gap:32,marginBottom:i<3?48:0,position:'relative' }}>
+              {/* Dot */}
+              <div style={{ width:58,height:58,borderRadius:'50%',background:'rgba(99,102,241,0.1)',border:'2px solid #6366F1',
+                display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,flexShrink:0,position:'relative',zIndex:1 }}>{st.icon}</div>
+              <motion.div whileHover={{ x:4 }} style={{ flex:1,background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',
+                borderRadius:16,padding:'24px 28px',transition:'border-color 0.3s' }}>
+                <span style={{ fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'0.8rem',color:'#6366F140',letterSpacing:'0.1em' }}>{st.n}</span>
+                <h3 style={{ fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:'1.2rem',color:'#fff',margin:'4px 0 8px' }}>{st.t}</h3>
+                <p style={{ color:'#94A3B8',fontSize:'0.93rem',lineHeight:1.6 }}>{st.d}</p>
+              </motion.div>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }
 
+/* ====== DEMOS — HORIZONTAL SCROLL ====== */
 function Demos() {
-  const { lang } = useLang()
-  const tr = t[lang]
-
+  const { lang } = useLang(); const tr = t[lang]
   const demos = [
-    { title: tr.demo1Title, url: 'https://chatbot-multiagente-ia.vercel.app', color: '#6366F1', metrics: [tr.demo1M1, tr.demo1M2, tr.demo1M3] },
-    { title: tr.demo2Title, url: 'https://content-studio-ai-blush.vercel.app', color: '#10B981', metrics: [tr.demo2M1, tr.demo2M2, tr.demo2M3] },
-    { title: tr.demo3Title, url: 'https://finance-ai-dashboard-omega.vercel.app', color: '#F59E0B', metrics: [tr.demo3M1, tr.demo3M2, tr.demo3M3] },
-    { title: tr.demo4Title, url: 'https://hr-scout-llm.vercel.app', color: '#EF4444', metrics: [tr.demo4M1, tr.demo4M2, tr.demo4M3] },
-    { title: tr.demo5Title, url: 'https://client-hub-nocode.vercel.app', color: '#8B5CF6', metrics: [tr.demo5M1, tr.demo5M2, tr.demo5M3] },
-    { title: tr.demo6Title, url: 'https://client-hub-nocode.vercel.app', color: '#EC4899', metrics: [tr.demo6M1, tr.demo6M2, tr.demo6M3] },
-    { title: tr.demo7Title, url: 'https://frontend-silk-three-66.vercel.app', color: '#F97316', metrics: [tr.demo7M1, tr.demo7M2, tr.demo7M3] },
+    { t:tr.d1T,m:tr.d1M,c:'#6366F1' },{ t:tr.d2T,m:tr.d2M,c:'#10B981' },{ t:tr.d3T,m:tr.d3M,c:'#F59E0B' },
+    { t:tr.d4T,m:tr.d4M,c:'#EF4444' },{ t:tr.d5T,m:tr.d5M,c:'#8B5CF6' },{ t:tr.d6T,m:tr.d6M,c:'#EC4899' },{ t:tr.d7T,m:tr.d7M,c:'#F97316' },
   ]
-
   return (
-    <section id="demos" style={{ ...s.sectionPad, background: '#0A0B0F' }}>
-      <div style={s.container} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            {tr.demosBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.demosTitle}</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>{tr.demosSub}</p>
+    <Section id="demos" style={{ background:'#0A0B0F' }}>
+      <Container>
+        <div style={{ textAlign:'center',marginBottom:48 }}>
+          <Badge>{tr.demoBadge}</Badge><SectionTitle>{tr.demoTitle}</SectionTitle>
+          <SectionSub style={{ margin:'0 auto' }}>{tr.demoSub}</SectionSub>
         </div>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: 24,
-        }}>
-          {demos.map((d, i) => (
-            <a key={i} href={d.url} target="_blank" rel="noopener noreferrer" style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 16, overflow: 'hidden',
-              transition: 'border-color 0.3s, transform 0.3s',
-              display: 'block', textDecoration: 'none',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = d.color + '60'; e.currentTarget.style.transform = 'translateY(-4px)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
-            >
-              {/* Preview area */}
-              <div style={{
-                height: 160, background: `linear-gradient(135deg, ${d.color}15, ${d.color}05)`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderBottom: '1px solid rgba(255,255,255,0.06)',
-                position: 'relative', overflow: 'hidden',
-              }}>
-                {/* Fake browser chrome */}
-                <div style={{
-                  position: 'absolute', top: 0, left: 0, right: 0, height: 28,
-                  background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center',
-                  padding: '0 12px', gap: 6,
-                }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444' }}/>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#F59E0B' }}/>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981' }}/>
-                  <div style={{
-                    flex: 1, height: 16, borderRadius: 4, background: 'rgba(255,255,255,0.08)',
-                    marginLeft: 8, fontSize: '0.6rem', color: '#64748B', display: 'flex',
-                    alignItems: 'center', paddingLeft: 8,
-                  }}>
-                    {d.url.replace('https://', '')}
-                  </div>
-                </div>
-                <span style={{
-                  fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.3rem',
-                  color: d.color, opacity: 0.6,
-                }}>{d.title.split(' ')[0]}</span>
+      </Container>
+      {/* Horizontal scroll container */}
+      <div className="demo-hscroll" style={{ display:'flex',gap:24,padding:'0 max(24px,calc((100vw - 1200px)/2))',overflowX:'auto',scrollbarWidth:'none',WebkitOverflowScrolling:'touch',paddingBottom:8 }}>
+        {demos.map((d,i) => (
+          <motion.a key={i} href={demoURLs[i]} target="_blank" rel="noopener noreferrer" variants={fadeUp}
+            whileHover={{ y:-8,borderColor:d.c+'60' }}
+            style={{ minWidth:380,flex:'0 0 380px',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',
+              borderRadius:20,overflow:'hidden',textDecoration:'none',display:'block',transition:'border-color 0.3s' }}>
+            {/* Browser mockup */}
+            <div style={{ height:180,background:`linear-gradient(135deg,${d.c}12,${d.c}05)`,position:'relative',display:'flex',alignItems:'center',justifyContent:'center',
+              borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ position:'absolute',top:0,left:0,right:0,height:32,background:'rgba(0,0,0,0.3)',display:'flex',alignItems:'center',padding:'0 12px',gap:6 }}>
+                <div style={{ width:8,height:8,borderRadius:'50%',background:'#EF4444' }}/>
+                <div style={{ width:8,height:8,borderRadius:'50%',background:'#F59E0B' }}/>
+                <div style={{ width:8,height:8,borderRadius:'50%',background:'#10B981' }}/>
+                <div style={{ flex:1,height:18,borderRadius:6,background:'rgba(255,255,255,0.08)',marginLeft:8,fontSize:'0.65rem',color:'#64748B',
+                  display:'flex',alignItems:'center',paddingLeft:8 }}>{demoURLs[i].replace('https://','')}</div>
               </div>
-
-              {/* Metrics */}
-              <div style={{
-                display: 'flex', gap: 8, padding: '12px 20px',
-                borderBottom: '1px solid rgba(255,255,255,0.04)',
-              }}>
-                {d.metrics.map((m, mi) => (
-                  <span key={mi} style={{
-                    padding: '4px 10px', borderRadius: 6,
-                    background: d.color + '12', color: d.color,
-                    fontSize: '0.75rem', fontWeight: 600,
-                  }}>{m}</span>
-                ))}
-              </div>
-
-              <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <h3 style={{ fontWeight: 600, fontSize: '1rem', color: '#E2E8F0' }}>{d.title}</h3>
-                <span style={{
-                  padding: '10px 20px', borderRadius: 8,
-                  background: d.color + '20', color: d.color,
-                  fontSize: '0.85rem', fontWeight: 700,
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  transition: 'background 0.2s',
-                }}>
-                  {tr.demoCta} {icons.external}
-                </span>
-              </div>
-            </a>
-          ))}
-        </div>
+              <span style={{ fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:'1.5rem',color:d.c,opacity:0.5 }}>{d.t.split(' ')[0]}</span>
+            </div>
+            {/* Metrics */}
+            <div style={{ display:'flex',gap:8,padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,0.04)',flexWrap:'wrap' }}>
+              {d.m.map((m,mi) => (
+                <span key={mi} style={{ padding:'4px 10px',borderRadius:6,background:d.c+'12',color:d.c,fontSize:'0.75rem',fontWeight:600 }}>{m}</span>
+              ))}
+            </div>
+            <div style={{ padding:'16px 20px',display:'flex',alignItems:'center',justifyContent:'space-between' }}>
+              <h3 style={{ fontWeight:600,fontSize:'1rem',color:'#E2E8F0' }}>{d.t}</h3>
+              <span style={{ padding:'10px 20px',borderRadius:10,background:d.c+'18',color:d.c,fontSize:'0.85rem',fontWeight:700,
+                display:'flex',alignItems:'center',gap:6,position:'relative',overflow:'hidden' }}>
+                <span style={{ position:'absolute',inset:0,background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)',animation:'shimmer 2.5s infinite',backgroundSize:'200% 100%' }}/>
+                <span style={{ position:'relative' }}>{tr.demoCta}</span> {I.ext}
+              </span>
+            </div>
+          </motion.a>
+        ))}
       </div>
-    </section>
+    </Section>
   )
 }
 
-function TechStack() {
-  const { lang } = useLang()
-  const tr = t[lang]
+/* ====== TECH STACK ====== */
+function TechStackSection() {
+  const { lang } = useLang(); const tr = t[lang]
   return (
-    <section style={{
-      ...s.sectionPad,
-      background: 'linear-gradient(180deg, #0F1017 0%, #0A0B0F 100%)',
-    }}>
-      <div style={s.container} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <div style={{ ...s.badge, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#34D399' }}>
-            {tr.techBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.techTitle}</h2>
+    <Section style={{ background:'linear-gradient(180deg,#0F1017,#0A0B0F)' }}>
+      <Container>
+        <div style={{ textAlign:'center',marginBottom:48 }}>
+          <Badge color="#10B981">{tr.techBadge}</Badge><SectionTitle>{tr.techTitle}</SectionTitle>
         </div>
-        <div style={{
-          display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center',
-        }}>
-          {techStack.map((tech, i) => (
-            <span key={i} style={{
-              padding: '12px 24px', borderRadius: 12,
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: '#CBD5E1', fontSize: '0.95rem', fontWeight: 500,
-              transition: 'border-color 0.3s, background 0.3s, color 0.3s',
-            }}
-              onMouseEnter={e => { e.target.style.borderColor = '#6366F180'; e.target.style.background = 'rgba(99,102,241,0.08)'; e.target.style.color = '#C7D2FE' }}
-              onMouseLeave={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.background = 'rgba(255,255,255,0.04)'; e.target.style.color = '#CBD5E1' }}
-            >
-              {tech}
-            </span>
+        <motion.div variants={stagger} style={{ display:'flex',flexWrap:'wrap',gap:12,justifyContent:'center' }}>
+          {techStack.map((tech,i) => (
+            <motion.span key={i} variants={fadeUp} whileHover={{ borderColor:'#6366F180',background:'rgba(99,102,241,0.08)',color:'#C7D2FE',y:-2 }}
+              style={{ padding:'12px 24px',borderRadius:12,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',
+                color:'#CBD5E1',fontSize:'0.95rem',fontWeight:500,transition:'all 0.3s' }}>{tech}</motion.span>
           ))}
-        </div>
-      </div>
-    </section>
+        </motion.div>
+      </Container>
+    </Section>
   )
 }
 
+/* ====== ABOUT ====== */
 function About() {
-  const { lang } = useLang()
-  const tr = t[lang]
+  const { lang } = useLang(); const tr = t[lang]
   return (
-    <section id="sobre" style={{ ...s.sectionPad, background: '#0A0B0F' }}>
-      <div style={{ ...s.container, maxWidth: 900 }} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            {tr.aboutBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.aboutName}</h2>
+    <Section id="sobre" style={{ background:'#0A0B0F' }}>
+      <Container style={{ maxWidth:900 }}>
+        <div style={{ textAlign:'center',marginBottom:48 }}>
+          <Badge>{tr.aboutBadge}</Badge><SectionTitle>{tr.aboutName}</SectionTitle>
         </div>
-        <div style={{
-          display: 'flex', gap: 40, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center',
-        }}>
-          <div style={{
-            width: 200, height: 200, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #6366F1, #10B981)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '3rem', color: '#fff', fontFamily: "'Syne', sans-serif", fontWeight: 800,
-            flexShrink: 0,
-          }}>CH</div>
-          <div style={{ flex: 1, minWidth: 280 }}>
-            <p style={{ color: '#CBD5E1', fontSize: '1.05rem', lineHeight: 1.8, marginBottom: 24 }}>
-              {tr.aboutBio}
-            </p>
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              {[tr.aboutTag1, tr.aboutTag2, tr.aboutTag3].map((item, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#94A3B8', fontSize: '0.9rem' }}>
-                  {icons.check} {item}
-                </div>
+        <motion.div variants={fadeUp} style={{ display:'flex',gap:40,alignItems:'center',flexWrap:'wrap',justifyContent:'center' }}>
+          <motion.div whileHover={{ scale:1.05,rotate:2 }} transition={{ type:'spring',stiffness:300 }}
+            style={{ width:180,height:180,borderRadius:'50%',background:'linear-gradient(135deg,#6366F1,#10B981)',
+              display:'flex',alignItems:'center',justifyContent:'center',fontSize:'2.8rem',color:'#fff',fontFamily:"'Syne',sans-serif",fontWeight:800,flexShrink:0 }}>CH</motion.div>
+          <div style={{ flex:1,minWidth:280 }}>
+            <p style={{ color:'#CBD5E1',fontSize:'1.05rem',lineHeight:1.8,marginBottom:24 }}>{tr.aboutBio}</p>
+            <div style={{ display:'flex',gap:16,flexWrap:'wrap' }}>
+              {[tr.aboutTag1,tr.aboutTag2,tr.aboutTag3].map((tag,i) => (
+                <div key={i} style={{ display:'flex',alignItems:'center',gap:8,color:'#94A3B8',fontSize:'0.9rem' }}>{I.check} {tag}</div>
               ))}
             </div>
           </div>
-        </div>
-      </div>
-    </section>
+        </motion.div>
+      </Container>
+    </Section>
   )
 }
 
+/* ====== RESULTS ====== */
 function Results() {
-  const { lang } = useLang()
-  const tr = t[lang]
-  const results = [
-    { icon: '\u{1F916}', metric: tr.res1Metric, label: tr.res1Label, desc: tr.res1Desc },
-    { icon: '\u{26A1}', metric: tr.res2Metric, label: tr.res2Label, desc: tr.res2Desc },
-    { icon: '\u{1F4CA}', metric: tr.res3Metric, label: tr.res3Label, desc: tr.res3Desc },
-    { icon: '\u{23F1}\u{FE0F}', metric: tr.res4Metric, label: tr.res4Label, desc: tr.res4Desc },
-    { icon: '\u{1F310}', metric: tr.res5Metric, label: tr.res5Label, desc: tr.res5Desc },
-  ]
+  const { lang } = useLang(); const tr = t[lang]
+  const results = [{ m:tr.r1M,l:tr.r1L,d:tr.r1D },{ m:tr.r2M,l:tr.r2L,d:tr.r2D },{ m:tr.r3M,l:tr.r3L,d:tr.r3D },{ m:tr.r4M,l:tr.r4L,d:tr.r4D },{ m:tr.r5M,l:tr.r5L,d:tr.r5D }]
   return (
-    <section style={{ ...s.sectionPad, background: 'linear-gradient(180deg, #0F1017 0%, #0A0B0F 100%)' }}>
-      <div style={s.container} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ ...s.badge, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#34D399' }}>
-            {tr.resultsBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.resultsTitle}</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>{tr.resultsSub}</p>
+    <Section style={{ background:'linear-gradient(180deg,#0F1017,#0A0B0F)' }}>
+      <Container>
+        <div style={{ textAlign:'center',marginBottom:56 }}>
+          <Badge color="#10B981">{tr.resBadge}</Badge><SectionTitle>{tr.resTitle}</SectionTitle>
+          <SectionSub style={{ margin:'0 auto' }}>{tr.resSub}</SectionSub>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
-          {results.map((r, i) => (
-            <div key={i} style={{
-              background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 16, padding: '28px 24px', textAlign: 'center',
-              transition: 'border-color 0.3s, transform 0.3s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
-            >
-              <div style={{ fontSize: 32, marginBottom: 12 }}>{r.icon}</div>
-              <div style={{
-                fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '2rem',
-                background: 'linear-gradient(135deg, #10B981, #6366F1)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                marginBottom: 4,
-              }}>{r.metric}</div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#E2E8F0', marginBottom: 8 }}>{r.label}</div>
-              <div style={{ fontSize: '0.8rem', color: '#64748B', lineHeight: 1.5 }}>{r.desc}</div>
-            </div>
+        <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:20 }}>
+          {results.map((r,i) => (
+            <motion.div key={i} variants={fadeUp} whileHover={{ y:-6,borderColor:'rgba(16,185,129,0.4)' }}
+              style={{ background:'rgba(255,255,255,0.02)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:16,padding:'28px 24px',textAlign:'center' }}>
+              <div style={{ fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'2.2rem',
+                background:'linear-gradient(135deg,#10B981,#6366F1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',marginBottom:4 }}>{r.m}</div>
+              <div style={{ fontSize:'0.9rem',fontWeight:600,color:'#E2E8F0',marginBottom:8 }}>{r.l}</div>
+              <div style={{ fontSize:'0.8rem',color:'#64748B',lineHeight:1.5 }}>{r.d}</div>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }
 
+/* ====== TESTIMONIALS ====== */
 function Testimonials() {
-  const { lang } = useLang()
-  const tr = t[lang]
-
-  const testimonials = [
-    { text: tr.test1, author: tr.test1Author, role: tr.test1Role, color: '#6366F1' },
-    { text: tr.test2, author: tr.test2Author, role: tr.test2Role, color: '#10B981' },
-    { text: tr.test3, author: tr.test3Author, role: tr.test3Role, color: '#F59E0B' },
-  ]
-
+  const { lang } = useLang(); const tr = t[lang]
+  const tsts = [{ text:tr.t1,author:tr.t1A,role:tr.t1R,color:'#6366F1' },{ text:tr.t2,author:tr.t2A,role:tr.t2R,color:'#10B981' },{ text:tr.t3,author:tr.t3A,role:tr.t3R,color:'#F59E0B' }]
   return (
-    <section style={{ ...s.sectionPad, background: '#0A0B0F' }}>
-      <div style={s.container} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            {tr.testimonialsBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.testimonialsTitle}</h2>
+    <Section style={{ background:'#0A0B0F' }}>
+      <Container>
+        <div style={{ textAlign:'center',marginBottom:56 }}>
+          <Badge>{tr.testBadge}</Badge><SectionTitle>{tr.testTitle}</SectionTitle>
         </div>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: 24,
-        }}>
-          {testimonials.map((test, i) => (
-            <div key={i} style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 16, padding: 32,
-              transition: 'border-color 0.3s, transform 0.3s',
-              display: 'flex', flexDirection: 'column',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = test.color + '40'; e.currentTarget.style.transform = 'translateY(-4px)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' }}
-            >
-              <div style={{ marginBottom: 16, opacity: 0.5 }}>{icons.quote}</div>
-              <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
-                {[...Array(5)].map((_, si) => <span key={si}>{icons.star}</span>)}
-              </div>
-              <p style={{ color: '#CBD5E1', fontSize: '1rem', lineHeight: 1.7, flex: 1, marginBottom: 24, fontStyle: 'italic' }}>
-                "{test.text}"
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20 }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: '50%',
-                  background: `linear-gradient(135deg, ${test.color}, ${test.color}88)`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#fff', fontWeight: 700, fontSize: '0.9rem',
-                }}>
-                  {test.author.split(' ').map(n => n[0]).join('')}
+        <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:24 }}>
+          {tsts.map((ts,i) => (
+            <motion.div key={i} variants={fadeUp} whileHover={{ y:-6,borderColor:ts.color+'40' }}
+              style={{ background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:16,padding:32,
+                display:'flex',flexDirection:'column',backdropFilter:'blur(8px)' }}>
+              <div style={{ marginBottom:16,opacity:0.5 }}>{I.quote}</div>
+              <div style={{ display:'flex',gap:4,marginBottom:16 }}>{[...Array(5)].map((_,si) => <span key={si}>{I.star}</span>)}</div>
+              <p style={{ color:'#CBD5E1',fontSize:'1rem',lineHeight:1.7,flex:1,marginBottom:24,fontStyle:'italic' }}>{ts.text}</p>
+              <div style={{ display:'flex',alignItems:'center',gap:12,borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:20 }}>
+                <div style={{ width:44,height:44,borderRadius:'50%',background:`linear-gradient(135deg,${ts.color},${ts.color}88)`,
+                  display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:'0.9rem' }}>
+                  {ts.author.split(' ').map(n=>n[0]).join('')}
                 </div>
                 <div>
-                  <div style={{ color: '#fff', fontWeight: 600, fontSize: '0.95rem' }}>{test.author}</div>
-                  <div style={{ color: '#64748B', fontSize: '0.85rem' }}>{test.role}</div>
+                  <div style={{ color:'#fff',fontWeight:600,fontSize:'0.95rem' }}>{ts.author}</div>
+                  <div style={{ color:'#64748B',fontSize:'0.85rem' }}>{ts.role}</div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }
 
+/* ====== FAQ ====== */
 function FAQ() {
-  const { lang } = useLang()
-  const tr = t[lang]
-  const [openIndex, setOpenIndex] = useState(null)
-
-  const faqs = [
-    { q: tr.faq1Q, a: tr.faq1A },
-    { q: tr.faq2Q, a: tr.faq2A },
-    { q: tr.faq3Q, a: tr.faq3A },
-    { q: tr.faq4Q, a: tr.faq4A },
-    { q: tr.faq5Q, a: tr.faq5A },
-    { q: tr.faq6Q, a: tr.faq6A },
-  ]
-
+  const { lang } = useLang(); const tr = t[lang]
+  const [openIdx, setOpenIdx] = useState(null)
+  const faqs = [{ q:tr.f1Q,a:tr.f1A },{ q:tr.f2Q,a:tr.f2A },{ q:tr.f3Q,a:tr.f3A },{ q:tr.f4Q,a:tr.f4A },{ q:tr.f5Q,a:tr.f5A },{ q:tr.f6Q,a:tr.f6A }]
   return (
-    <section style={{ ...s.sectionPad, background: 'linear-gradient(180deg, #0F1017 0%, #0A0B0F 100%)' }}>
-      <div style={{ ...s.container, maxWidth: 800 }} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            {tr.faqBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.faqTitle}</h2>
+    <Section style={{ background:'linear-gradient(180deg,#0F1017,#0A0B0F)' }}>
+      <Container style={{ maxWidth:800 }}>
+        <div style={{ textAlign:'center',marginBottom:56 }}>
+          <Badge>{tr.faqBadge}</Badge><SectionTitle>{tr.faqTitle}</SectionTitle>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {faqs.map((faq, i) => (
-            <div key={i} style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 12, overflow: 'hidden',
-              transition: 'border-color 0.3s',
-              borderColor: openIndex === i ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.06)',
-            }}>
-              <button
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                style={{
-                  width: '100%', padding: '20px 24px',
-                  background: 'none', border: 'none',
-                  color: '#E2E8F0', fontSize: '1.05rem', fontWeight: 600,
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  textAlign: 'left', cursor: 'pointer',
-                }}
-              >
+        <div style={{ display:'flex',flexDirection:'column',gap:12 }}>
+          {faqs.map((faq,i) => (
+            <motion.div key={i} variants={fadeUp} style={{ background:'rgba(255,255,255,0.03)',border:'1px solid',
+              borderColor:openIdx===i?'rgba(99,102,241,0.3)':'rgba(255,255,255,0.06)',borderRadius:12,overflow:'hidden',transition:'border-color 0.3s' }}>
+              <button onClick={()=>setOpenIdx(openIdx===i?null:i)}
+                style={{ width:'100%',padding:'20px 24px',background:'none',border:'none',color:'#E2E8F0',fontSize:'1.05rem',fontWeight:600,
+                  display:'flex',alignItems:'center',justifyContent:'space-between',textAlign:'left',cursor:'pointer' }}>
                 {faq.q}
-                <span style={{
-                  transform: openIndex === i ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.3s', flexShrink: 0, marginLeft: 16,
-                }}>
-                  {icons.chevronDown}
-                </span>
+                <span style={{ transform:openIdx===i?'rotate(180deg)':'rotate(0)',transition:'transform 0.3s',flexShrink:0,marginLeft:16 }}>{I.chev}</span>
               </button>
-              {openIndex === i && (
-                <div style={{
-                  padding: '0 24px 20px',
-                  color: '#94A3B8', fontSize: '0.95rem', lineHeight: 1.7,
-                }}>
-                  {faq.a}
-                </div>
-              )}
-            </div>
+              <AnimatePresence>
+                {openIdx===i && (
+                  <motion.div initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}} exit={{height:0,opacity:0}} transition={{duration:0.3,ease:EASE}}
+                    style={{ overflow:'hidden' }}>
+                    <div style={{ padding:'0 24px 20px',color:'#94A3B8',fontSize:'0.95rem',lineHeight:1.7 }}>{faq.a}</div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }
 
+/* ====== CONTACT ====== */
 function Contact() {
-  const { lang } = useLang()
-  const tr = t[lang]
+  const { lang } = useLang(); const tr = t[lang]
   const [submitted, setSubmitted] = useState(false)
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 4000)
-  }
-
-  const inputStyle = {
-    width: '100%', padding: '14px 18px', borderRadius: 12,
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#E2E8F0', fontSize: '1rem',
-    transition: 'border-color 0.3s',
-    outline: 'none',
-  }
-
+  const handleSubmit = (e) => { e.preventDefault(); setSubmitted(true); setTimeout(()=>setSubmitted(false),4000) }
+  const inp = { width:'100%',padding:'14px 18px',borderRadius:12,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',
+    color:'#E2E8F0',fontSize:'1rem',outline:'none',transition:'border-color 0.3s' }
   return (
-    <section id="contacto" style={{
-      ...s.sectionPad,
-      background: 'linear-gradient(180deg, #0F1017 0%, #0A0B0F 100%)',
-    }}>
-      <div style={s.container} className="fade-section">
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ ...s.badge, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#818CF8' }}>
-            {tr.contactBadge}
-          </div>
-          <h2 style={s.sectionTitle}>{tr.contactTitle}</h2>
-          <p style={{ ...s.sectionSub, margin: '0 auto' }}>
-            {tr.contactSub}
-          </p>
+    <Section id="contacto" style={{ background:'linear-gradient(180deg,#0F1017,#0A0B0F)' }}>
+      <Container>
+        <div style={{ textAlign:'center',marginBottom:56 }}>
+          <Badge>{tr.ctBadge}</Badge>
+          <SectionTitle>
+            {tr.ctTitle}<span style={{ background:'linear-gradient(135deg,#6366F1,#10B981)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent' }}>{tr.ctHL}</span>
+          </SectionTitle>
+          <SectionSub style={{ margin:'0 auto' }}>{tr.ctSub}</SectionSub>
         </div>
-
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: 48, maxWidth: 900, margin: '0 auto',
-        }}>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <input type="text" placeholder={tr.contactName} required style={inputStyle}
-              onFocus={e => e.target.style.borderColor = '#6366F1'}
-              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-            />
-            <input type="email" placeholder={tr.contactEmail} required style={inputStyle}
-              onFocus={e => e.target.style.borderColor = '#6366F1'}
-              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-            />
-            <input type="text" placeholder={tr.contactCompany} style={inputStyle}
-              onFocus={e => e.target.style.borderColor = '#6366F1'}
-              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-            />
-            <textarea placeholder={tr.contactMessage} rows={4} required
-              style={{ ...inputStyle, resize: 'vertical', minHeight: 100 }}
-              onFocus={e => e.target.style.borderColor = '#6366F1'}
-              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-            />
-            <button type="submit" style={{
-              padding: '16px 36px', borderRadius: 12, border: 'none',
-              background: submitted
-                ? 'linear-gradient(135deg, #10B981, #059669)'
-                : 'linear-gradient(135deg, #6366F1, #4F46E5)',
-              color: '#fff', fontWeight: 700, fontSize: '1.05rem',
-              boxShadow: '0 8px 32px rgba(99,102,241,0.3)',
-              transition: 'all 0.3s',
-            }}>
-              {submitted ? tr.contactSent : tr.contactSubmit}
-            </button>
-          </form>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24, justifyContent: 'center' }}>
-            <div style={{
-              background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 16, padding: 24,
-            }}>
-              <h4 style={{ color: '#fff', fontWeight: 600, marginBottom: 16, fontSize: '1.05rem' }}>{tr.contactDirect}</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <a href="tel:5579605324" style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#CBD5E1', fontSize: '0.95rem' }}>
-                  {icons.phone} 55 7960 5324
-                </a>
-                <a href="mailto:chris_231011@hotmail.com" style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#CBD5E1', fontSize: '0.95rem' }}>
-                  {icons.mail} chris_231011@hotmail.com
-                </a>
+        <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:48,maxWidth:900,margin:'0 auto' }}>
+          <motion.form variants={fadeUp} onSubmit={handleSubmit} style={{ display:'flex',flexDirection:'column',gap:16 }}>
+            <input type="text" placeholder={tr.ctName} required style={inp} onFocus={e=>e.target.style.borderColor='#6366F1'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
+            <input type="email" placeholder={tr.ctEmail} required style={inp} onFocus={e=>e.target.style.borderColor='#6366F1'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
+            <input type="text" placeholder={tr.ctCompany} style={inp} onFocus={e=>e.target.style.borderColor='#6366F1'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
+            <textarea placeholder={tr.ctMsg} rows={4} required style={{ ...inp,resize:'vertical',minHeight:100 }} onFocus={e=>e.target.style.borderColor='#6366F1'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
+            <motion.button type="submit" whileHover={{ y:-2,boxShadow:'0 12px 40px rgba(99,102,241,0.4)' }} whileTap={{ scale:0.98 }}
+              style={{ padding:'16px 36px',borderRadius:12,border:'none',
+                background:submitted?'linear-gradient(135deg,#10B981,#059669)':'linear-gradient(135deg,#6366F1,#4F46E5)',
+                color:'#fff',fontWeight:700,fontSize:'1.05rem',boxShadow:'0 8px 32px rgba(99,102,241,0.3)',position:'relative',overflow:'hidden' }}>
+              <span style={{ position:'absolute',inset:0,background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent)',animation:'shimmer 2s infinite',backgroundSize:'200% 100%' }}/>
+              <span style={{ position:'relative' }}>{submitted?tr.ctSent:tr.ctSubmit}</span>
+            </motion.button>
+          </motion.form>
+          <motion.div variants={fadeUp} style={{ display:'flex',flexDirection:'column',gap:24,justifyContent:'center' }}>
+            <div style={{ background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:16,padding:24 }}>
+              <h4 style={{ color:'#fff',fontWeight:600,marginBottom:16,fontSize:'1.05rem' }}>{tr.ctDirect}</h4>
+              <div style={{ display:'flex',flexDirection:'column',gap:12 }}>
+                <a href="mailto:christianescamilla15@gmail.com" style={{ display:'flex',alignItems:'center',gap:12,color:'#CBD5E1',fontSize:'0.95rem' }}>
+                  {I.mail} christianescamilla15@gmail.com</a>
+                <a href="https://wa.me/525579605324" target="_blank" rel="noopener noreferrer" style={{ display:'flex',alignItems:'center',gap:12,color:'#CBD5E1',fontSize:'0.95rem' }}>
+                  {I.wa} +52 55 7960 5324</a>
               </div>
             </div>
-            <div style={{
-              background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 16, padding: 24,
-            }}>
-              <h4 style={{ color: '#fff', fontWeight: 600, marginBottom: 16, fontSize: '1.05rem' }}>{tr.contactSocial}</h4>
-              <div style={{ display: 'flex', gap: 16 }}>
-                <a href="https://linkedin.com/in/christianhernandez-ia" target="_blank" rel="noopener noreferrer"
-                  style={{
-                    width: 48, height: 48, borderRadius: 12,
-                    background: 'rgba(99,102,241,0.1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#818CF8', transition: 'background 0.3s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.2)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(99,102,241,0.1)'}
-                >
-                  {icons.linkedin}
-                </a>
-                <a href="https://github.com/christianescamilla15-cell" target="_blank" rel="noopener noreferrer"
-                  style={{
-                    width: 48, height: 48, borderRadius: 12,
-                    background: 'rgba(99,102,241,0.1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#818CF8', transition: 'background 0.3s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.2)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(99,102,241,0.1)'}
-                >
-                  {icons.github}
-                </a>
+            <div style={{ background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:16,padding:24 }}>
+              <h4 style={{ color:'#fff',fontWeight:600,marginBottom:16,fontSize:'1.05rem' }}>{tr.ctSocial}</h4>
+              <div style={{ display:'flex',gap:16 }}>
+                {[
+                  { icon:I.li,href:'https://linkedin.com/in/christianhernandez-ia' },
+                  { icon:I.gh,href:'https://github.com/christianescamilla15-cell' },
+                ].map((s,i) => (
+                  <motion.a key={i} href={s.href} target="_blank" rel="noopener noreferrer" whileHover={{ background:'rgba(99,102,241,0.2)',y:-2 }}
+                    style={{ width:48,height:48,borderRadius:12,background:'rgba(99,102,241,0.1)',display:'flex',alignItems:'center',justifyContent:'center',color:'#818CF8' }}>
+                    {s.icon}
+                  </motion.a>
+                ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   )
 }
 
+/* ====== FOOTER ====== */
 function Footer() {
-  const { lang } = useLang()
-  const tr = t[lang]
+  const { lang } = useLang(); const tr = t[lang]
   return (
-    <footer style={{
-      padding: '32px 0',
-      borderTop: '1px solid rgba(255,255,255,0.06)',
-      background: '#0A0B0F',
-    }}>
-      <div style={{ ...s.container, textAlign: 'center' }}>
-        <p style={{ color: '#64748B', fontSize: '0.9rem' }}>
-          {tr.footerText}
-        </p>
-      </div>
+    <footer style={{ padding:'32px 0',borderTop:'1px solid rgba(255,255,255,0.06)',background:'#0A0B0F' }}>
+      <Container style={{ textAlign:'center' }}>
+        <p style={{ color:'#64748B',fontSize:'0.9rem' }}>{tr.footer}</p>
+      </Container>
     </footer>
   )
 }
 
-/* ───────────────── Floating CTA Button ───────────────── */
+/* ====== FLOATING CTA ====== */
 function FloatingCTA() {
-  const { lang } = useLang()
-  const tr = t[lang]
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 400)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  if (!visible) return null
-
+  const { lang } = useLang(); const tr = t[lang]
+  const [vis, setVis] = useState(false)
+  useEffect(() => { const fn = () => setVis(window.scrollY>400); window.addEventListener('scroll',fn); return ()=>window.removeEventListener('scroll',fn) }, [])
+  if (!vis) return null
   return (
-    <a href="#contacto" className="floating-cta" style={{
-      position: 'fixed', bottom: 90, right: 24, zIndex: 998,
-      padding: '12px 24px', borderRadius: 12,
-      background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
-      color: '#fff', fontWeight: 700, fontSize: '0.9rem',
-      boxShadow: '0 8px 32px rgba(99,102,241,0.4)',
-      display: 'flex', alignItems: 'center', gap: 8,
-      transition: 'transform 0.2s, box-shadow 0.2s',
-      textDecoration: 'none',
-    }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.5)' }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.4)' }}
-    >
-      {icons.phone} {tr.floatingCta}
-    </a>
+    <motion.a href="#contacto" className="floating-cta" initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}
+      whileHover={{ y:-2,boxShadow:'0 12px 40px rgba(99,102,241,0.5)' }}
+      style={{ position:'fixed',bottom:90,right:24,zIndex:998,padding:'12px 24px',borderRadius:12,
+        background:'linear-gradient(135deg,#6366F1,#4F46E5)',color:'#fff',fontWeight:700,fontSize:'0.9rem',
+        boxShadow:'0 8px 32px rgba(99,102,241,0.4)',display:'flex',alignItems:'center',gap:8,textDecoration:'none' }}>
+      {I.phone} {tr.floatCta}
+    </motion.a>
   )
 }
 
-/* ───────────────── AI Chatbot ───────────────── */
+/* ====== CHATBOT ====== */
 function Chatbot() {
-  const { lang } = useLang()
-  const tr = t[lang]
-  const kb = chatbotKB[lang]
+  const { lang } = useLang(); const tr = t[lang]; const kb = chatKB[lang]
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState([])
+  const [msgs, setMsgs] = useState([])
   const [input, setInput] = useState('')
-  const messagesEndRef = useRef(null)
+  const endRef = useRef(null)
 
-  useEffect(() => {
-    if (open && messages.length === 0) {
-      setMessages([{ from: 'bot', text: tr.chatWelcome }])
-    }
-  }, [open])
+  useEffect(() => { if (open && msgs.length===0) setMsgs([{ from:'bot',text:tr.chatWelcome }]) }, [open])
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior:'smooth' }) }, [msgs])
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
-
-  const getBotResponse = (userMsg) => {
-    const lower = userMsg.toLowerCase()
-    if (lower.includes('servicio') || lower.includes('service') || lower.includes('qué ofrecen') || lower.includes('what do you offer')) {
-      return kb.services
-    }
-    if (lower.includes('precio') || lower.includes('cost') || lower.includes('pricing') || lower.includes('paquete') || lower.includes('bundle') || lower.includes('cuánto')) {
-      return kb.pricing
-    }
-    if (lower.includes('proceso') || lower.includes('process') || lower.includes('cómo trabaj') || lower.includes('how do you work') || lower.includes('paso')) {
-      return kb.process
-    }
-    if (lower.includes('agenda') || lower.includes('schedule') || lower.includes('llamada') || lower.includes('call') || lower.includes('contacto') || lower.includes('contact')) {
-      return kb.schedule
-    }
-    if (lower.includes('nexusforge') || lower.includes('orquestaci') || lower.includes('orchestrat') || lower.includes('enjambre') || lower.includes('swarm') || lower.includes('agentes')) {
-      return lang === 'es'
-        ? 'NexusForge AI es nuestra plataforma enterprise de orquestación de agentes IA. Cuenta con 22 agentes especializados, 6 topologías de enjambre (cadena, estrella, malla, jerárquica, broadcast, debate), auto-reparación automática, pipeline RAG y 231 tests automatizados. Infraestructura desplegada con Terraform y Kubernetes. Precio: $7,999/proyecto.'
-        : 'NexusForge AI is our enterprise AI agent orchestration platform. It features 22 specialized agents, 6 swarm topologies (chain, star, mesh, hierarchical, broadcast, debate), automatic self-healing, RAG pipeline, and 231 automated tests. Infrastructure deployed with Terraform and Kubernetes. Price: $7,999/project.'
-    }
-    if (lower.includes('tiempo') || lower.includes('time') || lower.includes('cuánto tarda') || lower.includes('how long') || lower.includes('implementa')) {
-      return lang === 'es'
-        ? 'La implementación típica toma entre 1 y 3 semanas, dependiendo de la complejidad. Trabajamos en sprints ágiles para entregar valor rápidamente.'
-        : 'Typical implementation takes 1-3 weeks, depending on complexity. We work in agile sprints to deliver value quickly.'
-    }
+  const respond = (msg) => {
+    const l = msg.toLowerCase()
+    if (l.includes('servicio')||l.includes('service')||l.includes('ofrecen')||l.includes('offer')) return kb.services
+    if (l.includes('precio')||l.includes('cost')||l.includes('pricing')||l.includes('paquete')||l.includes('bundle')||l.includes('cu\u00e1nto cuesta')) return kb.pricing
+    if (l.includes('proceso')||l.includes('process')||l.includes('c\u00f3mo trabaj')||l.includes('how do you work')||l.includes('paso')) return kb.process
+    if (l.includes('contacto')||l.includes('contact')||l.includes('agenda')||l.includes('schedule')||l.includes('llamada')||l.includes('call')) return kb.contact
+    if (l.includes('nexusforge')||l.includes('orquestaci')||l.includes('orchestrat')||l.includes('enjambre')||l.includes('swarm')) return kb.nexus
+    if (l.includes('tiempo')||l.includes('time')||l.includes('tarda')||l.includes('how long')||l.includes('implementa')) return kb.time
+    if (l.includes('garant')||l.includes('refund')||l.includes('reembolso')||l.includes('guarantee')) return kb.guarantee
+    if (l.includes('stack')||l.includes('tecnolog')||l.includes('tech')) return kb.stack
+    if (l.includes('chatbot')||l.includes('multiagente')||l.includes('multi-agent')) return kb.chatbot
+    if (l.includes('automatiz')||l.includes('automat')) return kb.automation
+    if (l.includes('contenido')||l.includes('content')||l.includes('dall')) return kb.content
+    if (l.includes('financ')||l.includes('dashboard')||l.includes('anomal')) return kb.finance
+    if (l.includes('cv')||l.includes('hr')||l.includes('recurso')||l.includes('resume')||l.includes('filtrad')) return kb.hr
+    if (l.includes('portal')||l.includes('no-code')||l.includes('nocode')||l.includes('cliente')) return kb.portal
+    if (l.includes('roi')||l.includes('retorno')||l.includes('return')) return kb.roi
+    if (l.includes('whatsapp')||l.includes('wha')) return kb.whatsapp
+    if (l.includes('email')||l.includes('correo')||l.includes('mail')) return kb.email
     return kb.default
   }
 
-  const handleSend = (text) => {
+  const send = (text) => {
     const msg = text || input.trim()
     if (!msg) return
-    setMessages(prev => [...prev, { from: 'user', text: msg }])
+    setMsgs(p => [...p, { from:'user',text:msg }])
     setInput('')
-    setTimeout(() => {
-      setMessages(prev => [...prev, { from: 'bot', text: getBotResponse(msg) }])
-    }, 600)
+    setTimeout(() => setMsgs(p => [...p, { from:'bot',text:respond(msg) }]), 500)
   }
 
-  const quickActions = [
-    { label: tr.chatQuick1, action: () => handleSend(lang === 'es' ? 'Qué servicios ofrecen?' : 'What services do you offer?') },
-    { label: tr.chatQuick2, action: () => handleSend(lang === 'es' ? 'Cuáles son los precios?' : 'What are your prices?') },
-    { label: tr.chatQuick3, action: () => handleSend(lang === 'es' ? 'Cuál es el proceso?' : 'What is the process?') },
-    { label: tr.chatQuick4, action: () => handleSend(lang === 'es' ? 'Quiero agendar una llamada' : 'I want to schedule a call') },
+  const quicks = [
+    { label:tr.cQ1,msg:lang==='es'?'Qu\u00e9 servicios ofrecen?':'What services do you offer?' },
+    { label:tr.cQ2,msg:lang==='es'?'Cu\u00e1les son los precios?':'What are your prices?' },
+    { label:tr.cQ3,msg:lang==='es'?'Cu\u00e1l es el proceso?':'What is the process?' },
+    { label:tr.cQ4,msg:lang==='es'?'Quiero contactarlos':'I want to contact you' },
   ]
 
   return (
     <>
-      {/* Chat toggle button */}
-      <button onClick={() => setOpen(!open)} style={{
-        position: 'fixed', bottom: 24, right: 24, zIndex: 1001,
-        width: 60, height: 60, borderRadius: '50%',
-        background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
-        border: 'none', color: '#fff',
-        boxShadow: '0 8px 32px rgba(99,102,241,0.4)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        transition: 'transform 0.2s, box-shadow 0.2s',
-      }}
-        onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.5)' }}
-        onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.4)' }}
-      >
-        {open ? icons.close : icons.chatbot}
-      </button>
+      <motion.button onClick={()=>setOpen(!open)} whileHover={{ scale:1.1 }} whileTap={{ scale:0.95 }}
+        style={{ position:'fixed',bottom:24,right:24,zIndex:1001,width:60,height:60,borderRadius:'50%',
+          background:'linear-gradient(135deg,#6366F1,#4F46E5)',border:'none',color:'#fff',
+          boxShadow:'0 8px 32px rgba(99,102,241,0.4)',display:'flex',alignItems:'center',justifyContent:'center' }}>
+        {open ? I.close : I.chat}
+      </motion.button>
 
-      {/* Chat window */}
-      {open && (
-        <div style={{
-          position: 'fixed', bottom: 96, right: 24, zIndex: 1001,
-          width: 380, maxHeight: 520,
-          background: '#12131A',
-          border: '1px solid rgba(99,102,241,0.2)',
-          borderRadius: 16, overflow: 'hidden',
-          display: 'flex', flexDirection: 'column',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-        }}>
-          {/* Header */}
-          <div style={{
-            padding: '16px 20px',
-            background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(16,185,129,0.1))',
-            borderBottom: '1px solid rgba(99,102,241,0.2)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #6366F1, #10B981)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                {icons.chatbot}
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{opacity:0,y:20,scale:0.95}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:20,scale:0.95}}
+            transition={{ duration:0.3,ease:EASE }}
+            style={{ position:'fixed',bottom:96,right:24,zIndex:1001,width:380,maxHeight:520,
+              background:'#12131A',border:'1px solid rgba(99,102,241,0.2)',borderRadius:20,overflow:'hidden',
+              display:'flex',flexDirection:'column',boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}>
+            {/* Header */}
+            <div style={{ padding:'16px 20px',background:'linear-gradient(135deg,rgba(99,102,241,0.15),rgba(16,185,129,0.1))',
+              borderBottom:'1px solid rgba(99,102,241,0.2)',display:'flex',alignItems:'center',gap:10 }}>
+              <div style={{ width:32,height:32,borderRadius:'50%',background:'linear-gradient(135deg,#6366F1,#10B981)',
+                display:'flex',alignItems:'center',justifyContent:'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               </div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff' }}>{tr.chatTitle}</div>
-                <div style={{ fontSize: '0.7rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', display: 'inline-block' }}/> Online
+                <div style={{ fontWeight:700,fontSize:'0.9rem',color:'#fff' }}>{tr.chatTitle}</div>
+                <div style={{ fontSize:'0.7rem',color:'#10B981',display:'flex',alignItems:'center',gap:4 }}>
+                  <span style={{ width:6,height:6,borderRadius:'50%',background:'#10B981',display:'inline-block' }}/> Online
                 </div>
               </div>
             </div>
-          </div>
 
-          <>
-              {/* Messages */}
-              <div style={{
-                flex: 1, overflowY: 'auto', padding: '16px', minHeight: 250, maxHeight: 320,
-                display: 'flex', flexDirection: 'column', gap: 12,
-              }}>
-                {messages.map((msg, i) => (
-                  <div key={i} style={{
-                    alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
-                    maxWidth: '85%',
-                    padding: '10px 14px', borderRadius: 12,
-                    background: msg.from === 'user'
-                      ? 'linear-gradient(135deg, #6366F1, #4F46E5)'
-                      : 'rgba(255,255,255,0.06)',
-                    color: msg.from === 'user' ? '#fff' : '#CBD5E1',
-                    fontSize: '0.88rem', lineHeight: 1.5,
-                    whiteSpace: 'pre-line',
-                  }}>
-                    {msg.text}
-                  </div>
+            {/* Messages */}
+            <div style={{ flex:1,overflowY:'auto',padding:16,minHeight:250,maxHeight:320,display:'flex',flexDirection:'column',gap:12 }}>
+              {msgs.map((msg,i) => (
+                <motion.div key={i} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{duration:0.2}}
+                  style={{ alignSelf:msg.from==='user'?'flex-end':'flex-start',maxWidth:'85%',padding:'10px 14px',borderRadius:12,
+                    background:msg.from==='user'?'linear-gradient(135deg,#6366F1,#4F46E5)':'rgba(255,255,255,0.06)',
+                    color:msg.from==='user'?'#fff':'#CBD5E1',fontSize:'0.88rem',lineHeight:1.5,whiteSpace:'pre-line' }}>
+                  {msg.text}
+                </motion.div>
+              ))}
+              <div ref={endRef}/>
+            </div>
+
+            {/* Quick actions */}
+            {msgs.length <= 1 && (
+              <div style={{ padding:'8px 16px',display:'flex',gap:6,flexWrap:'wrap',borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+                {quicks.map((q,i) => (
+                  <motion.button key={i} onClick={()=>send(q.msg)} whileHover={{ background:'rgba(99,102,241,0.2)' }}
+                    style={{ padding:'6px 12px',borderRadius:8,background:'rgba(99,102,241,0.1)',border:'1px solid rgba(99,102,241,0.3)',
+                      color:'#818CF8',fontSize:'0.78rem',fontWeight:600,cursor:'pointer' }}>{q.label}</motion.button>
                 ))}
-                <div ref={messagesEndRef} />
               </div>
+            )}
 
-              {/* Quick actions */}
-              {messages.length <= 1 && (
-                <div style={{
-                  padding: '8px 16px', display: 'flex', gap: 6, flexWrap: 'wrap',
-                  borderTop: '1px solid rgba(255,255,255,0.06)',
-                }}>
-                  {quickActions.map((qa, i) => (
-                    <button key={i} onClick={qa.action} style={{
-                      padding: '6px 12px', borderRadius: 8,
-                      background: 'rgba(99,102,241,0.1)',
-                      border: '1px solid rgba(99,102,241,0.3)',
-                      color: '#818CF8', fontSize: '0.78rem', fontWeight: 600,
-                      cursor: 'pointer', transition: 'all 0.2s',
-                    }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.2)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'rgba(99,102,241,0.1)'}
-                    >
-                      {qa.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Input */}
-              <div style={{
-                padding: '12px 16px',
-                borderTop: '1px solid rgba(255,255,255,0.06)',
-                display: 'flex', gap: 8,
-              }}>
-                <input
-                  type="text"
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSend()}
-                  placeholder={tr.chatPlaceholder}
-                  style={{
-                    flex: 1, padding: '10px 14px', borderRadius: 8,
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: '#E2E8F0', fontSize: '0.9rem', outline: 'none',
-                  }}
-                />
-                <button onClick={() => handleSend()} style={{
-                  padding: '10px 16px', borderRadius: 8, border: 'none',
-                  background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
-                  color: '#fff', fontWeight: 600, fontSize: '0.85rem',
-                }}>
-                  {icons.arrow}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
+            {/* Input */}
+            <div style={{ padding:'12px 16px',borderTop:'1px solid rgba(255,255,255,0.06)',display:'flex',gap:8 }}>
+              <input type="text" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&send()}
+                placeholder={tr.chatPH}
+                style={{ flex:1,padding:'10px 14px',borderRadius:8,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',
+                  color:'#E2E8F0',fontSize:'0.9rem',outline:'none' }}/>
+              <motion.button onClick={()=>send()} whileHover={{ scale:1.05 }} whileTap={{ scale:0.95 }}
+                style={{ padding:'10px 16px',borderRadius:8,border:'none',background:'linear-gradient(135deg,#6366F1,#4F46E5)',color:'#fff' }}>
+                {I.send}
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
 
-/* ───────────────── Responsive CSS ───────────────── */
-const responsiveStyles = `
-  @media (max-width: 768px) {
-    .nav-desktop { display: none !important; }
-    .nav-hamburger { display: block !important; }
-    .nav-lang-mobile { display: flex !important; }
-    .floating-cta { display: none !important; }
-  }
-  @media (min-width: 769px) {
-    .nav-mobile-menu { display: none !important; }
-    .nav-mobile-controls .nav-lang-mobile { display: none !important; }
-  }
-`
-
-/* ───────────────── App ───────────────── */
+/* ====== APP ====== */
 export default function App() {
   const [lang, setLang] = useState('es')
-  useFadeIn()
+
+  // Lenis smooth scroll
+  useEffect(() => {
+    const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true })
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf) }
+    requestAnimationFrame(raf)
+    return () => lenis.destroy()
+  }, [])
 
   return (
     <LangContext.Provider value={{ lang, setLang }}>
-      <style>{globalStyles}</style>
-      <style>{responsiveStyles}</style>
+      <style>{globalCSS}</style>
+      <ScrollProgress />
+      <div className="film-grain" />
+      <CustomCursor />
       <Navbar />
       <Hero />
       <TrustSignals />
@@ -1898,7 +1088,7 @@ export default function App() {
       <Services />
       <Process />
       <Demos />
-      <TechStack />
+      <TechStackSection />
       <About />
       <Results />
       <Testimonials />
