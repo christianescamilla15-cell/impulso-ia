@@ -230,93 +230,398 @@ input,textarea{font-family:'DM Sans',sans-serif}
 }
 `
 
-/* ====== ONBOARDING TOUR ====== */
-const TOUR_STEPS = {
-  es: [
-    { title: 'Bienvenido a ImpulsoIA', text: 'Soluciones de IA para tu negocio.\nPermíteme darte un recorrido rápido por lo que ofrecemos.', btn: 'Comenzar Tour →' },
-    { title: 'Nuestros Servicios', text: 'Ofrecemos 7 servicios de IA: desde chatbots multiagente hasta dashboards financieros y orquestación de agentes.', target: '#servicios', btn: 'Siguiente →' },
-    { title: 'Demos en Vivo', text: 'Prueba cada solución en vivo. Haz click en cualquier demo para verla funcionando.', target: '#demos', btn: 'Siguiente →' },
-    { title: 'Nuestro Proceso', text: '4 pasos claros: Descubrimiento → Diseño → Desarrollo → Entrega. Sin contratos largos.', target: '#proceso', btn: 'Siguiente →' },
-    { title: 'Resultados Reales', text: '18 sistemas en producción con 1,346+ tests automatizados. Números que hablan por nosotros.', target: null, btn: 'Siguiente →' },
-    { title: 'Contáctanos', text: '¿Listo para transformar tu negocio? Contáctanos por email o WhatsApp para un diagnóstico gratuito.', target: '#contacto', btn: 'Siguiente →' },
-    { title: '¡Listo!', text: 'Explora nuestros servicios y demos. ¡Estamos listos para ayudarte a automatizar, escalar y crecer!', btn: 'Finalizar ✓' },
-  ],
-  en: [
-    { title: 'Welcome to ImpulsoIA', text: 'AI Solutions for your business.\nLet me give you a quick tour of what we offer.', btn: 'Start Tour →' },
-    { title: 'Our Services', text: 'We offer 7 AI services: from multi-agent chatbots to financial dashboards and agent orchestration.', target: '#servicios', btn: 'Next →' },
-    { title: 'Live Demos', text: 'Try each solution live. Click on any demo to see it in action.', target: '#demos', btn: 'Next →' },
-    { title: 'Our Process', text: '4 clear steps: Discovery → Design → Development → Delivery. No long contracts.', target: '#proceso', btn: 'Next →' },
-    { title: 'Real Results', text: '18 production systems with 1,346+ automated tests. Numbers that speak for themselves.', target: null, btn: 'Next →' },
-    { title: 'Contact Us', text: 'Ready to transform your business? Reach out via email or WhatsApp for a free diagnosis.', target: '#contacto', btn: 'Next →' },
-    { title: 'All Set!', text: 'Explore our services and demos. We are ready to help you automate, scale, and grow!', btn: 'Finish ✓' },
-  ],
+/* ====== ONBOARDING TOUR (Level 3 — Spotlight + Real Actions) ====== */
+const TOUR_STEPS_L3 = [
+  { id: 'welcome', target: null, action: null, wait: 0 },
+  { id: 'hero', target: '[data-tour="hero"]', action: null, wait: 0 },
+  { id: 'services', target: '[data-tour="services-grid"]', action: null, wait: 0 },
+  { id: 'demos', target: '[data-tour="demos-grid"]', action: null, wait: 0 },
+  { id: 'process', target: '[data-tour="process-timeline"]', action: null, wait: 0 },
+  { id: 'contact', target: '[data-tour="contact-section"]', action: null, wait: 0 },
+  { id: 'chatbot', target: '[data-tour="chatbot-btn"]', action: 'openChatbot', wait: 4000 },
+  { id: 'final', target: null, action: 'scrollTop', wait: 500 },
+]
+
+const TOUR_TR = {
+  es: {
+    tourWelcome: 'Bienvenido a ImpulsoIA',
+    tourWelcomeDesc: 'Soluciones de IA & Automatizacion para tu negocio.\nPermiteme darte un recorrido interactivo por todo lo que ofrecemos.',
+    tourHero: 'Tu Negocio, Potenciado',
+    tourHeroDesc: 'Automatiza, escala y crece. 7+ servicios, 18 sistemas en produccion y 1,346+ tests automatizados.',
+    tourServices: 'Nuestros 7 Servicios',
+    tourServicesDesc: 'Desde chatbots multiagente hasta dashboards financieros y orquestacion de agentes IA. Cada uno con demos en vivo.',
+    tourDemos: 'Demos en Vivo',
+    tourDemosDesc: 'Prueba cada solucion en vivo. Haz click en cualquier demo para verla funcionando en produccion.',
+    tourProcess: 'Proceso en 4 Pasos',
+    tourProcessDesc: 'Descubrimiento, Diseno, Desarrollo y Entrega. Sin contratos largos, con resultados medibles en 1-3 semanas.',
+    tourContact: 'Contactanos',
+    tourContactDesc: 'Agenda tu diagnostico gratis por email o WhatsApp. Sin compromiso, con ideas concretas para tu negocio.',
+    tourChatbot: 'Asistente IA',
+    tourChatbotDesc: 'Nuestro chatbot responde sobre servicios, precios y proceso. Mira como responde en tiempo real.',
+    tourComplete: 'Tour Completado',
+    tourCompleteDesc: 'Has explorado ImpulsoIA completo. Estamos listos para transformar tu negocio con IA.',
+    next: 'Siguiente', prev: 'Anterior', skip: 'Saltar Tour', finish: 'Finalizar',
+    restartTour: 'Reiniciar Tour', explore: 'Explorar',
+    watching: 'Ejecutando accion...',
+    services: 'Servicios', demos: 'Demos', systems: 'Sistemas',
+  },
+  en: {
+    tourWelcome: 'Welcome to ImpulsoIA',
+    tourWelcomeDesc: 'AI & Automation solutions for your business.\nLet me give you an interactive tour of everything we offer.',
+    tourHero: 'Your Business, Supercharged',
+    tourHeroDesc: 'Automate, scale, and grow. 7+ services, 18 production systems and 1,346+ automated tests.',
+    tourServices: 'Our 7 Services',
+    tourServicesDesc: 'From multi-agent chatbots to financial dashboards and AI agent orchestration. Each with live demos.',
+    tourDemos: 'Live Demos',
+    tourDemosDesc: 'Try each solution live. Click any demo to see it running in production.',
+    tourProcess: '4-Step Process',
+    tourProcessDesc: 'Discovery, Design, Development and Delivery. No long contracts, measurable results in 1-3 weeks.',
+    tourContact: 'Contact Us',
+    tourContactDesc: 'Schedule your free diagnosis via email or WhatsApp. No commitment, with concrete ideas for your business.',
+    tourChatbot: 'AI Assistant',
+    tourChatbotDesc: 'Our chatbot answers about services, pricing and process. Watch it respond in real time.',
+    tourComplete: 'Tour Complete!',
+    tourCompleteDesc: 'You have explored ImpulsoIA fully. We are ready to transform your business with AI.',
+    next: 'Next', prev: 'Back', skip: 'Skip Tour', finish: 'Finish',
+    restartTour: 'Restart Tour', explore: 'Explore',
+    watching: 'Running action...',
+    services: 'Services', demos: 'Demos', systems: 'Systems',
+  },
 }
-const TOUR_CSS = `
-.tour-overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;pointer-events:auto}
-.tour-panel{background:#111827;border:1px solid #6366F1;border-radius:16px;padding:32px;max-width:480px;width:92%;text-align:center;position:relative}
-.tour-panel h2{font-family:'Syne',sans-serif;font-size:1.35rem;color:#6366F1;margin-bottom:8px}
-.tour-panel p{font-size:.9rem;color:#D1D5DB;line-height:1.7;margin-bottom:20px;white-space:pre-wrap}
-.tour-counter{font-size:.75rem;color:#9CA3AF;margin-bottom:16px}
-.tour-lang-row{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
-.tour-lang-btn{padding:8px 24px;border:1px solid #374151;border-radius:8px;background:transparent;color:#9CA3AF;cursor:pointer;font-size:.85rem;font-weight:600;min-height:44px;min-width:44px}
-.tour-lang-btn.active{background:#6366F1;color:#fff;border-color:#6366F1}
-.tour-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.tour-next{padding:12px 32px;border-radius:10px;border:none;background:linear-gradient(135deg,#6366F1,#4F46E5);color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;min-height:44px;min-width:44px;transition:transform .15s,box-shadow .15s}
-.tour-next:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(99,102,241,0.5)}
-.tour-skip{padding:12px 20px;border-radius:10px;border:1px solid #374151;background:transparent;color:#9CA3AF;font-size:.8rem;cursor:pointer;min-height:44px;min-width:44px}
-.tour-skip:hover{color:#E2E8F0;border-color:#6366F1}
-@media(max-width:640px){.tour-panel{padding:24px 16px;margin:12px}.tour-panel h2{font-size:1.15rem}.tour-panel p{font-size:.85rem}}
+
+const tourKeyframesCSS = `
+@keyframes tourPulse {
+  0%, 100% { border-color: rgba(99,102,241,0.6); box-shadow: 0 0 0 0 rgba(99,102,241,0.2); }
+  50% { border-color: rgba(99,102,241,0.9); box-shadow: 0 0 20px 4px rgba(99,102,241,0.15); }
+}
+@keyframes tourTooltipIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes tourActionPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+@keyframes tourFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes tourScaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 `
+
+function typeIntoInput(selector, text) {
+  const el = document.querySelector(selector)
+  if (!el) return false
+  const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set
+  if (nativeSetter) { nativeSetter.call(el, text); el.dispatchEvent(new Event('input', { bubbles: true })) }
+  el.dispatchEvent(new Event('change', { bubbles: true }))
+  return true
+}
+
+function clickElement(selector) {
+  const el = document.querySelector(selector)
+  if (!el) return false
+  el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+  return true
+}
+
+function TourSpotlight({ targetRect, padding = 12 }) {
+  if (!targetRect) return null
+  const { top, left, width, height } = targetRect
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 10001, pointerEvents: 'none' }}>
+      <div style={{
+        position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.75)',
+        clipPath: `polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ${top - padding}px, ${left - padding}px ${top - padding}px, ${left - padding}px ${top + height + padding}px, ${left + width + padding}px ${top + height + padding}px, ${left + width + padding}px ${top - padding}px, 0% ${top - padding}px)`,
+      }} />
+      <div style={{
+        position: 'absolute', top: top - padding, left: left - padding,
+        width: width + padding * 2, height: height + padding * 2,
+        border: '2px solid rgba(99,102,241,0.6)', borderRadius: 12,
+        animation: 'tourPulse 2s ease-in-out infinite', pointerEvents: 'none',
+      }} />
+    </div>
+  )
+}
+
+function TourTooltipL3({ step, stepIndex, totalSteps, targetRect, lang, actionRunning, onNext, onPrev, onSkip, onSetLang }) {
+  const tr = TOUR_TR[lang]
+  const titles = { welcome:'tourWelcome', hero:'tourHero', services:'tourServices', demos:'tourDemos', process:'tourProcess', contact:'tourContact', chatbot:'tourChatbot', final:'tourComplete' }
+  const descs = { welcome:'tourWelcomeDesc', hero:'tourHeroDesc', services:'tourServicesDesc', demos:'tourDemosDesc', process:'tourProcessDesc', contact:'tourContactDesc', chatbot:'tourChatbotDesc', final:'tourCompleteDesc' }
+
+  let tooltipStyle = {
+    position: 'fixed', zIndex: 10002, background: '#111827',
+    border: '1px solid rgba(99,102,241,0.4)', borderRadius: 14,
+    padding: '20px 22px', width: 380, maxWidth: 'calc(100vw - 32px)',
+    boxShadow: '0 12px 48px rgba(0,0,0,0.6)', animation: 'tourTooltipIn 0.3s ease-out',
+    pointerEvents: 'auto',
+  }
+
+  if (targetRect) {
+    const spaceBelow = window.innerHeight - (targetRect.top + targetRect.height + 20)
+    const spaceAbove = targetRect.top - 20
+    if (spaceBelow >= 220) {
+      tooltipStyle.top = targetRect.top + targetRect.height + 16
+      tooltipStyle.left = Math.max(16, Math.min(targetRect.left, window.innerWidth - 400))
+    } else if (spaceAbove >= 220) {
+      tooltipStyle.bottom = window.innerHeight - targetRect.top + 16
+      tooltipStyle.left = Math.max(16, Math.min(targetRect.left, window.innerWidth - 400))
+    } else {
+      tooltipStyle.top = '50%'; tooltipStyle.left = '50%'; tooltipStyle.transform = 'translate(-50%, -50%)'
+    }
+  } else {
+    tooltipStyle.top = '50%'; tooltipStyle.left = '50%'
+    tooltipStyle.transform = 'translate(-50%, -50%)'; tooltipStyle.width = 440
+  }
+
+  return (
+    <div style={tooltipStyle}>
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px',
+        borderRadius: 12, background: 'rgba(99,102,241,0.15)', color: '#A5B4FC',
+        fontSize: 11, fontWeight: 600, marginBottom: 10,
+      }}>{stepIndex + 1} / {totalSteps}</div>
+
+      {step.id === 'welcome' && (
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 12 }}>
+          <button onClick={() => onSetLang('es')} style={{
+            padding: '6px 18px', borderRadius: 8, border: lang === 'es' ? 'none' : '1px solid rgba(255,255,255,0.2)',
+            background: lang === 'es' ? '#6366F1' : 'transparent', color: lang === 'es' ? '#fff' : '#9CA3AF',
+            cursor: 'pointer', fontSize: 13, fontWeight: 600,
+          }}>ES</button>
+          <button onClick={() => onSetLang('en')} style={{
+            padding: '6px 18px', borderRadius: 8, border: lang === 'en' ? 'none' : '1px solid rgba(255,255,255,0.2)',
+            background: lang === 'en' ? '#6366F1' : 'transparent', color: lang === 'en' ? '#fff' : '#9CA3AF',
+            cursor: 'pointer', fontSize: 13, fontWeight: 600,
+          }}>EN</button>
+        </div>
+      )}
+
+      <h3 style={{ fontFamily:"'Syne',sans-serif", fontSize: 18, fontWeight: 700, color: '#E5E7EB', marginBottom: 6 }}>{tr[titles[step.id]]}</h3>
+      <p style={{ fontSize: 14, color: '#9CA3AF', lineHeight: 1.5, marginBottom: 16, whiteSpace: 'pre-wrap' }}>{tr[descs[step.id]]}</p>
+
+      {actionRunning && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+          borderRadius: 8, marginBottom: 14, background: 'rgba(99,102,241,0.1)',
+          border: '1px solid rgba(99,102,241,0.2)',
+        }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#6366F1', animation: 'tourActionPulse 1s ease-in-out infinite' }} />
+          <span style={{ fontSize: 12, color: '#A5B4FC', fontWeight: 500 }}>{tr.watching}</span>
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: 4, marginBottom: 14, flexWrap: 'wrap' }}>
+        {TOUR_STEPS_L3.map((_, i) => (
+          <div key={i} style={{
+            width: i === stepIndex ? 20 : 6, height: 6, borderRadius: 3,
+            background: i < stepIndex ? '#6366F1' : i === stepIndex ? '#818CF8' : 'rgba(255,255,255,0.1)',
+            transition: 'all 0.3s',
+          }} />
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        {stepIndex > 0 && !actionRunning && (
+          <button onClick={onPrev} style={{
+            padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)',
+            background: 'transparent', color: '#9CA3AF', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          }}>{tr.prev}</button>
+        )}
+        <div style={{ flex: 1 }} />
+        {!actionRunning && (
+          <button onClick={onSkip} style={{
+            padding: '8px 16px', borderRadius: 8, border: 'none',
+            background: 'transparent', color: '#6B7280', fontSize: 12, cursor: 'pointer',
+          }}>{tr.skip}</button>
+        )}
+        {!actionRunning && (
+          <button onClick={onNext} style={{
+            padding: '8px 20px', borderRadius: 8, border: 'none',
+            background: 'linear-gradient(135deg, #6366F1, #4F46E5)', color: '#fff',
+            fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          }}>{stepIndex === totalSteps - 1 ? tr.finish : tr.next}</button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function TourCompletionModal({ lang, onRestart, onExplore }) {
+  const tr = TOUR_TR[lang]
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 10003, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'rgba(0,0,0,0.8)', animation: 'tourFadeIn 0.4s ease-out',
+    }}>
+      <div style={{
+        background: '#111827', border: '1px solid rgba(99,102,241,0.4)',
+        borderRadius: 20, padding: '36px 40px', maxWidth: 460, width: '90%',
+        textAlign: 'center', animation: 'tourScaleIn 0.4s ease-out',
+        boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+      }}>
+        <div style={{
+          width: 64, height: 64, borderRadius: '50%',
+          background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          margin: '0 auto 20px', boxShadow: '0 0 30px rgba(99,102,241,0.3)',
+        }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+        </div>
+        <h2 style={{ fontFamily:"'Syne',sans-serif", fontSize: 24, fontWeight: 700, color: '#E5E7EB', marginBottom: 8 }}>{tr.tourComplete}</h2>
+        <p style={{ fontSize: 14, color: '#9CA3AF', lineHeight: 1.6, marginBottom: 24 }}>{tr.tourCompleteDesc}</p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 28, flexWrap: 'wrap' }}>
+          {[
+            { value: '7', label: tr.services, color: '#6366F1' },
+            { value: '7', label: tr.demos, color: '#10B981' },
+            { value: '18', label: tr.systems, color: '#F59E0B' },
+          ].map(s => (
+            <div key={s.label} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: s.color }}>{s.value}</div>
+              <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+          <button onClick={onRestart} style={{
+            padding: '10px 24px', borderRadius: 10, border: '1px solid rgba(99,102,241,0.3)',
+            background: 'transparent', color: '#A5B4FC', fontSize: 14, fontWeight: 500, cursor: 'pointer',
+          }}>{tr.restartTour}</button>
+          <button onClick={onExplore} style={{
+            padding: '10px 28px', borderRadius: 10, border: 'none',
+            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: '#fff',
+            fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          }}>{tr.explore}</button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function OnboardingTour() {
   const { lang, setLang } = useLang()
-  const [step, setStep] = useState(0)
-  const [active, setActive] = useState(true)
-  const steps = TOUR_STEPS[lang]
+  const [stepIndex, setStepIndex] = useState(0)
+  const [targetRect, setTargetRect] = useState(null)
+  const [actionRunning, setActionRunning] = useState(false)
+  const [showCompletion, setShowCompletion] = useState(false)
+  const timeoutsRef = useRef([])
+
+  const clearAllTimeouts = useCallback(() => {
+    timeoutsRef.current.forEach(t => clearTimeout(t)); timeoutsRef.current = []
+  }, [])
+  const addTimeout = useCallback((fn, ms) => {
+    const id = setTimeout(fn, ms); timeoutsRef.current.push(id); return id
+  }, [])
+
+  useEffect(() => () => clearAllTimeouts(), [clearAllTimeouts])
+
+  const currentStep = TOUR_STEPS_L3[stepIndex]
+
+  const measureTarget = useCallback(() => {
+    if (!currentStep?.target) { setTargetRect(null); return }
+    const el = document.querySelector(currentStep.target)
+    if (el) {
+      const rect = el.getBoundingClientRect()
+      setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height })
+      if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        addTimeout(() => {
+          const r2 = el.getBoundingClientRect()
+          setTargetRect({ top: r2.top, left: r2.left, width: r2.width, height: r2.height })
+        }, 600)
+      }
+    } else { setTargetRect(null) }
+  }, [currentStep, addTimeout])
+
+  useEffect(() => {
+    if (!currentStep) return
+    clearAllTimeouts()
+    addTimeout(() => measureTarget(), 300)
+  }, [stepIndex, currentStep, measureTarget, clearAllTimeouts, addTimeout])
+
+  useEffect(() => {
+    const handler = () => measureTarget()
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [measureTarget])
+
+  const executeAction = useCallback(() => {
+    if (!currentStep?.action) return
+    setActionRunning(true)
+
+    switch (currentStep.action) {
+      case 'openChatbot': {
+        addTimeout(() => { clickElement('[data-tour="chatbot-btn"]') }, 300)
+        addTimeout(() => {
+          const chatInput = document.querySelector('[data-tour="chatbot-panel"] input[type="text"]')
+          if (chatInput) { typeIntoInput('[data-tour="chatbot-panel"] input[type="text"]', lang === 'es' ? 'Servicios' : 'Services') }
+        }, 1000)
+        addTimeout(() => {
+          const sendBtns = document.querySelectorAll('[data-tour="chatbot-panel"] button')
+          for (const btn of sendBtns) {
+            const svg = btn.querySelector('svg')
+            if (svg && btn.style.borderRadius === '8px') { btn.click(); break }
+          }
+          clickElement('[data-tour="chatbot-send"]')
+        }, 1500)
+        addTimeout(() => { setActionRunning(false); measureTarget() }, currentStep.wait)
+        break
+      }
+      case 'scrollTop': {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        addTimeout(() => setActionRunning(false), currentStep.wait)
+        break
+      }
+      default:
+        setActionRunning(false)
+    }
+  }, [currentStep, addTimeout, measureTarget, lang])
+
+  const goToStep = useCallback((idx) => {
+    if (idx < 0 || idx >= TOUR_STEPS_L3.length) return
+    clearAllTimeouts(); setActionRunning(false); setTargetRect(null); setStepIndex(idx)
+  }, [clearAllTimeouts])
 
   const handleNext = useCallback(() => {
-    const next = step + 1
-    if (next >= steps.length) { setActive(false); return }
-    const target = steps[next]?.target
-    if (target) {
-      const el = document.querySelector(target)
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (actionRunning) return
+    if (currentStep?.action) {
+      executeAction()
+      addTimeout(() => {
+        if (stepIndex < TOUR_STEPS_L3.length - 1) goToStep(stepIndex + 1)
+        else { window.scrollTo({ top: 0, behavior: 'smooth' }); setShowCompletion(true) }
+      }, (currentStep.wait || 0) + 200)
+      return
     }
-    setStep(next)
-  }, [step, steps])
+    if (stepIndex < TOUR_STEPS_L3.length - 1) goToStep(stepIndex + 1)
+    else { window.scrollTo({ top: 0, behavior: 'smooth' }); setShowCompletion(true) }
+  }, [stepIndex, currentStep, actionRunning, executeAction, goToStep, addTimeout])
 
-  const handleSkip = useCallback(() => setActive(false), [])
+  const handlePrev = useCallback(() => { if (!actionRunning) goToStep(stepIndex - 1) }, [stepIndex, actionRunning, goToStep])
+  const handleSkip = useCallback(() => {
+    clearAllTimeouts(); setActionRunning(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' }); setShowCompletion(false)
+  }, [clearAllTimeouts])
+  const handleRestart = useCallback(() => {
+    setShowCompletion(false); setTargetRect(null); setActionRunning(false)
+    clearAllTimeouts(); setStepIndex(0)
+  }, [clearAllTimeouts])
+  const handleExplore = useCallback(() => { setShowCompletion(false) }, [])
 
-  if (!active) return null
-  const s = steps[step]
+  if (showCompletion) {
+    return (<><style>{tourKeyframesCSS}</style><TourCompletionModal lang={lang} onRestart={handleRestart} onExplore={handleExplore} /></>)
+  }
+
+  // If skipped (not in completion and not active)
+  if (stepIndex < 0) return null
 
   return (
-    <AnimatePresence>
-      <motion.div className="tour-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key="tour">
-        <style>{TOUR_CSS}</style>
-        <motion.div className="tour-panel" initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }} key={step}>
-          <h2>{s.title}</h2>
-          {step === 0 && (
-            <div className="tour-lang-row">
-              <button className={`tour-lang-btn ${lang === 'es' ? 'active' : ''}`} onClick={() => setLang('es')}>ES</button>
-              <button className={`tour-lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>EN</button>
-            </div>
-          )}
-          <p>{s.text}</p>
-          <div className="tour-counter">
-            {step + 1} / {steps.length}
-          </div>
-          <div className="tour-actions">
-            {step < steps.length - 1 && (
-              <button className="tour-skip" onClick={handleSkip}>
-                {lang === 'es' ? 'Saltar Tour' : 'Skip Tour'}
-              </button>
-            )}
-            <button className="tour-next" onClick={handleNext}>{s.btn}</button>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+    <>
+      <style>{tourKeyframesCSS}</style>
+      {currentStep?.target && targetRect ? (
+        <TourSpotlight targetRect={targetRect} />
+      ) : (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 10001, background: 'rgba(0,0,0,0.75)', pointerEvents: 'none' }} />
+      )}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 10001, pointerEvents: actionRunning ? 'none' : 'auto', background: 'transparent' }}
+        onClick={e => e.stopPropagation()}>
+        <TourTooltipL3
+          step={currentStep} stepIndex={stepIndex} totalSteps={TOUR_STEPS_L3.length}
+          targetRect={targetRect} lang={lang} actionRunning={actionRunning}
+          onNext={handleNext} onPrev={handlePrev} onSkip={handleSkip} onSetLang={setLang}
+        />
+      </div>
+    </>
   )
 }
 
@@ -527,7 +832,7 @@ function Hero() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 200])
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
   return (
-    <section ref={ref} style={{ position:'relative',minHeight:'100vh',display:'flex',alignItems:'center',overflow:'hidden',paddingTop:72 }}>
+    <section ref={ref} data-tour="hero" style={{ position:'relative',minHeight:'100vh',display:'flex',alignItems:'center',overflow:'hidden',paddingTop:72 }}>
       {/* BG effects */}
       <motion.div style={{ position:'absolute',inset:0,zIndex:0,y,
         background:'radial-gradient(ellipse 80% 60% at 50% 40%,rgba(99,102,241,0.15) 0%,rgba(16,185,129,0.05) 40%,transparent 70%)',
@@ -663,7 +968,7 @@ function Services() {
           <Badge>{tr.svcBadge}</Badge><SectionTitle>{tr.svcTitle}</SectionTitle>
           <SectionSub style={{ margin:'0 auto' }}>{tr.svcSub}</SectionSub>
         </div>
-        <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(340px,1fr))',gap:24 }}>
+        <div data-tour="services-grid" style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(340px,1fr))',gap:24 }}>
           {svcs.map((sv,i) => {
             const color = svcColors[i]
             const W = sv.demo ? 'a' : 'div'
@@ -716,7 +1021,7 @@ function Process() {
           <Badge color="#10B981">{tr.procBadge}</Badge><SectionTitle>{tr.procTitle}</SectionTitle>
           <SectionSub style={{ margin:'0 auto' }}>{tr.procSub}</SectionSub>
         </div>
-        <div style={{ position:'relative',maxWidth:700,margin:'0 auto' }}>
+        <div data-tour="process-timeline" style={{ position:'relative',maxWidth:700,margin:'0 auto' }}>
           {/* Vertical line */}
           <div style={{ position:'absolute',left:28,top:0,bottom:0,width:2,background:'linear-gradient(180deg,#6366F1,#10B981)',opacity:0.3 }}/>
           {steps.map((st,i) => (
@@ -754,7 +1059,7 @@ function Demos() {
         </div>
       </Container>
       {/* Horizontal scroll container */}
-      <div className="demo-hscroll" style={{ display:'flex',gap:24,padding:'0 max(24px,calc((100vw - 1200px)/2))',overflowX:'auto',scrollbarWidth:'none',WebkitOverflowScrolling:'touch',paddingBottom:8 }}>
+      <div className="demo-hscroll" data-tour="demos-grid" style={{ display:'flex',gap:24,padding:'0 max(24px,calc((100vw - 1200px)/2))',overflowX:'auto',scrollbarWidth:'none',WebkitOverflowScrolling:'touch',paddingBottom:8 }}>
         {demos.map((d,i) => (
           <motion.a key={i} href={demoURLs[i]} target="_blank" rel="noopener noreferrer" variants={fadeUp}
             whileHover={{ y:-8,borderColor:d.c+'60' }}
@@ -958,7 +1263,7 @@ function Contact() {
           </SectionTitle>
           <SectionSub style={{ margin:'0 auto' }}>{tr.ctSub}</SectionSub>
         </div>
-        <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:48,maxWidth:900,margin:'0 auto' }}>
+        <div data-tour="contact-section" style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:48,maxWidth:900,margin:'0 auto' }}>
           <motion.form variants={fadeUp} onSubmit={handleSubmit} style={{ display:'flex',flexDirection:'column',gap:16 }}>
             <input type="text" placeholder={tr.ctName} required style={inp} onFocus={e=>e.target.style.borderColor='#6366F1'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
             <input type="email" placeholder={tr.ctEmail} required style={inp} onFocus={e=>e.target.style.borderColor='#6366F1'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
@@ -1082,7 +1387,7 @@ function Chatbot() {
 
   return (
     <>
-      <motion.button onClick={()=>setOpen(!open)} whileHover={{ scale:1.1 }} whileTap={{ scale:0.95 }}
+      <motion.button data-tour="chatbot-btn" onClick={()=>setOpen(!open)} whileHover={{ scale:1.1 }} whileTap={{ scale:0.95 }}
         style={{ position:'fixed',bottom:24,right:24,zIndex:1001,width:60,height:60,borderRadius:'50%',
           background:'linear-gradient(135deg,#6366F1,#4F46E5)',border:'none',color:'#fff',
           boxShadow:'0 8px 32px rgba(99,102,241,0.4)',display:'flex',alignItems:'center',justifyContent:'center' }}>
@@ -1091,7 +1396,7 @@ function Chatbot() {
 
       <AnimatePresence>
         {open && (
-          <motion.div initial={{opacity:0,y:20,scale:0.95}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:20,scale:0.95}}
+          <motion.div data-tour="chatbot-panel" initial={{opacity:0,y:20,scale:0.95}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:20,scale:0.95}}
             transition={{ duration:0.3,ease:EASE }}
             style={{ position:'fixed',bottom:96,right:24,zIndex:1001,width:380,maxHeight:520,
               background:'#12131A',border:'1px solid rgba(99,102,241,0.2)',borderRadius:20,overflow:'hidden',
@@ -1141,7 +1446,7 @@ function Chatbot() {
                 placeholder={tr.chatPH}
                 style={{ flex:1,padding:'10px 14px',borderRadius:8,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',
                   color:'#E2E8F0',fontSize:'0.9rem',outline:'none' }}/>
-              <motion.button onClick={()=>send()} whileHover={{ scale:1.05 }} whileTap={{ scale:0.95 }}
+              <motion.button data-tour="chatbot-send" onClick={()=>send()} whileHover={{ scale:1.05 }} whileTap={{ scale:0.95 }}
                 style={{ padding:'10px 16px',borderRadius:8,border:'none',background:'linear-gradient(135deg,#6366F1,#4F46E5)',color:'#fff' }}>
                 {I.send}
               </motion.button>
