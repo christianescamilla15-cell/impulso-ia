@@ -17,7 +17,7 @@ const t = {
     heroT1:'Automatiza.',heroT2:'Escala.',heroT3:'Crece.',
     heroSub:'Soluciones de IA que transforman tu negocio \u2014 reducen costos, aceleran procesos y liberan a tu equipo para lo que realmente importa.',
     heroCta:'Agenda tu diagn\u00f3stico gratis',heroCtaSec:'Ver servicios',
-    hStat1:'7+',hStat1L:'Servicios',hStat2:'16',hStat2L:'Sistemas',hStat3:'1,238+',hStat3L:'Tests',
+    hStat1:'7+',hStat1L:'Servicios',hStat2:'18',hStat2L:'Sistemas',hStat3:'1,346+',hStat3L:'Tests',
     trustBadge:'Respaldado por resultados',trustTitle:'N\u00fameros que hablan por nosotros',
     trust1:'Sistemas IA Entregados',trust2:'Claude Tools en Producci\u00f3n',trust3:'Tests Automatizados',trust4:'Demos en Vivo',
     painBadge:'El problema',painTitle:'Esto le pasa a tu empresa hoy',
@@ -46,8 +46,8 @@ const t = {
     d7T:'NexusForge AI',d7M:['22 agentes','6 topolog\u00edas','247 tests'],
     techBadge:'Tecnolog\u00edas',techTitle:'Nuestro stack',
     aboutBadge:'Sobre m\u00ed',aboutName:'Christian Hernandez Escamilla',
-    aboutBio:'Ingeniero en Software especializado en IA & Automatizaci\u00f3n. 16 sistemas en producci\u00f3n con 1,238+ tests automatizados, incluyendo chatbots multiagente, dashboards financieros, portales No-Code y NexusForge: orquestaci\u00f3n de 22 agentes IA con Terraform + Kubernetes.',
-    aboutTag1:'16 sistemas IA en producci\u00f3n',aboutTag2:'React, Python, Node.js, Terraform',aboutTag3:'1,238+ tests automatizados',
+    aboutBio:'Ingeniero en Software especializado en IA & Automatizaci\u00f3n. 18 sistemas en producci\u00f3n con 1,346+ tests automatizados, incluyendo chatbots multiagente, dashboards financieros, portales No-Code y NexusForge: orquestaci\u00f3n de 22 agentes IA con Terraform + Kubernetes.',
+    aboutTag1:'18 sistemas IA en producci\u00f3n',aboutTag2:'React, Python, Node.js, Terraform',aboutTag3:'1,346+ tests automatizados',
     resBadge:'Resultados reales',resTitle:'No prometemos, demostramos',resSub:'M\u00e9tricas de proyectos reales.',
     r1M:'80%',r1L:'consultas sin humanos',r1D:'Chatbot multiagente con 5 IAs especializadas',
     r2M:'90%',r2L:'menos tiempo en contenido',r2D:'Copy + visual para 4 plataformas en segundos',
@@ -79,7 +79,7 @@ const t = {
     heroT1:'Automate.',heroT2:'Scale.',heroT3:'Grow.',
     heroSub:'AI solutions that transform your business \u2014 cut costs, accelerate processes, and free your team.',
     heroCta:'Schedule your free diagnosis',heroCtaSec:'View services',
-    hStat1:'7+',hStat1L:'Services',hStat2:'16',hStat2L:'Systems',hStat3:'1,238+',hStat3L:'Tests',
+    hStat1:'7+',hStat1L:'Services',hStat2:'18',hStat2L:'Systems',hStat3:'1,346+',hStat3L:'Tests',
     trustBadge:'Backed by results',trustTitle:'Numbers that speak',
     trust1:'AI Systems Shipped',trust2:'Claude Tools in Prod',trust3:'Automated Tests',trust4:'Live Demos',
     painBadge:'The problem',painTitle:'This is happening to your business',
@@ -108,8 +108,8 @@ const t = {
     d7T:'NexusForge AI',d7M:['22 agents','6 topologies','247 tests'],
     techBadge:'Technologies',techTitle:'Our stack',
     aboutBadge:'About me',aboutName:'Christian Hernandez Escamilla',
-    aboutBio:'Software Engineer specializing in AI & Automation. 16 production systems with 1,238+ tests, multi-agent chatbots, financial dashboards, No-Code portals, and NexusForge: 22 AI agents with Terraform + K8s.',
-    aboutTag1:'16 AI systems in production',aboutTag2:'React, Python, Node.js, Terraform',aboutTag3:'1,238+ automated tests',
+    aboutBio:'Software Engineer specializing in AI & Automation. 18 production systems with 1,346+ tests, multi-agent chatbots, financial dashboards, No-Code portals, and NexusForge: 22 AI agents with Terraform + K8s.',
+    aboutTag1:'18 AI systems in production',aboutTag2:'React, Python, Node.js, Terraform',aboutTag3:'1,346+ automated tests',
     resBadge:'Real results',resTitle:'We prove, not promise',resSub:'Metrics from real projects.',
     r1M:'80%',r1L:'queries without humans',r1D:'Multi-agent chatbot with 5 specialized AIs',
     r2M:'90%',r2L:'less content production time',r2D:'Copy + visual for 4 platforms in seconds',
@@ -501,8 +501,8 @@ function Hero() {
 function TrustSignals() {
   const { lang } = useLang(); const tr = t[lang]
   const counters = [
-    { end:16,suffix:'',label:tr.trust1,color:'#6366F1' },{ end:32,suffix:'',label:tr.trust2,color:'#10B981' },
-    { end:1238,suffix:'+',label:tr.trust3,color:'#F59E0B' },{ end:7,suffix:'',label:tr.trust4,color:'#8B5CF6' },
+    { end:18,suffix:'',label:tr.trust1,color:'#6366F1' },{ end:32,suffix:'',label:tr.trust2,color:'#10B981' },
+    { end:1346,suffix:'+',label:tr.trust3,color:'#F59E0B' },{ end:7,suffix:'',label:tr.trust4,color:'#8B5CF6' },
   ]
   return (
     <Section style={{ padding:'80px 0',background:'linear-gradient(180deg,#0A0B0F,#0F1017)' }}>
