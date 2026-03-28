@@ -1361,7 +1361,8 @@ function Chatbot() {
   const endRef = useRef(null)
 
   useEffect(() => { if (open && msgs.length===0) setMsgs([{ from:'bot',text:tr.chatWelcome }]) }, [open])
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior:'smooth' }) }, [msgs])
+  const msgsContainerRef = useRef(null)
+  useEffect(() => { if (msgsContainerRef.current) msgsContainerRef.current.scrollTop = msgsContainerRef.current.scrollHeight }, [msgs])
 
   const respond = (msg) => {
     const l = msg.toLowerCase()
@@ -1432,7 +1433,7 @@ function Chatbot() {
             </div>
 
             {/* Messages */}
-            <div style={{ flex:1,overflowY:'auto',padding:16,minHeight:250,maxHeight:320,display:'flex',flexDirection:'column',gap:12 }}>
+            <div ref={msgsContainerRef} style={{ flex:1,overflowY:'auto',padding:16,minHeight:250,maxHeight:320,display:'flex',flexDirection:'column',gap:12 }}>
               {msgs.map((msg,i) => (
                 <motion.div key={i} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{duration:0.2}}
                   style={{ alignSelf:msg.from==='user'?'flex-end':'flex-start',maxWidth:'85%',padding:'10px 14px',borderRadius:12,
@@ -1444,15 +1445,14 @@ function Chatbot() {
               <div ref={endRef}/>
             </div>
 
-            {/* Quick actions */}
-            {msgs.length <= 1 && (
-              <div style={{ padding:'8px 16px',display:'flex',gap:6,flexWrap:'wrap',borderTop:'1px solid rgba(255,255,255,0.06)' }}>
-                {quicks.map((q,i) => (
-                  <motion.button key={i} onClick={()=>send(q.msg)} whileHover={{ background:'rgba(99,102,241,0.2)' }}
-                    style={{ padding:'6px 12px',borderRadius:8,background:'rgba(99,102,241,0.1)',border:'1px solid rgba(99,102,241,0.3)',
-                      color:'#818CF8',fontSize:'0.78rem',fontWeight:600,cursor:'pointer' }}>{q.label}</motion.button>
-                ))}
-              </div>
+            {/* Quick actions — always visible */}
+            <div style={{ padding:'8px 16px',display:'flex',gap:6,flexWrap:'wrap',borderTop:'1px solid rgba(255,255,255,0.06)',flexShrink:0 }}>
+              {quicks.map((q,i) => (
+                <motion.button key={i} onClick={()=>send(q.msg)} whileHover={{ background:'rgba(99,102,241,0.2)' }}
+                  style={{ padding:'6px 12px',borderRadius:8,background:'rgba(99,102,241,0.1)',border:'1px solid rgba(99,102,241,0.3)',
+                    color:'#818CF8',fontSize:'0.78rem',fontWeight:600,cursor:'pointer' }}>{q.label}</motion.button>
+              ))}
+            </div>
             )}
 
             {/* Input */}
