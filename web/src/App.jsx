@@ -495,6 +495,7 @@ function OnboardingTour() {
   const [targetRect, setTargetRect] = useState(null)
   const [actionRunning, setActionRunning] = useState(false)
   const [showCompletion, setShowCompletion] = useState(false)
+  const [dismissed, setDismissed] = useState(false)
   const timeoutsRef = useRef([])
 
   const clearAllTimeouts = useCallback(() => {
@@ -579,24 +580,31 @@ function OnboardingTour() {
       executeAction()
       addTimeout(() => {
         if (stepIndex < TOUR_STEPS_L3.length - 1) goToStep(stepIndex + 1)
-        else { window.scrollTo({ top: 0, behavior: 'smooth' }); setShowCompletion(true) }
+        else { window.scrollTo({ top: 0, behavior: 'smooth' }); setShowCompletion(true); setDismissed(false) }
       }, (currentStep.wait || 0) + 200)
       return
     }
     if (stepIndex < TOUR_STEPS_L3.length - 1) goToStep(stepIndex + 1)
-    else { window.scrollTo({ top: 0, behavior: 'smooth' }); setShowCompletion(true) }
+    else { window.scrollTo({ top: 0, behavior: 'smooth' }); setShowCompletion(true); setDismissed(false) }
   }, [stepIndex, currentStep, actionRunning, executeAction, goToStep, addTimeout])
 
   const handlePrev = useCallback(() => { if (!actionRunning) goToStep(stepIndex - 1) }, [stepIndex, actionRunning, goToStep])
   const handleSkip = useCallback(() => {
     clearAllTimeouts(); setActionRunning(false)
-    window.scrollTo({ top: 0, behavior: 'smooth' }); setShowCompletion(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' }); setShowCompletion(false); setDismissed(true)
   }, [clearAllTimeouts])
   const handleRestart = useCallback(() => {
-    setShowCompletion(false); setTargetRect(null); setActionRunning(false)
+    setShowCompletion(false); setDismissed(false); setTargetRect(null); setActionRunning(false)
     clearAllTimeouts(); setStepIndex(0)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [clearAllTimeouts])
-  const handleExplore = useCallback(() => { setShowCompletion(false) }, [])
+  const handleExplore = useCallback(() => {
+    setShowCompletion(false); setDismissed(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  // If tour was dismissed (skip or explore), don't render anything
+  if (dismissed) return null
 
   if (showCompletion) {
     return (<><style>{tourKeyframesCSS}</style><TourCompletionModal lang={lang} onRestart={handleRestart} onExplore={handleExplore} /></>)
