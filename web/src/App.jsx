@@ -366,7 +366,7 @@ function TourTooltipL3({ step, stepIndex, totalSteps, targetRect, lang, actionRu
   }
 
   return (
-    <div style={tooltipStyle}>
+    <div data-tour-tooltip style={tooltipStyle}>
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px',
         borderRadius: 12, background: 'rgba(99,102,241,0.15)', color: '#A5B4FC',
@@ -444,8 +444,12 @@ function TourCompletionModal({ lang, onRestart, onExplore }) {
     <div style={{
       position: 'fixed', inset: 0, zIndex: 10003, display: 'flex', alignItems: 'center', justifyContent: 'center',
       background: 'rgba(0,0,0,0.8)', animation: 'tourFadeIn 0.4s ease-out',
+      cursor: 'pointer',
+    }} onClick={(e) => {
+      if (e.target.closest('[data-tour-completion]') || e.target.closest('button')) return;
+      onExplore();
     }}>
-      <div style={{
+      <div data-tour-completion style={{
         background: '#111827', border: '1px solid rgba(99,102,241,0.4)',
         borderRadius: 20, padding: '36px 40px', maxWidth: 460, width: '90%',
         textAlign: 'center', animation: 'tourScaleIn 0.4s ease-out',
@@ -621,8 +625,11 @@ function OnboardingTour() {
       ) : (
         <div style={{ position: 'fixed', inset: 0, zIndex: 10001, background: 'rgba(0,0,0,0.75)', pointerEvents: 'none' }} />
       )}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 10001, pointerEvents: actionRunning ? 'none' : 'auto', background: 'transparent' }}
-        onClick={e => e.stopPropagation()}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 10001, pointerEvents: actionRunning ? 'none' : 'auto', background: 'transparent', cursor: 'pointer' }}
+        onClick={(e) => {
+          if (e.target.closest('[data-tour-tooltip]') || e.target.closest('button')) return;
+          handleNext();
+        }}>
         <TourTooltipL3
           step={currentStep} stepIndex={stepIndex} totalSteps={TOUR_STEPS_L3.length}
           targetRect={targetRect} lang={lang} actionRunning={actionRunning}
