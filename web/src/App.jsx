@@ -230,6 +230,96 @@ input,textarea{font-family:'DM Sans',sans-serif}
 }
 `
 
+/* ====== ONBOARDING TOUR ====== */
+const TOUR_STEPS = {
+  es: [
+    { title: 'Bienvenido a ImpulsoIA', text: 'Soluciones de IA para tu negocio.\nPermíteme darte un recorrido rápido por lo que ofrecemos.', btn: 'Comenzar Tour →' },
+    { title: 'Nuestros Servicios', text: 'Ofrecemos 7 servicios de IA: desde chatbots multiagente hasta dashboards financieros y orquestación de agentes.', target: '#servicios', btn: 'Siguiente →' },
+    { title: 'Demos en Vivo', text: 'Prueba cada solución en vivo. Haz click en cualquier demo para verla funcionando.', target: '#demos', btn: 'Siguiente →' },
+    { title: 'Nuestro Proceso', text: '4 pasos claros: Descubrimiento → Diseño → Desarrollo → Entrega. Sin contratos largos.', target: '#proceso', btn: 'Siguiente →' },
+    { title: 'Resultados Reales', text: '18 sistemas en producción con 1,346+ tests automatizados. Números que hablan por nosotros.', target: null, btn: 'Siguiente →' },
+    { title: 'Contáctanos', text: '¿Listo para transformar tu negocio? Contáctanos por email o WhatsApp para un diagnóstico gratuito.', target: '#contacto', btn: 'Siguiente →' },
+    { title: '¡Listo!', text: 'Explora nuestros servicios y demos. ¡Estamos listos para ayudarte a automatizar, escalar y crecer!', btn: 'Finalizar ✓' },
+  ],
+  en: [
+    { title: 'Welcome to ImpulsoIA', text: 'AI Solutions for your business.\nLet me give you a quick tour of what we offer.', btn: 'Start Tour →' },
+    { title: 'Our Services', text: 'We offer 7 AI services: from multi-agent chatbots to financial dashboards and agent orchestration.', target: '#servicios', btn: 'Next →' },
+    { title: 'Live Demos', text: 'Try each solution live. Click on any demo to see it in action.', target: '#demos', btn: 'Next →' },
+    { title: 'Our Process', text: '4 clear steps: Discovery → Design → Development → Delivery. No long contracts.', target: '#proceso', btn: 'Next →' },
+    { title: 'Real Results', text: '18 production systems with 1,346+ automated tests. Numbers that speak for themselves.', target: null, btn: 'Next →' },
+    { title: 'Contact Us', text: 'Ready to transform your business? Reach out via email or WhatsApp for a free diagnosis.', target: '#contacto', btn: 'Next →' },
+    { title: 'All Set!', text: 'Explore our services and demos. We are ready to help you automate, scale, and grow!', btn: 'Finish ✓' },
+  ],
+}
+const TOUR_CSS = `
+.tour-overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;pointer-events:auto}
+.tour-panel{background:#111827;border:1px solid #6366F1;border-radius:16px;padding:32px;max-width:480px;width:92%;text-align:center;position:relative}
+.tour-panel h2{font-family:'Syne',sans-serif;font-size:1.35rem;color:#6366F1;margin-bottom:8px}
+.tour-panel p{font-size:.9rem;color:#D1D5DB;line-height:1.7;margin-bottom:20px;white-space:pre-wrap}
+.tour-counter{font-size:.75rem;color:#9CA3AF;margin-bottom:16px}
+.tour-lang-row{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.tour-lang-btn{padding:8px 24px;border:1px solid #374151;border-radius:8px;background:transparent;color:#9CA3AF;cursor:pointer;font-size:.85rem;font-weight:600;min-height:44px;min-width:44px}
+.tour-lang-btn.active{background:#6366F1;color:#fff;border-color:#6366F1}
+.tour-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.tour-next{padding:12px 32px;border-radius:10px;border:none;background:linear-gradient(135deg,#6366F1,#4F46E5);color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;min-height:44px;min-width:44px;transition:transform .15s,box-shadow .15s}
+.tour-next:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(99,102,241,0.5)}
+.tour-skip{padding:12px 20px;border-radius:10px;border:1px solid #374151;background:transparent;color:#9CA3AF;font-size:.8rem;cursor:pointer;min-height:44px;min-width:44px}
+.tour-skip:hover{color:#E2E8F0;border-color:#6366F1}
+@media(max-width:640px){.tour-panel{padding:24px 16px;margin:12px}.tour-panel h2{font-size:1.15rem}.tour-panel p{font-size:.85rem}}
+`
+
+function OnboardingTour() {
+  const { lang, setLang } = useLang()
+  const [step, setStep] = useState(0)
+  const [active, setActive] = useState(true)
+  const steps = TOUR_STEPS[lang]
+
+  const handleNext = useCallback(() => {
+    const next = step + 1
+    if (next >= steps.length) { setActive(false); return }
+    const target = steps[next]?.target
+    if (target) {
+      const el = document.querySelector(target)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    setStep(next)
+  }, [step, steps])
+
+  const handleSkip = useCallback(() => setActive(false), [])
+
+  if (!active) return null
+  const s = steps[step]
+
+  return (
+    <AnimatePresence>
+      <motion.div className="tour-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key="tour">
+        <style>{TOUR_CSS}</style>
+        <motion.div className="tour-panel" initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }} key={step}>
+          <h2>{s.title}</h2>
+          {step === 0 && (
+            <div className="tour-lang-row">
+              <button className={`tour-lang-btn ${lang === 'es' ? 'active' : ''}`} onClick={() => setLang('es')}>ES</button>
+              <button className={`tour-lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>EN</button>
+            </div>
+          )}
+          <p>{s.text}</p>
+          <div className="tour-counter">
+            {step + 1} / {steps.length}
+          </div>
+          <div className="tour-actions">
+            {step < steps.length - 1 && (
+              <button className="tour-skip" onClick={handleSkip}>
+                {lang === 'es' ? 'Saltar Tour' : 'Skip Tour'}
+              </button>
+            )}
+            <button className="tour-next" onClick={handleNext}>{s.btn}</button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
 /* ====== TECH STACK ====== */
 const techStack = ['Claude API','GPT-4o','Groq API','Make.com','n8n','Zapier','Airtable','Softr','DALL-E 3','React','Python','Node.js','FastAPI','PostgreSQL','Redis','Docker','Terraform','Kubernetes']
 
@@ -1097,6 +1187,7 @@ export default function App() {
       <Footer />
       <FloatingCTA />
       <Chatbot />
+      <OnboardingTour />
     </LangContext.Provider>
   )
 }
